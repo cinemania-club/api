@@ -1,10 +1,4 @@
-import {
-  OnQueueActive,
-  OnQueueError,
-  OnQueueFailed,
-  Process,
-  Processor,
-} from '@nestjs/bull';
+import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { ScrapperService } from './scrapper.service';
 
@@ -15,25 +9,8 @@ export class TmdbProcessor {
   @Process('getMovieDetails')
   async getMovieDetails(job: Job<{ id: number }>) {
     const { id } = job.data;
+    console.info(`[Scrapper] Enqueuing movie with id ${id}`);
+
     this.scrapperService.getMovieDetails(id);
-  }
-
-  @OnQueueActive()
-  onActive(job: Job) {
-    console.log(
-      `Processing job ${job.id} of type ${job.name} with data ${job.data}...`,
-    );
-  }
-
-  @OnQueueError()
-  onQueueError(error) {
-    console.log(error.failedReason);
-    console.log(error.stacktrace);
-  }
-
-  @OnQueueFailed()
-  onQueueFailed(error) {
-    console.log(error.failedReason);
-    console.log(error.stacktrace);
   }
 }

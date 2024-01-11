@@ -10,11 +10,7 @@ export class ScrapperService {
   ) {}
 
   async getMovieDetails(id: number) {
-    console.log('Getting movie', id);
-
     const movie = await this.tmdbAdapter.getMovieDetails(id);
     await this.movieRepository.upsert(movie);
-
-    console.log('Success');
   }
 }
