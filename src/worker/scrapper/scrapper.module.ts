@@ -8,7 +8,10 @@ import { TmdbProcessor } from "./tmdb.processor";
 @Module({
   imports: [
     BullModule.forRoot({ redis: { host: "redis", port: 6379 } }),
-    BullModule.registerQueue({ name: "tmdb" }),
+    BullModule.registerQueue({
+      name: "tmdb",
+      limiter: { max: 1, duration: 1000 },
+    }),
   ],
   providers: [ScrapperService, TmdbProcessor, MovieRepository, TmdbAdapter],
 })

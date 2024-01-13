@@ -1,16 +1,21 @@
 import { Process, Processor } from "@nestjs/bull";
 import { Job } from "bull";
+import { BaseProcessor } from "../processor";
 import { ScrapperService } from "./scrapper.service";
 
 @Processor("tmdb")
-export class TmdbProcessor {
-  constructor(private scrapperService: ScrapperService) {}
+export class TmdbProcessor extends BaseProcessor {
+  constructor(private scrapperService: ScrapperService) {
+    super();
+  }
 
   @Process("getMovieDetails")
   async getMovieDetails(job: Job<{ id: number }>) {
     const { id } = job.data;
-    console.info(`[Scrapper] Enqueuing movie with id ${id}`);
+    console.info(`[Scrapper] Start processing movie with id ${id}`);
 
     this.scrapperService.getMovieDetails(id);
+
+    console.info(`[Scrapper] Finish processing movie with id ${id}`);
   }
 }
