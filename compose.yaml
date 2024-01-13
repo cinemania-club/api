@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   api:
-    container_name: lm-api
+    container_name: cm-api
     image: node:20.10.0-alpine
     working_dir: /app
     command: sh -c "yarn install && yarn start:dev"
@@ -12,7 +12,7 @@ services:
       - .:/app
 
   worker:
-    container_name: lm-worker
+    container_name: cm-worker
     image: node:20.10.0-alpine
     working_dir: /app
     command: sh -c "yarn install && yarn start:dev"
@@ -25,22 +25,22 @@ services:
       - .:/app
 
   mongo:
-    container_name: lm-mongo
+    container_name: cm-mongo
     image: mongo:7.0.4
     ports:
       - 27017:27017
     volumes:
-      - lm.mongo.config:/data/configdb
-      - lm.mongo.db:/data/db
+      - cm.mongo.config:/data/configdb
+      - cm.mongo.db:/data/db
 
   redis:
-    container_name: lm-redis
+    container_name: cm-redis
     image: redis:7.2.3-alpine
     ports:
       - 6379:6379
 
 volumes:
-  lm.mongo.config:
+  cm.mongo.config:
     driver: local
-  lm.mongo.db:
+  cm.mongo.db:
     driver: local
