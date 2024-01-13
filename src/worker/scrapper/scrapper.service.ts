@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { MovieRepository } from './movie.repository';
-import { TmdbAdapter } from './tmdb.adapter';
+import { Injectable } from "@nestjs/common";
+import { MovieRepository } from "./movie.repository";
+import { TmdbAdapter } from "./tmdb.adapter";
 
 @Injectable()
 export class ScrapperService {

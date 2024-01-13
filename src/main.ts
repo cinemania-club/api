@@ -1,6 +1,6 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { WorkerModule } from './worker/worker.module';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { WorkerModule } from "./worker/worker.module";
 
 async function bootstrap() {
   const module = process.env.WORKER ? WorkerModule : AppModule;

@@ -1,14 +1,14 @@
-import { InjectQueue } from '@nestjs/bull';
-import { Body, Controller, Post } from '@nestjs/common';
-import { Queue } from 'bull';
+import { InjectQueue } from "@nestjs/bull";
+import { Body, Controller, Post } from "@nestjs/common";
+import { Queue } from "bull";
 
-@Controller('/admin')
+@Controller("/admin")
 export class AdminController {
-  constructor(@InjectQueue('tmdb') private tmdbQueue: Queue) {}
+  constructor(@InjectQueue("tmdb") private tmdbQueue: Queue) {}
 
-  @Post('/get-movie')
-  getMovie(@Body('id') id) {
+  @Post("/get-movie")
+  getMovie(@Body("id") id) {
     console.info(`[Admin] Enqueuing movie with id ${id}`);
-    this.tmdbQueue.add('getMovieDetails', { id });
+    this.tmdbQueue.add("getMovieDetails", { id });
   }
 }

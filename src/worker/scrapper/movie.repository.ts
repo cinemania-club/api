@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
+import { Injectable } from "@nestjs/common";
+import { InjectConnection } from "@nestjs/mongoose";
+import { Connection } from "mongoose";
 
 @Injectable()
 export class MovieRepository {
@@ -8,7 +8,7 @@ export class MovieRepository {
 
   async upsert(movie: { id: number }) {
     await this.connection.db
-      .collection<{ _id: number }>('movies')
+      .collection<{ _id: number }>("movies")
       .updateOne({ _id: movie.id }, { $set: movie }, { upsert: true });
   }
 }

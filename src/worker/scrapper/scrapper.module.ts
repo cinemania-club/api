@@ -1,14 +1,14 @@
-import { BullModule } from '@nestjs/bull';
-import { Module } from '@nestjs/common';
-import { MovieRepository } from './movie.repository';
-import { ScrapperService } from './scrapper.service';
-import { TmdbAdapter } from './tmdb.adapter';
-import { TmdbProcessor } from './tmdb.processor';
+import { BullModule } from "@nestjs/bull";
+import { Module } from "@nestjs/common";
+import { MovieRepository } from "./movie.repository";
+import { ScrapperService } from "./scrapper.service";
+import { TmdbAdapter } from "./tmdb.adapter";
+import { TmdbProcessor } from "./tmdb.processor";
 
 @Module({
   imports: [
-    BullModule.forRoot({ redis: { host: 'redis', port: 6379 } }),
-    BullModule.registerQueue({ name: 'tmdb' }),
+    BullModule.forRoot({ redis: { host: "redis", port: 6379 } }),
+    BullModule.registerQueue({ name: "tmdb" }),
   ],
   providers: [ScrapperService, TmdbProcessor, MovieRepository, TmdbAdapter],
 })
