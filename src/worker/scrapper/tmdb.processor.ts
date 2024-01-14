@@ -14,7 +14,7 @@ export class TmdbProcessor extends BaseProcessor {
     const { id } = job.data;
     console.info(`[Scrapper] Start processing movie with id ${id}`);
 
-    this.scrapperService.getMovieDetails(id);
+    await this.scrapperService.getMovieDetails(id);
 
     console.info(`[Scrapper] Finish processing movie with id ${id}`);
   }
