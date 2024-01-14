@@ -9,7 +9,6 @@ export class AdminController {
   @Post("/get-movie")
   getMovie(@Body("id") id) {
     console.info(`[Admin] Enqueuing movie with id ${id}`);
-
     this.tmdbQueue.add("getMovieDetails", { id });
   }
 }
