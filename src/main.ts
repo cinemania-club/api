@@ -7,7 +7,7 @@ import { WorkerModule } from "./worker/worker.module";
 async function bootstrap() {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    environment: "development",
+    environment: process.env.NODE_ENV,
   });
 
   const module = process.env.WORKER ? WorkerModule : AppModule;
