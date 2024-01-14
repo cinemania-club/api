@@ -6,7 +6,7 @@ import { WorkerModule } from "./worker/worker.module";
 
 async function bootstrap() {
   Sentry.init({
-    dsn: "https://c6add7e431af71133adac45322e3b12a@o4506566591512576.ingest.sentry.io/4506566641582080",
+    dsn: process.env.SENTRY_DSN,
     environment: "development",
   });
 
