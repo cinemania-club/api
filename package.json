@@ -30,6 +30,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/platform-express": "^10.0.0",
+    "@sentry/node": "^7.93.0",
     "axios": "^1.6.2",
     "bull": "^4.12.0",
     "mongoose": "^8.0.3",
