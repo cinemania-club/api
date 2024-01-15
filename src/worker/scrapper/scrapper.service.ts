@@ -9,13 +9,14 @@ export class ScrapperService {
     private movieRepository: MovieRepository,
   ) {}
 
-  // async getChanges(page: number) {
-  //   const movie = await this.tmdbAdapter.getMovieDetails(id);
-  //   await this.movieRepository.upsert(movie);
-  // }
+  async getChanges(date: Date, page: number) {
+    const changes = await this.tmdbAdapter.getChanges(date, page);
+    await this.movieRepository.saveChanges(changes.results);
+    return changes;
+  }
 
   async getMovieDetails(id: number) {
     const movie = await this.tmdbAdapter.getMovieDetails(id);
-    await this.movieRepository.upsert(movie);
+    await this.movieRepository.saveMovie(movie);
   }
 }
