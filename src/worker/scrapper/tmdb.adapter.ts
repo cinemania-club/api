@@ -17,6 +17,13 @@ export class TmdbAdapter {
     });
   }
 
+  // async getChanges(page: number) {
+  //   console.info(`[Scrapper] Fetching changes from TMDB: ${id}`);
+
+  //   const response = await this.instance.get("/movie/" + id.toString());
+  //   return response.data;
+  // }
+
   async getMovieDetails(id: number) {
     console.info(`[Scrapper] Fetching movie from TMDB: ${id}`);
 

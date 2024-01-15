@@ -11,4 +11,10 @@ export class MovieRepository {
       .collection<{ _id: number }>("movies")
       .updateOne({ _id: movie.id }, { $set: movie }, { upsert: true });
   }
+
+  // async changes() {
+  //   await this.connection.db
+  //     .collection<{ _id: number }>("changes")
+  //     .updateOne({ _id: movie.id }, { $set: movie }, { upsert: true });
+  // }
 }

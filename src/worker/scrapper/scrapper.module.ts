@@ -1,6 +1,7 @@
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MovieRepository } from "./movie.repository";
+import { ScrapperScheduler } from "./scrapper.scheduler";
 import { ScrapperService } from "./scrapper.service";
 import { TmdbAdapter } from "./tmdb.adapter";
 import { TmdbProcessor } from "./tmdb.processor";
@@ -13,6 +14,12 @@ import { TmdbProcessor } from "./tmdb.processor";
       limiter: { max: 1, duration: 1000 },
     }),
   ],
-  providers: [ScrapperService, TmdbProcessor, MovieRepository, TmdbAdapter],
+  providers: [
+    ScrapperService,
+    TmdbProcessor,
+    MovieRepository,
+    TmdbAdapter,
+    ScrapperScheduler,
+  ],
 })
 export class ScrapperModule {}
