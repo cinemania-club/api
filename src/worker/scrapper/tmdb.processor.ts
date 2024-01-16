@@ -19,7 +19,7 @@ export class TmdbProcessor extends BaseProcessor {
     const changes = await this.scrapperService.getChanges(date, page);
 
     console.info(
-      `[Scrapper] Finish processing changes for date ${date}, page ${page}/${changes.total_pages}`,
+      `[Scrapper] Finish processing changes for date ${date}, page ${changes.page}/${changes.total_pages}`,
     );
   }
 

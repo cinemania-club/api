@@ -8,7 +8,7 @@ import { ScrapperModule } from "./scrapper/scrapper.module";
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
-    MongooseModule.forRoot("mongodb://mongo/letsMovie"),
+    MongooseModule.forRoot("mongodb://mongo/cinemania"),
     ScrapperModule,
   ],
 })

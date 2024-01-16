@@ -17,8 +17,8 @@ export class AdminController {
   }
 
   @Post("/get-movie")
-  getMovie(@Body("id") id) {
+  async getMovie(@Body("id") id: number) {
     console.info(`[Admin] Enqueuing movie with id ${id}`);
-    this.tmdbQueue.add("getMovieDetails", { id });
+    await this.tmdbQueue.add("getMovieDetails", { id });
   }
 }
