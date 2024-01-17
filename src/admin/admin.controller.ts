@@ -21,4 +21,10 @@ export class AdminController {
     console.info(`[Admin] Enqueuing movie with id ${id}`);
     await this.tmdbQueue.add("getMovieDetails", { id });
   }
+
+  @Post("/empty")
+  flush() {
+    console.info(`[Admin] Empty TMDB queue`);
+    this.tmdbQueue.empty();
+  }
 }

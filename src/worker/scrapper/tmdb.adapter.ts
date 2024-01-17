@@ -50,7 +50,12 @@ export class TmdbAdapter {
   async getMovieDetails(id: number) {
     console.info(`[Scrapper] Fetching movie from TMDB: ${id}`);
 
-    const response = await this.instance.get("/movie/" + id.toString());
+    const response = await this.instance.get("/movie/" + id.toString(), {
+      params: {
+        language: "pt-BR",
+      },
+    });
+
     return response.data;
   }
 }

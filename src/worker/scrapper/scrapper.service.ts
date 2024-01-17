@@ -1,15 +1,17 @@
 import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 import { Queue } from "bull";
-import { MovieRepository } from "./movie.repository";
+import { Model } from "mongoose";
+import { Movie } from "src/movie/movie.schema";
 import { TmdbAdapter } from "./tmdb.adapter";
 
 @Injectable()
 export class ScrapperService {
   constructor(
     private tmdbAdapter: TmdbAdapter,
-    private movieRepository: MovieRepository,
     @InjectQueue("tmdb") private tmdbQueue: Queue,
+    @InjectModel(Movie.name) private movieModel: Model<Movie>,
   ) {}
 
   async getChanges(date: Date, page: number) {
@@ -30,6 +32,6 @@ export class ScrapperService {
 
   async getMovieDetails(id: number) {
     const movie = await this.tmdbAdapter.getMovieDetails(id);
-    await this.movieRepository.saveMovie(movie);
+    this.movieModel.create(movie);
   }
 }
