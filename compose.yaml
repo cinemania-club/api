@@ -7,6 +7,7 @@ services:
     working_dir: /app
     command: sh -c "yarn install && yarn start:dev"
     environment:
+      - TZ=America/Sao_Paulo
       - NODE_ENV=development
     ports:
       - 3000:3000
@@ -19,6 +20,7 @@ services:
     working_dir: /app
     command: sh -c "yarn install && yarn start:dev"
     environment:
+      - TZ=America/Sao_Paulo
       - NODE_ENV=development
       - WORKER=1
     ports:
