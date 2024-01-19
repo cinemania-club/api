@@ -3,7 +3,7 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { Queue } from "bull";
 import { ScrapperScheduler } from "src/worker/scrapper/scrapper.scheduler";
 
-@Controller("/admin")
+@Controller("/admin/scrapper")
 export class AdminController {
   constructor(
     @InjectQueue("tmdb") private tmdbQueue: Queue,
@@ -11,9 +11,9 @@ export class AdminController {
   ) {}
 
   @Post("/get-changes")
-  getChanges() {
+  async getChanges() {
     console.info(`[Admin] Processing changes`);
-    this.scrapperScheduler.getChanges();
+    await this.scrapperScheduler.getChanges();
   }
 
   @Post("/get-movie")
@@ -22,9 +22,9 @@ export class AdminController {
     await this.tmdbQueue.add("getMovieDetails", { id });
   }
 
-  @Post("/empty")
+  @Post("/flush")
   flush() {
-    console.info(`[Admin] Empty TMDB queue`);
+    console.info(`[Admin] Flush TMDB queue`);
     this.tmdbQueue.empty();
   }
 }
