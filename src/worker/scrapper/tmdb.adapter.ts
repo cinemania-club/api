@@ -38,8 +38,8 @@ export class TmdbAdapter {
 
     const response = await this.instance.get<Changes>("/movie/changes", {
       params: {
-        start_date: date,
-        end_date: date,
+        start_date: isoDate,
+        end_date: isoDate,
         page,
       },
     });
