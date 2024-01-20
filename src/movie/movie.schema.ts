@@ -6,10 +6,24 @@ export type MovieDocument = HydratedDocument<Movie>;
 @Schema({ timestamps: true, strict: false })
 export class Movie {
   @Prop()
-  title: string;
+  _id: number;
 
   @Prop()
+  backdrop_path: string;
+  @Prop()
+  poster_path: string;
+
+  @Prop()
+  title: string;
+  @Prop()
   genres: MovieGenre[];
+  @Prop()
+  release_date: Date;
+  @Prop()
+  runtime: number;
+
+  @Prop()
+  overview: number;
 }
 
 @Schema()

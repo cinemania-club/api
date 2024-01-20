@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Queue } from "bull";
 import { Model } from "mongoose";
+import { addMongoId } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
 import { TmdbAdapter } from "./tmdb.adapter";
 
@@ -32,6 +33,8 @@ export class ScrapperService {
 
   async getMovieDetails(id: number) {
     const movie = await this.tmdbAdapter.getMovieDetails(id);
-    this.movieModel.create(movie);
+
+    const movieWithId = addMongoId(movie, movie.id);
+    await this.movieModel.updateOne({ _id: id }, movieWithId, { upsert: true });
   }
 }

@@ -3,16 +3,35 @@ import { ConfigService } from "@nestjs/config";
 import axios, { AxiosInstance } from "axios";
 import { formatISO } from "date-fns";
 
-export type ChangesMovie = {
-  id: number;
-  adult: boolean;
-};
-
-export type Changes = {
+type Changes = {
   results: ChangesMovie[];
   page: number;
   total_pages: number;
   total_results: number;
+};
+
+type ChangesMovie = {
+  id: number;
+  adult: boolean;
+};
+
+type Movie = {
+  id: number;
+
+  backdrop_path: string;
+  poster_path: string;
+
+  title: string;
+  genres: MovieGenre[];
+  release_date: string;
+  runtime: number;
+
+  overview: string;
+};
+
+type MovieGenre = {
+  id: number;
+  name: string;
 };
 
 @Injectable()
@@ -50,12 +69,16 @@ export class TmdbAdapter {
   async getMovieDetails(id: number) {
     console.info(`[Scrapper] Fetching movie from TMDB: ${id}`);
 
-    const response = await this.instance.get("/movie/" + id.toString(), {
+    const response = await this.instance.get<Movie>("/movie/" + id.toString(), {
       params: {
         language: "pt-BR",
+        append_to_response: "watch/providers",
       },
     });
 
-    return response.data;
+    const movie = response.data;
+    const release_date = movie.release_date && new Date(movie.release_date);
+
+    return { ...movie, release_date };
   }
 }
