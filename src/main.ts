@@ -1,6 +1,7 @@
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import * as Sentry from "@sentry/node";
-import { AppModule } from "./app.module";
+import { ApiModule } from "./api.module";
+import { isApi } from "./constants";
 import { SentryFilter } from "./sentry.filter";
 import { WorkerModule } from "./worker/worker.module";
 
@@ -12,7 +13,7 @@ async function bootstrap() {
     environment: process.env.NODE_ENV,
   });
 
-  const module = process.env.WORKER ? WorkerModule : AppModule;
+  const module = isApi ? ApiModule : WorkerModule;
   const app = await NestFactory.create(module);
 
   const { httpAdapter } = app.get(HttpAdapterHost);
@@ -20,4 +21,5 @@ async function bootstrap() {
 
   await app.listen(3000);
 }
+
 bootstrap();
