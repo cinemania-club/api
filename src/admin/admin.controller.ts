@@ -1,5 +1,5 @@
 import { InjectQueue } from "@nestjs/bull";
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { Queue } from "bull";
 import { ScrapperScheduler } from "src/worker/scrapper/scrapper.scheduler";
 
@@ -9,6 +9,26 @@ export class AdminController {
     @InjectQueue("tmdb") private tmdbQueue: Queue,
     private scrapperScheduler: ScrapperScheduler,
   ) {}
+
+  @Get("/get-movies")
+  async getMovies() {
+    return [
+      {
+        id: "123",
+        title: "Oppenheimer",
+        releaseYear: 1999,
+        duration: 180,
+        grade: 2.5,
+      },
+      {
+        id: "456",
+        title: "Titanic",
+        releaseYear: 2012,
+        duration: 120,
+        grade: 4.53,
+      },
+    ];
+  }
 
   @Post("/get-changes")
   async getChanges() {
