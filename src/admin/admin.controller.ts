@@ -19,6 +19,7 @@ export class AdminController {
         releaseYear: 1999,
         duration: 180,
         grade: 2.5,
+        genres: ["Comédia", "Romance"],
       },
       {
         id: "456",
@@ -26,6 +27,7 @@ export class AdminController {
         releaseYear: 2012,
         duration: 120,
         grade: 4.53,
+        genres: ["Comédia"],
       },
     ];
   }
