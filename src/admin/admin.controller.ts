@@ -1,33 +1,22 @@
 import { InjectQueue } from "@nestjs/bull";
 import { Body, Controller, Get, Post } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 import { Queue } from "bull";
+import { Model } from "mongoose";
+import { Movie } from "src/movie/movie.schema";
 import { ScrapperScheduler } from "src/worker/scrapper/scrapper.scheduler";
 
 @Controller("/admin/scrapper")
 export class AdminController {
   constructor(
     @InjectQueue("tmdb") private tmdbQueue: Queue,
+    @InjectModel(Movie.name) private movieModel: Model<Movie>,
     private scrapperScheduler: ScrapperScheduler,
   ) {}
 
   @Get("/get-movies")
   async getMovies() {
-    return [
-      {
-        id: "123",
-        title: "Oppenheimer",
-        releaseYear: 1999,
-        duration: 180,
-        grade: 2.5,
-      },
-      {
-        id: "456",
-        title: "Titanic",
-        releaseYear: 2012,
-        duration: 120,
-        grade: 4.53,
-      },
-    ];
+    return this.movieModel.find();
   }
 
   @Post("/get-changes")
