@@ -1,14 +1,34 @@
-import { Controller, Get } from "@nestjs/common";
+import { Body, Controller, Get } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Movie } from "src/movie/movie.schema";
+import { MovieFilterDto } from "./dto/movieFilter.dto";
 
 @Controller("/movies")
 export class MovieController {
   constructor(@InjectModel(Movie.name) private movieModel: Model<Movie>) {}
 
   @Get()
-  async getMovies() {
-    return this.movieModel.find();
+  async getMovies(@Body() movieFilter: MovieFilterDto) {
+    const genres = movieFilter.genres.map((e) => ({
+      genres: { $elemMatch: { id: e } },
+    }));
+
+    const requiredGenres = movieFilter.requiredGenres.map((e) => ({
+      genres: { $elemMatch: { id: e } },
+    }));
+
+    return this.movieModel.find({
+      $and: [
+        {
+          runtime: {
+            $gte: movieFilter.minRuntime,
+            $lte: movieFilter.maxRuntime,
+          },
+        },
+        ...requiredGenres,
+        { $or: genres },
+      ],
+    });
   }
 }
