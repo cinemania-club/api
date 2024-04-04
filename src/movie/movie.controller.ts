@@ -10,6 +10,9 @@ export class MovieController {
 
   @Get()
   async getMovies(@Body() movieFilter: MovieFilterDto) {
+    const minReleaseDate = new Date(movieFilter.minReleaseDate);
+    const maxReleaseDate = new Date(movieFilter.maxReleaseDate);
+
     const genres = movieFilter.genres.map((e) => ({
       genres: { $elemMatch: { id: e } },
     }));
@@ -24,6 +27,12 @@ export class MovieController {
           runtime: {
             $gte: movieFilter.minRuntime,
             $lte: movieFilter.maxRuntime,
+          },
+        },
+        {
+          release_date: {
+            $gte: minReleaseDate,
+            $lte: maxReleaseDate,
           },
         },
         ...requiredGenres,
