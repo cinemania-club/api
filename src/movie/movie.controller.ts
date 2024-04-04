@@ -27,7 +27,7 @@ export class MovieController {
           },
         },
         ...requiredGenres,
-        { $or: genres },
+        { $or: genres.length ? genres : [{}] },
       ],
     });
   }
