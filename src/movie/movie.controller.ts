@@ -1,4 +1,4 @@
-import { Body, Controller, Get } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Movie } from "src/movie/movie.schema";
@@ -15,7 +15,7 @@ const SORT_QUERY = {
 export class MovieController {
   constructor(@InjectModel(Movie.name) private movieModel: Model<Movie>) {}
 
-  @Get()
+  @Post()
   async getMovies(@Body() movieFilter: MovieFilterDto) {
     const minReleaseDate = new Date(movieFilter.minReleaseDate);
     const maxReleaseDate = new Date(movieFilter.maxReleaseDate);
