@@ -8,7 +8,7 @@ const SORT_QUERY = {
   [OrderBy.CREATED_AT_ASC]: { createdAt: 1 },
   [OrderBy.CREATED_AT_DESC]: { createdAt: -1 },
   [OrderBy.RELEASE_DATE_ASC]: { release_date: 1 },
-  [OrderBy.RELEASE_DATE_DESC]: { release_date: 1 },
+  [OrderBy.RELEASE_DATE_DESC]: { release_date: -1 },
 };
 
 @Controller("/movies")
