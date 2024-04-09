@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import * as Sentry from "@sentry/node";
 import { ApiModule } from "./api.module";
@@ -18,6 +19,7 @@ async function bootstrap() {
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new SentryFilter(httpAdapter));
+  app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors();
   await app.listen(3000);
