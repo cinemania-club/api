@@ -4,7 +4,7 @@ import { Request } from "express";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { Movie } from "src/movie/movie.schema";
-import { MovieFilterDto, OrderBy } from "./dto/movieFilter.dto";
+import { MovieFiltersDto, OrderBy } from "./dto/movie-filters.dto";
 
 const SORT_QUERY = {
   [OrderBy.CREATED_AT_ASC]: { createdAt: 1 },
@@ -19,20 +19,17 @@ export class MovieController {
 
   @Anonymous()
   @Post()
-  async getMovies(
-    @Body() movieFilter: MovieFilterDto,
-    @Req() request: Request,
-  ) {
+  async getMovies(@Body() filters: MovieFiltersDto, @Req() request: Request) {
     console.log(request.payload?.userId);
 
-    const minReleaseDate = new Date(movieFilter.minReleaseDate);
-    const maxReleaseDate = new Date(movieFilter.maxReleaseDate);
+    const minReleaseDate = new Date(filters.minReleaseDate);
+    const maxReleaseDate = new Date(filters.maxReleaseDate);
 
-    const genres = movieFilter.genres.map((e) => ({
+    const genres = filters.genres.map((e) => ({
       genres: { $elemMatch: { id: e } },
     }));
 
-    const requiredGenres = movieFilter.requiredGenres.map((e) => ({
+    const requiredGenres = filters.requiredGenres.map((e) => ({
       genres: { $elemMatch: { id: e } },
     }));
 
@@ -41,8 +38,8 @@ export class MovieController {
         $and: [
           {
             runtime: {
-              $gte: movieFilter.minRuntime,
-              $lte: movieFilter.maxRuntime,
+              $gte: filters.minRuntime,
+              $lte: filters.maxRuntime,
             },
           },
           {
@@ -56,7 +53,7 @@ export class MovieController {
         ],
       },
       {},
-      { sort: SORT_QUERY[movieFilter.orderBy] },
+      { sort: SORT_QUERY[filters.orderBy] },
     );
   }
 }

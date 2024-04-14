@@ -14,7 +14,7 @@ export enum OrderBy {
   RELEASE_DATE_DESC = "RELEASE_DATE_DESC",
 }
 
-export class MovieFilterDto {
+export class MovieFiltersDto {
   @IsInt()
   @Min(0)
   @Max(600)

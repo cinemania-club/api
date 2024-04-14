@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Public } from "src/auth/auth.guard";
 import { Auth } from "src/auth/auth.schema";
-import { UserCreateDto } from "./dto/createUser.dto";
+import { CreateUserDto } from "./dto/create-user.dto";
 
 @Controller("/users")
 export class UserController {
@@ -11,7 +11,7 @@ export class UserController {
 
   @Public()
   @Post()
-  async create(@Body() user: UserCreateDto) {
+  async create(@Body() user: CreateUserDto) {
     this.authModel.updateOne({ uuid: user.uuid }, {}, { upsert: true });
   }
 }
