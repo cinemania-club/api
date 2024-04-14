@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { Request } from "express";
 import { Model } from "mongoose";
 import { Movie } from "src/movie/movie.schema";
 import { MovieFilterDto, OrderBy } from "./dto/movieFilter.dto";
@@ -16,7 +17,12 @@ export class MovieController {
   constructor(@InjectModel(Movie.name) private movieModel: Model<Movie>) {}
 
   @Post()
-  async getMovies(@Body() movieFilter: MovieFilterDto) {
+  async getMovies(
+    @Body() movieFilter: MovieFilterDto,
+    @Req() request: Request,
+  ) {
+    console.log(request.payload?.userId);
+
     const minReleaseDate = new Date(movieFilter.minReleaseDate);
     const maxReleaseDate = new Date(movieFilter.maxReleaseDate);
 
