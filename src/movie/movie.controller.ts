@@ -1,8 +1,7 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { Model } from "mongoose";
-import { AuthGuard } from "src/auth/auth.guard";
 import { Movie } from "src/movie/movie.schema";
 import { MovieFilterDto, OrderBy } from "./dto/movieFilter.dto";
 
@@ -13,7 +12,6 @@ const SORT_QUERY = {
   [OrderBy.RELEASE_DATE_DESC]: { release_date: -1 },
 };
 
-@UseGuards(AuthGuard)
 @Controller("/movies")
 export class MovieController {
   constructor(@InjectModel(Movie.name) private movieModel: Model<Movie>) {}
