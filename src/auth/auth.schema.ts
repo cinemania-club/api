@@ -7,6 +7,12 @@ export type AuthDocument = HydratedDocument<Auth>;
 export class Auth {
   @Prop({ type: SchemaTypes.String })
   uuid: string;
+
+  @Prop({ type: SchemaTypes.String })
+  token: string;
+
+  @Prop({ type: SchemaTypes.Boolean })
+  admin: boolean;
 }
 
 export const AuthSchema = SchemaFactory.createForClass(Auth);

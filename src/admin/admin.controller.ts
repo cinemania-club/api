@@ -1,8 +1,10 @@
 import { InjectQueue } from "@nestjs/bull";
 import { Body, Controller, Post } from "@nestjs/common";
 import { Queue } from "bull";
+import { Admin } from "src/auth/auth.guard";
 import { ScrapperScheduler } from "src/worker/scrapper/scrapper.scheduler";
 
+@Admin()
 @Controller("/admin/scrapper")
 export class AdminController {
   constructor(

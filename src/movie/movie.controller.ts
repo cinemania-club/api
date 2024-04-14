@@ -2,6 +2,7 @@ import { Body, Controller, Post, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { Model } from "mongoose";
+import { Anonymous } from "src/auth/auth.guard";
 import { Movie } from "src/movie/movie.schema";
 import { MovieFilterDto, OrderBy } from "./dto/movieFilter.dto";
 
@@ -16,6 +17,7 @@ const SORT_QUERY = {
 export class MovieController {
   constructor(@InjectModel(Movie.name) private movieModel: Model<Movie>) {}
 
+  @Anonymous()
   @Post()
   async getMovies(
     @Body() movieFilter: MovieFilterDto,
