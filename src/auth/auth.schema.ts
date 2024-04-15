@@ -3,7 +3,7 @@ import { HydratedDocument, SchemaTypes } from "mongoose";
 
 export type AuthDocument = HydratedDocument<Auth>;
 
-@Schema({ timestamps: true, strict: false })
+@Schema({ timestamps: true })
 export class Auth {
   @Prop({ type: SchemaTypes.String })
   uuid: string;

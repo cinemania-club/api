@@ -12,6 +12,6 @@ export class UserController {
   @Public()
   @Post()
   async create(@Body() user: CreateUserDto) {
-    this.authModel.updateOne({ uuid: user.uuid }, {}, { upsert: true });
+    await this.authModel.updateOne({ uuid: user.uuid }, {}, { upsert: true });
   }
 }
