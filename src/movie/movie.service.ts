@@ -31,28 +31,30 @@ export class MovieService {
       genres: { $elemMatch: { id: genreId } },
     }));
 
-    const movies = await this.movieModel.find(
-      {
-        $and: [
-          {
-            runtime: {
-              $gte: filters.minRuntime,
-              $lte: filters.maxRuntime,
+    const movies = await this.movieModel
+      .find(
+        {
+          $and: [
+            {
+              runtime: {
+                $gte: filters.minRuntime,
+                $lte: filters.maxRuntime,
+              },
             },
-          },
-          {
-            release_date: {
-              $gte: minReleaseDate,
-              $lte: maxReleaseDate,
+            {
+              release_date: {
+                $gte: minReleaseDate,
+                $lte: maxReleaseDate,
+              },
             },
-          },
-          ...requiredGenres,
-          { $or: genres.length ? genres : [{}] },
-        ],
-      },
-      {},
-      { sort: SORT_QUERY[filters.orderBy] },
-    );
+            ...requiredGenres,
+            { $or: genres.length ? genres : [{}] },
+          ],
+        },
+        {},
+        { sort: SORT_QUERY[filters.orderBy] },
+      )
+      .lean();
 
     const movieIds = movies.map((movie) => movie._id);
 
@@ -61,7 +63,11 @@ export class MovieService {
       movieId: { $in: movieIds },
     });
 
-    console.log(userVotes);
-    return movies;
+    const fullMovie = movies.map((movie) => ({
+      ...movie,
+      userStars: userVotes.find((vote) => vote.movieId === movie._id).stars,
+    }));
+
+    return fullMovie;
   }
 }
