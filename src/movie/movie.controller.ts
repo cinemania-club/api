@@ -18,15 +18,12 @@ export class MovieController {
   @Anonymous()
   @Post()
   async getMovies(@Body() filters: MovieFiltersDto, @Req() request: Request) {
-    console.log(request.payload?.userId);
-    return await this.movieService.getMovies(filters);
+    return await this.movieService.getMovies(filters, request.payload!.userId);
   }
 
   @Anonymous()
   @Post("/vote")
   async vote(@Req() req: Request, @Body() vote: VoteMovieDto) {
-    console.log(req.payload?.userId);
-
     await this.movieVoteModel.updateOne(
       {
         movieId: vote.movieId,

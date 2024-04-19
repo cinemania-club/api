@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Movie } from "src/movie/movie.schema";
 import { MovieFiltersDto, OrderBy } from "./dto/movie-filters.dto";
+import { MovieVote } from "./movie-vote.schema";
 
 const SORT_QUERY = {
   [OrderBy.CREATED_AT_ASC]: { createdAt: 1 },
@@ -13,41 +14,60 @@ const SORT_QUERY = {
 
 @Injectable()
 export class MovieService {
-  constructor(@InjectModel(Movie.name) private movieModel: Model<Movie>) {}
+  constructor(
+    @InjectModel(Movie.name) private movieModel: Model<Movie>,
+    @InjectModel(MovieVote.name) private movieVoteModel: Model<MovieVote>,
+  ) {}
 
-  async getMovies(filters: MovieFiltersDto) {
+  async getMovies(filters: MovieFiltersDto, userId: Types.ObjectId) {
     const minReleaseDate = new Date(filters.minReleaseDate);
     const maxReleaseDate = new Date(filters.maxReleaseDate);
 
-    const genres = filters.genres.map((e) => ({
-      genres: { $elemMatch: { id: e } },
+    const genres = filters.genres.map((genreId) => ({
+      genres: { $elemMatch: { id: genreId } },
     }));
 
-    const requiredGenres = filters.requiredGenres.map((e) => ({
-      genres: { $elemMatch: { id: e } },
+    const requiredGenres = filters.requiredGenres.map((genreId) => ({
+      genres: { $elemMatch: { id: genreId } },
     }));
 
-    return this.movieModel.find(
-      {
-        $and: [
-          {
-            runtime: {
-              $gte: filters.minRuntime,
-              $lte: filters.maxRuntime,
+    const movies = await this.movieModel
+      .find(
+        {
+          $and: [
+            {
+              runtime: {
+                $gte: filters.minRuntime,
+                $lte: filters.maxRuntime,
+              },
             },
-          },
-          {
-            release_date: {
-              $gte: minReleaseDate,
-              $lte: maxReleaseDate,
+            {
+              release_date: {
+                $gte: minReleaseDate,
+                $lte: maxReleaseDate,
+              },
             },
-          },
-          ...requiredGenres,
-          { $or: genres.length ? genres : [{}] },
-        ],
-      },
-      {},
-      { sort: SORT_QUERY[filters.orderBy] },
-    );
+            ...requiredGenres,
+            { $or: genres.length ? genres : [{}] },
+          ],
+        },
+        {},
+        { sort: SORT_QUERY[filters.orderBy] },
+      )
+      .lean();
+
+    const movieIds = movies.map((movie) => movie._id);
+
+    const userVotes = await this.movieVoteModel.find({
+      userId: userId,
+      movieId: { $in: movieIds },
+    });
+
+    const fullMovie = movies.map((movie) => ({
+      ...movie,
+      userStars: userVotes.find((vote) => vote.movieId === movie._id).stars,
+    }));
+
+    return fullMovie;
   }
 }
