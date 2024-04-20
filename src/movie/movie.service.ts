@@ -65,7 +65,7 @@ export class MovieService {
 
     const fullMovie = movies.map((movie) => ({
       ...movie,
-      userStars: userVotes.find((vote) => vote.movieId === movie._id).stars,
+      userVote: userVotes.find((vote) => vote.movieId === movie._id)?.stars,
     }));
 
     return fullMovie;

@@ -1,4 +1,4 @@
-import { IsInt, Max, Min } from "class-validator";
+import { IsInt, IsOptional, Max, Min } from "class-validator";
 
 export enum OrderBy {
   CREATED_AT_ASC = "CREATED_AT_ASC",
@@ -14,5 +14,6 @@ export class VoteMovieDto {
   @IsInt()
   @Min(1)
   @Max(5)
+  @IsOptional()
   stars: number;
 }
