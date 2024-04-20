@@ -1,6 +1,7 @@
 import { Body, Controller, Post, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
+import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { MovieFiltersDto } from "./dto/movie-filters.dto";
@@ -18,7 +19,23 @@ export class MovieController {
   @Anonymous()
   @Post()
   async getMovies(@Body() filters: MovieFiltersDto, @Req() request: Request) {
-    return await this.movieService.getMovies(filters, request.payload!.userId);
+    const movies = await this.movieService.getMovies(
+      filters,
+      request.payload!.userId,
+    );
+
+    return movies.map((movie) =>
+      pick(movie, [
+        "_id",
+        "title",
+        "runtime",
+        "release_date",
+        "vote_average",
+        "poster_path",
+        "overview",
+        "userVote",
+      ]),
+    );
   }
 
   @Anonymous()

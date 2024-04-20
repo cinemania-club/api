@@ -36,4 +36,7 @@ export class MovieFiltersDto {
 
   @IsEnum(OrderBy)
   orderBy: OrderBy;
+
+  @IsArray()
+  skip: number[];
 }

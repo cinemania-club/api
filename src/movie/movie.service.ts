@@ -5,6 +5,7 @@ import { Movie } from "src/movie/movie.schema";
 import { MovieFiltersDto, OrderBy } from "./dto/movie-filters.dto";
 import { MovieVote } from "./movie-vote.schema";
 
+const PAGE_SIZE = 100;
 const SORT_QUERY = {
   [OrderBy.CREATED_AT_ASC]: { createdAt: 1 },
   [OrderBy.CREATED_AT_DESC]: { createdAt: -1 },
@@ -35,6 +36,7 @@ export class MovieService {
       .find(
         {
           $and: [
+            { _id: { $nin: filters.skip } },
             {
               runtime: {
                 $gte: filters.minRuntime,
@@ -54,6 +56,7 @@ export class MovieService {
         {},
         { sort: SORT_QUERY[filters.orderBy] },
       )
+      .limit(PAGE_SIZE)
       .lean();
 
     const movieIds = movies.map((movie) => movie._id);
