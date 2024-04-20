@@ -29,7 +29,7 @@ export class MovieController {
         movieId: vote.movieId,
         userId: req.payload!.userId,
       },
-      { stars: vote.stars },
+      { stars: vote.stars || null },
       { upsert: true },
     );
   }

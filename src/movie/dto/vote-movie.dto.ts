@@ -15,5 +15,5 @@ export class VoteMovieDto {
   @Min(1)
   @Max(5)
   @IsOptional()
-  stars: number;
+  stars?: number;
 }
