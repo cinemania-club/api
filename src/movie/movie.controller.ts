@@ -9,6 +9,8 @@ import { VoteMovieDto } from "./dto/vote-movie.dto";
 import { MovieVote } from "./movie-vote.schema";
 import { MovieService } from "./movie.service";
 
+const ONBOARDING_VOTES = 10;
+
 @Controller("/movies")
 export class MovieController {
   constructor(
@@ -18,24 +20,37 @@ export class MovieController {
 
   @Anonymous()
   @Post()
-  async getMovies(@Body() filters: MovieFiltersDto, @Req() request: Request) {
+  async getMovies(@Req() req: Request, @Body() filters: MovieFiltersDto) {
     const movies = await this.movieService.getMovies(
       filters,
-      request.payload!.userId,
+      req.payload!.userId,
     );
 
-    return movies.map((movie) =>
-      pick(movie, [
-        "_id",
-        "title",
-        "runtime",
-        "release_date",
-        "vote_average",
-        "poster_path",
-        "overview",
-        "userVote",
-      ]),
-    );
+    const votes = await this.movieVoteModel.countDocuments({
+      userId: req.payload!.userId,
+      stars: { $ne: null },
+    });
+
+    let onboarding = null;
+    if (votes < ONBOARDING_VOTES) {
+      onboarding = { votes, target: ONBOARDING_VOTES };
+    }
+
+    return {
+      onboarding,
+      movies: movies.map((movie) =>
+        pick(movie, [
+          "_id",
+          "title",
+          "runtime",
+          "release_date",
+          "vote_average",
+          "poster_path",
+          "overview",
+          "userVote",
+        ]),
+      ),
+    };
   }
 
   @Anonymous()
