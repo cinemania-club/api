@@ -18,7 +18,7 @@ services:
     container_name: cm-worker
     image: node:20.10.0-alpine
     working_dir: /app
-    command: sh -c "yarn install && yarn start:dev"
+    command: yarn start:dev
     environment:
       - NODE_ENV=development
       - MODE=worker
