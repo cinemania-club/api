@@ -1,12 +1,14 @@
-import { Body, Controller, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
+import { MovieDetailsDto } from "./dto/movie-details.dto";
 import { MovieFiltersDto } from "./dto/movie-filters.dto";
 import { VoteMovieDto } from "./dto/vote-movie.dto";
 import { MovieVote } from "./movie-vote.schema";
+import { Movie } from "./movie.schema";
 import { MovieService } from "./movie.service";
 
 const ONBOARDING_VOTES = 10;
@@ -16,6 +18,7 @@ export class MovieController {
   constructor(
     private movieService: MovieService,
     @InjectModel(MovieVote.name) private movieVoteModel: Model<MovieVote>,
+    @InjectModel(Movie.name) private moviesModel: Model<Movie>,
   ) {}
 
   @Anonymous()
@@ -54,6 +57,42 @@ export class MovieController {
   }
 
   @Anonymous()
+  @Get("/:id")
+  async getMovie(@Req() req: Request, @Param() movieDto: MovieDetailsDto) {
+    const movie = await this.moviesModel.findById(movieDto.id).lean();
+    if (!movie) return { movie: null };
+
+    const vote = await this.movieVoteModel.findOne({
+      userId: req.payload!.userId,
+      movieId: movieDto.id,
+    });
+    const userVote = vote?.stars || null;
+
+    return {
+      movie: pick(
+        {
+          ...movie,
+          id: movie._id,
+          genres: movie.genres.map((genre) => genre.name),
+          scaledVoteAverage: this.calculateScaledVote(movie.vote_average),
+          userVote,
+        },
+        [
+          "id",
+          "title",
+          "backdrop_path",
+          "genres",
+          "release_date",
+          "runtime",
+          "overview",
+          "scaledVoteAverage",
+          "userVote",
+        ],
+      ),
+    };
+  }
+
+  @Anonymous()
   @Post("/vote")
   async vote(@Req() req: Request, @Body() vote: VoteMovieDto) {
     await this.movieVoteModel.updateOne(
@@ -64,5 +103,9 @@ export class MovieController {
       { stars: vote.stars || null },
       { upsert: true },
     );
+  }
+
+  private calculateScaledVote(vote: number) {
+    return (4 * (vote - 1)) / 9 + 1;
   }
 }
