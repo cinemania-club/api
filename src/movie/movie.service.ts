@@ -37,6 +37,7 @@ export class MovieService {
         {
           $and: [
             { _id: { $nin: filters.skip } },
+            { overview: new RegExp(filters.search, "gi") },
             {
               runtime: {
                 $gte: filters.minRuntime,

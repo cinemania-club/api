@@ -3,6 +3,8 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
+  IsOptional,
+  IsString,
   Max,
   Min,
 } from "class-validator";
@@ -15,6 +17,10 @@ export enum OrderBy {
 }
 
 export class MovieFiltersDto {
+  @IsString()
+  @IsOptional()
+  search: string;
+
   @IsInt()
   @Min(0)
   @Max(600)
