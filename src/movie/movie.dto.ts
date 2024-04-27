@@ -1,3 +1,5 @@
+import { IsNumberString } from "class-validator";
+
 import {
   IsArray,
   IsDateString,
@@ -45,4 +47,20 @@ export class MovieFiltersDto {
 
   @IsArray()
   skip: number[];
+}
+
+export class MovieDetailsDto {
+  @IsNumberString()
+  id: number;
+}
+
+export class VoteMovieDto {
+  @IsInt()
+  movieId: number;
+
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  @IsOptional()
+  stars?: number;
 }
