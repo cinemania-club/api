@@ -9,6 +9,18 @@ export class TmdbProcessor extends BaseProcessor {
     super();
   }
 
+  @Process("getTopRated")
+  async getTopRated(job: Job<{ page: number }>) {
+    const { page } = job.data;
+    console.info(`[Scrapper] Start processing top rated movies. Page: ${page}`);
+
+    const movies = await this.scrapperService.getTopRated(page);
+
+    console.info(
+      `[Scrapper] Finish processing top rated movies. Page: ${movies.page}/${movies.total_pages}`,
+    );
+  }
+
   @Process("getChanges")
   async getChanges(job: Job<{ date: Date; page: number }>) {
     const { date, page } = job.data;

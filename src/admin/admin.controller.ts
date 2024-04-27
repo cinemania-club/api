@@ -12,6 +12,12 @@ export class AdminController {
     private scrapperScheduler: ScrapperScheduler,
   ) {}
 
+  @Post("/get-top-rated")
+  async getTopRated() {
+    console.info(`[Admin] Processing top rated movies`);
+    await this.tmdbQueue.add("getTopRated", { page: 1 });
+  }
+
   @Post("/get-changes")
   async getChanges() {
     console.info(`[Admin] Processing changes`);
