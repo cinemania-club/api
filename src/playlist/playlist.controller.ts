@@ -30,7 +30,12 @@ export class PlaylistController {
   async addMovies(@Req() req: Request, @Body() dto: AddMoviesDto) {
     await this.playlistModel.updateMany(
       { userId: req.payload!.userId, _id: { $in: dto.playlists } },
-      { $push: { movies: dto.movieId } },
+      { $addToSet: { movies: dto.movieId } },
+    );
+
+    await this.playlistModel.updateMany(
+      { userId: req.payload!.userId, _id: { $nin: dto.playlists } },
+      { $pull: { movies: dto.movieId } },
     );
   }
 
