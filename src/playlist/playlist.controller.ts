@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
+import { AddMoviesDto } from "./add-movies.dto";
 import { CreatePlaylistDto } from "./create-playlist.dto";
 import { DeletePlaylistDto } from "./delete-playlist.dto";
 import { Playlist } from "./playlist.schema";
@@ -22,6 +23,15 @@ export class PlaylistController {
     });
 
     return { id: created._id };
+  }
+
+  @Anonymous()
+  @Post("add-movie")
+  async addMovies(@Req() req: Request, @Body() dto: AddMoviesDto) {
+    await this.playlistModel.updateMany(
+      { userId: req.payload!.userId, _id: { $in: dto.playlists } },
+      { $push: { movies: dto.movieId } },
+    );
   }
 
   @Anonymous()
