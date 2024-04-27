@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Queue } from "bull";
 import { Model } from "mongoose";
+import { POPULAR_MOVIES_PAGES_LIMIT } from "src/constants";
 import { addMongoId } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
 import { TmdbAdapter } from "./tmdb.adapter";
@@ -40,7 +41,10 @@ export class ScrapperService {
     }));
 
     await this.tmdbQueue.addBulk(jobs);
-    if (movies.page < movies.total_pages) {
+    if (
+      movies.page < movies.total_pages &&
+      movies.page < POPULAR_MOVIES_PAGES_LIMIT
+    ) {
       this.tmdbQueue.add("getPopular", { page: movies.page + 1 });
     }
 
