@@ -6,7 +6,7 @@ import { ScrapperScheduler } from "src/worker/scrapper/scrapper.scheduler";
 
 @Admin()
 @Controller("/admin/scrapper")
-export class AdminController {
+export class ScrapperController {
   constructor(
     @InjectQueue("tmdb") private tmdbQueue: Queue,
     private scrapperScheduler: ScrapperScheduler,
@@ -16,6 +16,12 @@ export class AdminController {
   async getTopRated() {
     console.info(`[Admin] Processing top rated movies`);
     await this.tmdbQueue.add("getTopRated", { page: 1 });
+  }
+
+  @Post("/get-popular")
+  async getPopular() {
+    console.info(`[Admin] Processing popular movies`);
+    await this.tmdbQueue.add("getPopular", { page: 1 });
   }
 
   @Post("/get-changes")

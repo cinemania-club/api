@@ -42,6 +42,16 @@ export class TmdbAdapter {
     return response.data;
   }
 
+  async getPopular(page: number) {
+    console.info(`[Scrapper] Fetching popular movies from TMDB. Page: ${page}`);
+
+    const response = await this.instance.get<MoviesList>("/movie/popular", {
+      params: { page },
+    });
+
+    return response.data;
+  }
+
   async getChanges(date: Date, page: number) {
     const isoDate = formatISO(date, { representation: "date" });
     console.info(

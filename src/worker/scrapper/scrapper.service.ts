@@ -31,6 +31,22 @@ export class ScrapperService {
     return movies;
   }
 
+  async getPopular(page: number) {
+    const movies = await this.tmdbAdapter.getPopular(page);
+
+    const jobs = movies.results.map((movie) => ({
+      name: "getMovieDetails",
+      data: { id: movie.id },
+    }));
+
+    await this.tmdbQueue.addBulk(jobs);
+    if (movies.page < movies.total_pages) {
+      this.tmdbQueue.add("getPopular", { page: movies.page + 1 });
+    }
+
+    return movies;
+  }
+
   async getChanges(date: Date, page: number) {
     const changes = await this.tmdbAdapter.getChanges(date, page);
 

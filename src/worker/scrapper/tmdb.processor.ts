@@ -21,6 +21,18 @@ export class TmdbProcessor extends BaseProcessor {
     );
   }
 
+  @Process("getPopular")
+  async getPopular(job: Job<{ page: number }>) {
+    const { page } = job.data;
+    console.info(`[Scrapper] Start processing popular movies. Page: ${page}`);
+
+    const movies = await this.scrapperService.getPopular(page);
+
+    console.info(
+      `[Scrapper] Finish processing popular movies. Page: ${movies.page}/${movies.total_pages}`,
+    );
+  }
+
   @Process("getChanges")
   async getChanges(job: Job<{ date: Date; page: number }>) {
     const { date, page } = job.data;
