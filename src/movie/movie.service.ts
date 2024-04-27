@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Movie } from "src/movie/movie.schema";
-import { MovieFiltersDto, OrderBy } from "./dto/movie-filters.dto";
+import { MovieFiltersDto, OrderBy } from "./movie-filters.dto";
 import { MovieVote } from "./movie-vote.schema";
 
 const PAGE_SIZE = 100;

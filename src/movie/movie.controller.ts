@@ -4,12 +4,12 @@ import { Request } from "express";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
-import { MovieDetailsDto } from "./dto/movie-details.dto";
-import { MovieFiltersDto } from "./dto/movie-filters.dto";
-import { VoteMovieDto } from "./dto/vote-movie.dto";
+import { MovieDetailsDto } from "./movie-details.dto";
+import { MovieFiltersDto } from "./movie-filters.dto";
 import { MovieVote } from "./movie-vote.schema";
 import { Movie } from "./movie.schema";
 import { MovieService } from "./movie.service";
+import { VoteMovieDto } from "./vote-movie.dto";
 
 const ONBOARDING_VOTES = 10;
 
