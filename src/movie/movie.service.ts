@@ -26,6 +26,15 @@ export class MovieService {
   ) {}
 
   async getMovies(filters: MovieFiltersDto, userId: Types.ObjectId) {
+    const filterStreamings = $criteria(
+      {
+        "watch/providers.results.BR.flatrate": {
+          $elemMatch: { provider_id: { $in: filters.streamings } },
+        },
+      },
+      !!filters.streamings?.length,
+    );
+
     const filterMinRuntime = $criteria(
       { runtime: { $gte: filters.minRuntime } },
       !!filters.minRuntime,
@@ -102,6 +111,7 @@ export class MovieService {
     const skipPreviousResults = { _id: { $nin: filters.skip } };
     const sortCriteria = { sort: SORT_QUERY[filters.sort] };
     const filter = $and([
+      filterStreamings,
       filterMinRuntime,
       filterMaxRuntime,
       filterGenres,

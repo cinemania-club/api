@@ -22,6 +22,11 @@ export enum SortCriteria {
 }
 
 export class MovieFiltersDto {
+  @IsArray()
+  @IsInt({ each: true })
+  @IsOptional()
+  streamings: number[];
+
   @IsInt()
   @Min(0)
   @IsOptional()
