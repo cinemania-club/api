@@ -75,6 +75,29 @@ export class MovieService {
       !!filters.spokenLanguage?.length,
     );
 
+    const filterOriginCountry = $criteria(
+      { origin_country: { $elemMatch: { $in: filters.originCountry } } },
+      !!filters.originCountry?.length,
+    );
+
+    const filterProductionCountries = $criteria(
+      {
+        production_countries: {
+          $elemMatch: { iso_3166_1: { $in: filters.productionCountries } },
+        },
+      },
+      !!filters.productionCountries?.length,
+    );
+
+    const filterProductionCompanies = $criteria(
+      {
+        production_companies: {
+          $elemMatch: { id: { $in: filters.productionCompanies } },
+        },
+      },
+      !!filters.productionCompanies?.length,
+    );
+
     const skipAdult = { adult: false };
     const skipPreviousResults = { _id: { $nin: filters.skip } };
     const sortCriteria = { sort: SORT_QUERY[filters.sort] };
@@ -87,6 +110,9 @@ export class MovieService {
       filterMaxReleaseDate,
       filterOriginalLanguage,
       filterSpokenLanguage,
+      filterOriginCountry,
+      filterProductionCountries,
+      filterProductionCompanies,
       skipAdult,
       skipPreviousResults,
     ]);

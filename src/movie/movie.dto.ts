@@ -33,10 +33,12 @@ export class MovieFiltersDto {
   maxRuntime: number;
 
   @IsArray()
+  @IsInt({ each: true })
   @IsOptional()
   genres: number[];
 
   @IsArray()
+  @IsInt({ each: true })
   @IsOptional()
   requiredGenres: number[];
 
@@ -59,6 +61,22 @@ export class MovieFiltersDto {
   spokenLanguage: string[];
 
   @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  originCountry: number[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  productionCountries: number[];
+
+  @IsArray()
+  @IsInt({ each: true })
+  @IsOptional()
+  productionCompanies: number[];
+
+  @IsArray()
+  @IsInt({ each: true })
   skip: number[];
 
   @IsEnum(SortCriteria)
