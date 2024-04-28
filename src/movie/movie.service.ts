@@ -5,13 +5,17 @@ import { MOVIES_PAGE_SIZE } from "src/constants";
 import { $and, $criteria, $or } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
 import { MovieVote } from "./movie-vote.schema";
-import { MovieFiltersDto, OrderBy } from "./movie.dto";
+import { MovieFiltersDto, SortCriteria } from "./movie.dto";
 
 const SORT_QUERY = {
-  [OrderBy.CREATED_AT_ASC]: { createdAt: 1 },
-  [OrderBy.CREATED_AT_DESC]: { createdAt: -1 },
-  [OrderBy.RELEASE_DATE_ASC]: { release_date: 1 },
-  [OrderBy.RELEASE_DATE_DESC]: { release_date: -1 },
+  [SortCriteria.RATING_ASC]: { vote_average: 1 },
+  [SortCriteria.RATING_DESC]: { vote_average: -1 },
+  [SortCriteria.POPULARITY_ASC]: { popularity: 1 },
+  [SortCriteria.POPULARITY_DESC]: { popularity: -1 },
+  [SortCriteria.RELEASE_DATE_ASC]: { release_date: 1 },
+  [SortCriteria.RELEASE_DATE_DESC]: { release_date: -1 },
+  [SortCriteria.CREATED_AT_ASC]: { createdAt: 1 },
+  [SortCriteria.CREATED_AT_DESC]: { createdAt: -1 },
 };
 
 @Injectable()
@@ -60,7 +64,7 @@ export class MovieService {
 
     const skipAdult = { adult: false };
     const skipPreviousResults = { _id: { $nin: filters.skip } };
-    const sortCriteria = { sort: SORT_QUERY[filters.orderBy] };
+    const sortCriteria = { sort: SORT_QUERY[filters.sort] };
     const filter = $and([
       filterMinRuntime,
       filterMaxRuntime,

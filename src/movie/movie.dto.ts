@@ -9,11 +9,15 @@ import {
   Min,
 } from "class-validator";
 
-export enum OrderBy {
-  CREATED_AT_ASC = "CREATED_AT_ASC",
-  CREATED_AT_DESC = "CREATED_AT_DESC",
+export enum SortCriteria {
+  RATING_ASC = "RATING_ASC",
+  RATING_DESC = "RATING_DESC",
+  POPULARITY_ASC = "POPULARITY_ASC",
+  POPULARITY_DESC = "POPULARITY_DESC",
   RELEASE_DATE_ASC = "RELEASE_DATE_ASC",
   RELEASE_DATE_DESC = "RELEASE_DATE_DESC",
+  CREATED_AT_ASC = "CREATED_AT_ASC",
+  CREATED_AT_DESC = "CREATED_AT_DESC",
 }
 
 export class MovieFiltersDto {
@@ -46,8 +50,8 @@ export class MovieFiltersDto {
   @IsArray()
   skip: number[];
 
-  @IsEnum(OrderBy)
-  orderBy: OrderBy;
+  @IsEnum(SortCriteria)
+  sort: SortCriteria;
 }
 
 export class MovieDetailsDto {
