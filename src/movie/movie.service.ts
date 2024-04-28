@@ -58,6 +58,7 @@ export class MovieService {
       !!filters.maxReleaseDate,
     );
 
+    const skipAdult = { adult: false };
     const skipPreviousResults = { _id: { $nin: filters.skip } };
     const sortCriteria = { sort: SORT_QUERY[filters.orderBy] };
     const filter = $and([
@@ -67,6 +68,7 @@ export class MovieService {
       filterRequiredGenres,
       filterMinReleaseDate,
       filterMaxReleaseDate,
+      skipAdult,
       skipPreviousResults,
     ]);
 
