@@ -21,8 +21,11 @@ export class Movie {
   release_date: Date;
   @Prop()
   runtime: number;
+
   @Prop()
   vote_average: number;
+  @Prop()
+  popularity: number;
 
   @Prop()
   overview: string;
