@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
+import { MOVIES_PAGE_SIZE } from "src/constants";
+import { $and, $criteria, $or } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
 import { MovieVote } from "./movie-vote.schema";
 import { MovieFiltersDto, OrderBy } from "./movie.dto";
 
-const PAGE_SIZE = 100;
 const SORT_QUERY = {
   [OrderBy.CREATED_AT_ASC]: { createdAt: 1 },
   [OrderBy.CREATED_AT_DESC]: { createdAt: -1 },
@@ -21,43 +22,57 @@ export class MovieService {
   ) {}
 
   async getMovies(filters: MovieFiltersDto, userId: Types.ObjectId) {
-    const minReleaseDate = new Date(filters.minReleaseDate);
-    const maxReleaseDate = new Date(filters.maxReleaseDate);
+    const filterMinRuntime = $criteria(
+      { runtime: { $gte: filters.minRuntime } },
+      !!filters.minRuntime,
+    );
 
-    const genres = filters.genres.map((genreId) => ({
-      genres: { $elemMatch: { id: genreId } },
-    }));
+    const filterMaxRuntime = $criteria(
+      { runtime: { $lte: filters.maxRuntime } },
+      !!filters.maxRuntime,
+    );
 
-    const requiredGenres = filters.requiredGenres.map((genreId) => ({
-      genres: { $elemMatch: { id: genreId } },
-    }));
+    const filterGenres = $or(
+      filters.genres?.map((genreId) => ({
+        genres: { $elemMatch: { id: genreId } },
+      })),
+    );
+
+    const filterRequiredGenres = $and(
+      filters.requiredGenres?.map((genreId) => ({
+        genres: { $elemMatch: { id: genreId } },
+      })),
+    );
+
+    const minReleaseDate =
+      filters.minReleaseDate && new Date(filters.minReleaseDate);
+    const filterMinReleaseDate = $criteria(
+      { release_date: { $gte: minReleaseDate } },
+      !!filters.minReleaseDate,
+    );
+
+    const maxReleaseDate =
+      filters.maxReleaseDate && new Date(filters.maxReleaseDate);
+    const filterMaxReleaseDate = $criteria(
+      { release_date: { $lte: maxReleaseDate } },
+      !!filters.maxReleaseDate,
+    );
+
+    const skipPreviousResults = { _id: { $nin: filters.skip } };
+    const sortCriteria = { sort: SORT_QUERY[filters.orderBy] };
+    const filter = $and([
+      filterMinRuntime,
+      filterMaxRuntime,
+      filterGenres,
+      filterRequiredGenres,
+      filterMinReleaseDate,
+      filterMaxReleaseDate,
+      skipPreviousResults,
+    ]);
 
     const movies = await this.movieModel
-      .find(
-        {
-          $and: [
-            { _id: { $nin: filters.skip } },
-            { overview: new RegExp(filters.search, "gi") },
-            {
-              runtime: {
-                $gte: filters.minRuntime,
-                $lte: filters.maxRuntime,
-              },
-            },
-            {
-              release_date: {
-                $gte: minReleaseDate,
-                $lte: maxReleaseDate,
-              },
-            },
-            ...requiredGenres,
-            { $or: genres.length ? genres : [{}] },
-          ],
-        },
-        {},
-        { sort: SORT_QUERY[filters.orderBy] },
-      )
-      .limit(PAGE_SIZE)
+      .find(filter, {}, sortCriteria)
+      .limit(MOVIES_PAGE_SIZE)
       .lean();
 
     const movieIds = movies.map((movie) => movie._id);

@@ -1,12 +1,10 @@
-import { IsNumberString } from "class-validator";
-
 import {
   IsArray,
   IsDateString,
   IsEnum,
   IsInt,
+  IsNumberString,
   IsOptional,
-  IsString,
   Max,
   Min,
 } from "class-validator";
@@ -19,34 +17,37 @@ export enum OrderBy {
 }
 
 export class MovieFiltersDto {
-  @IsString()
+  @IsInt()
+  @Min(0)
   @IsOptional()
-  search: string;
+  minRuntime: number;
 
   @IsInt()
   @Min(0)
-  @Max(600)
-  minRuntime: number;
-  @IsInt()
-  @Min(0)
-  @Max(600)
+  @IsOptional()
   maxRuntime: number;
 
+  @IsArray()
+  @IsOptional()
+  genres: number[];
+
+  @IsArray()
+  @IsOptional()
+  requiredGenres: number[];
+
   @IsDateString()
+  @IsOptional()
   minReleaseDate: string;
+
   @IsDateString()
+  @IsOptional()
   maxReleaseDate: string;
 
   @IsArray()
-  genres: number[];
-  @IsArray()
-  requiredGenres: number[];
+  skip: number[];
 
   @IsEnum(OrderBy)
   orderBy: OrderBy;
-
-  @IsArray()
-  skip: number[];
 }
 
 export class MovieDetailsDto {
