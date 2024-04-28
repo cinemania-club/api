@@ -43,6 +43,7 @@ export class MovieController {
         pick(movie, [
           "_id",
           "title",
+          "genres",
           "runtime",
           "release_date",
           "vote_average",

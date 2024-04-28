@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { MOVIES_PAGE_SIZE } from "src/constants";
-import { $and, $criteria, $or } from "src/mongo";
+import { $and, $criteria } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
 import { MovieVote } from "./movie-vote.schema";
 import { MovieFiltersDto, SortCriteria } from "./movie.dto";
@@ -36,10 +36,9 @@ export class MovieService {
       !!filters.maxRuntime,
     );
 
-    const filterGenres = $or(
-      filters.genres?.map((genreId) => ({
-        genres: { $elemMatch: { id: genreId } },
-      })),
+    const filterGenres = $criteria(
+      { genres: { $elemMatch: { id: { $in: filters.genres } } } },
+      !!filters.genres?.length,
     );
 
     const filterRequiredGenres = $and(
@@ -62,6 +61,20 @@ export class MovieService {
       !!filters.maxReleaseDate,
     );
 
+    const filterOriginalLanguage = $criteria(
+      { original_language: { $in: filters.originalLanguage } },
+      !!filters.originalLanguage?.length,
+    );
+
+    const filterSpokenLanguage = $criteria(
+      {
+        spoken_languages: {
+          $elemMatch: { iso_639_1: { $in: filters.spokenLanguage } },
+        },
+      },
+      !!filters.spokenLanguage?.length,
+    );
+
     const skipAdult = { adult: false };
     const skipPreviousResults = { _id: { $nin: filters.skip } };
     const sortCriteria = { sort: SORT_QUERY[filters.sort] };
@@ -72,6 +85,8 @@ export class MovieService {
       filterRequiredGenres,
       filterMinReleaseDate,
       filterMaxReleaseDate,
+      filterOriginalLanguage,
+      filterSpokenLanguage,
       skipAdult,
       skipPreviousResults,
     ]);

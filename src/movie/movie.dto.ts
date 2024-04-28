@@ -5,6 +5,7 @@ import {
   IsInt,
   IsNumberString,
   IsOptional,
+  IsString,
   Max,
   Min,
 } from "class-validator";
@@ -46,6 +47,16 @@ export class MovieFiltersDto {
   @IsDateString()
   @IsOptional()
   maxReleaseDate: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  originalLanguage: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  spokenLanguage: string[];
 
   @IsArray()
   skip: number[];
