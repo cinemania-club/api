@@ -7,5 +7,9 @@ export const isTest = process.env.NODE_ENV === "test";
 export const isApi = process.env.MODE === "api";
 export const isWorker = process.env.MODE === "worker";
 
+export const MONGO_URL = "mongodb://mongo/cinemania";
+export const ELASTICSEARCH_URL = "http://elasticsearch:9200";
+
 export const MOVIES_PAGE_SIZE = 100;
+export const SEARCH_PAGE_SIZE = 100;
 export const POPULAR_MOVIES_PAGES_LIMIT = 1000;

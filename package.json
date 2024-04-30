@@ -24,10 +24,12 @@
     "open:redis": "docker exec -it cm-redis sh"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.13.1",
     "@nestjs/bull": "^10.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/elasticsearch": "^10.0.1",
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.0.0",
