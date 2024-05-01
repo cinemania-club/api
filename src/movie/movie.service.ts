@@ -23,6 +23,8 @@ const SORT_QUERY: Record<SortCriteria, Record<string, 1 | -1>> = {
   [SortCriteria.CREATED_AT_DESC]: { createdAt: -1 },
 };
 
+const DEFAULT_SORT_CRITERIA = SortCriteria.POPULARITY_DESC;
+
 @Injectable()
 export class MovieService {
   constructor(
@@ -112,8 +114,12 @@ export class MovieService {
       !!filters.productionCompanies?.length,
     );
 
+    const skipPreviousResults = $criteria(
+      { _id: { $nin: filters.skip } },
+      !!filters.skip,
+    );
+
     const skipAdult = { adult: false };
-    const skipPreviousResults = { _id: { $nin: filters.skip } };
     const filter = $and([
       filterStreamings,
       filterMinRuntime,
@@ -127,17 +133,18 @@ export class MovieService {
       filterOriginCountry,
       filterProductionCountries,
       filterProductionCompanies,
-      skipAdult,
       skipPreviousResults,
+      skipAdult,
     ]);
 
+    const sortCriteria = filters.sort || DEFAULT_SORT_CRITERIA;
     const [result] = await this.movieModel.aggregate<Catalog>([
       { $match: filter },
       {
         $facet: {
           total: [{ $count: "count" }],
           items: [
-            { $sort: SORT_QUERY[filters.sort] },
+            { $sort: SORT_QUERY[sortCriteria] },
             { $limit: MOVIES_PAGE_SIZE },
           ],
         },

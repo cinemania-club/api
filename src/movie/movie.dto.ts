@@ -82,9 +82,11 @@ export class MovieFiltersDto {
 
   @IsArray()
   @IsInt({ each: true })
+  @IsOptional()
   skip: number[];
 
   @IsEnum(SortCriteria)
+  @IsOptional()
   sort: SortCriteria;
 }
 
