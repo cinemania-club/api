@@ -7,7 +7,10 @@ import { SeriesService } from "./series.service";
   imports: [
     MongooseModule.forFeature([{ name: Series.name, schema: SeriesSchema }]),
   ],
-  exports: [SeriesService],
+  exports: [
+    MongooseModule.forFeature([{ name: Series.name, schema: SeriesSchema }]),
+    SeriesService,
+  ],
   providers: [SeriesService],
 })
 export class SeriesModule {}

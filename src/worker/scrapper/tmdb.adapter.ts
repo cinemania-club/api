@@ -30,6 +30,10 @@ type TmdbMovieGenre = {
 
 type TmdbSeries = {
   id: number;
+  original_name: string;
+  name: string;
+  tagline: string;
+  overview: string;
   first_air_date: string;
 };
 
