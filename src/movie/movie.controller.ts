@@ -30,7 +30,7 @@ export class MovieController {
   @Anonymous()
   @Post()
   async getMovies(@Req() req: Request, @Body() filters: MovieFiltersDto) {
-    const movies = await this.movieService.getMovies(
+    const result = await this.movieService.getMovies(
       filters,
       req.payload!.userId,
     );
@@ -47,7 +47,8 @@ export class MovieController {
 
     return {
       onboarding,
-      movies: movies.map((movie) =>
+      total: result.total,
+      items: result.items.map((movie) =>
         pick(movie, [
           "_id",
           "title",

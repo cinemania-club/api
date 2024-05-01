@@ -7,7 +7,12 @@ import { Movie } from "src/movie/movie.schema";
 import { MovieVote } from "./movie-vote.schema";
 import { MovieFiltersDto, SortCriteria } from "./movie.dto";
 
-const SORT_QUERY = {
+type Catalog = {
+  total: number;
+  items: Movie[];
+};
+
+const SORT_QUERY: Record<SortCriteria, Record<string, 1 | -1>> = {
   [SortCriteria.RATING_ASC]: { vote_average: 1 },
   [SortCriteria.RATING_DESC]: { vote_average: -1 },
   [SortCriteria.POPULARITY_ASC]: { popularity: 1 },
@@ -109,7 +114,6 @@ export class MovieService {
 
     const skipAdult = { adult: false };
     const skipPreviousResults = { _id: { $nin: filters.skip } };
-    const sortCriteria = { sort: SORT_QUERY[filters.sort] };
     const filter = $and([
       filterStreamings,
       filterMinRuntime,
@@ -127,23 +131,36 @@ export class MovieService {
       skipPreviousResults,
     ]);
 
-    const movies = await this.movieModel
-      .find(filter, {}, sortCriteria)
-      .limit(MOVIES_PAGE_SIZE)
-      .lean();
+    const [result] = await this.movieModel.aggregate<Catalog>([
+      { $match: filter },
+      {
+        $facet: {
+          total: [{ $count: "count" }],
+          items: [
+            { $sort: SORT_QUERY[filters.sort] },
+            { $limit: MOVIES_PAGE_SIZE },
+          ],
+        },
+      },
+      {
+        $project: {
+          total: { $arrayElemAt: ["$total.count", 0] },
+          items: 1,
+        },
+      },
+    ]);
 
-    const movieIds = movies.map((movie) => movie._id);
-
+    const movieIds = result.items.map((movie) => movie._id);
     const userVotes = await this.movieVoteModel.find({
       userId: userId,
       movieId: { $in: movieIds },
     });
 
-    const fullMovie = movies.map((movie) => ({
+    result.items = result.items.map((movie) => ({
       ...movie,
       userVote: userVotes.find((vote) => vote.movieId === movie._id)?.stars,
     }));
 
-    return fullMovie;
+    return result;
   }
 }
