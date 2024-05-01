@@ -117,13 +117,12 @@ export class MovieController {
       movie: pick(
         {
           ...movie,
-          id: movie._id,
           genres: movie.genres.map((genre) => genre.name),
           scaledVoteAverage: this.calculateScaledVote(movie.vote_average),
           userVote,
         },
         [
-          "id",
+          "_id",
           "title",
           "backdrop_path",
           "genres",
