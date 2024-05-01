@@ -18,6 +18,10 @@ import { TmdbProcessor } from "./tmdb.processor";
     MovieModule,
     SeriesModule,
   ],
+  exports: [
+    BullModule.forRoot({ redis: REDIS_URL }),
+    BullModule.registerQueue({ name: "tmdb" }),
+  ],
   providers: [ScrapperService, TmdbProcessor, TmdbAdapter, ScrapperScheduler],
 })
 export class ScrapperModule {}
