@@ -35,8 +35,10 @@ export class Movie {
   @Prop()
   overview: string;
 
+  @Prop({ type: SchemaTypes.Date, required: true })
+  loadedAt: Date;
   @Prop({ type: SchemaTypes.Date })
-  indexedAt: Date;
+  indexedAt?: Date;
 }
 
 @Schema()

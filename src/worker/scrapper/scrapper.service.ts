@@ -37,9 +37,7 @@ export class ScrapperService {
 
   async getMovieDetails(id: number) {
     const movie = await this.tmdbAdapter.getMovieDetails(id);
-
-    const movieWithId = addMongoId(movie, movie.id);
-    await this.movieRepository.saveMovie(movieWithId);
+    await this.movieRepository.saveMovie(movie);
   }
 
   async getSeriesDetails(id: number) {

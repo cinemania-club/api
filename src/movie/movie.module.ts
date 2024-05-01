@@ -20,6 +20,6 @@ import { MovieService } from "./movie.service";
   ],
   exports: [MovieRepository],
   controllers: [MovieController],
-  providers: [MovieService],
+  providers: [MovieService, MovieRepository],
 })
 export class MovieModule {}

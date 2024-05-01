@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios, { AxiosInstance } from "axios";
-import { Movie } from "src/movie/movie.schema";
 
 type MoviesList = {
   results: TmdbMovie[];
@@ -10,10 +9,23 @@ type MoviesList = {
   total_results: number;
 };
 
-type TmdbMovie = Omit<Movie, "_id" | keyof TmdbMovieFields> & TmdbMovieFields;
-type TmdbMovieFields = {
+export type TmdbMovie = {
   id: number;
+  backdrop_path: string;
+  poster_path: string;
+  original_title: string;
+  title: string;
+  genres: TmdbMovieGenre[];
   release_date: string;
+  runtime: number;
+  vote_average: number;
+  popularity: number;
+  tagline: string;
+  overview: string;
+};
+type TmdbMovieGenre = {
+  id: number;
+  name: string;
 };
 
 type Series = {
@@ -62,7 +74,7 @@ export class TmdbAdapter {
     const movie = response.data;
     const release_date = movie.release_date && new Date(movie.release_date);
 
-    return { ...movie, release_date };
+    return { ...movie, _id: movie.id, release_date };
   }
 
   async getSeriesDetails(id: number) {
