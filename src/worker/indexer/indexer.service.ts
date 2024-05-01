@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { InjectModel } from "@nestjs/mongoose";
-import { addMinutes, sub } from "date-fns";
+import { sub } from "date-fns";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Movie } from "src/movie/movie.schema";
@@ -24,7 +24,7 @@ export class IndexerService {
     const movies = await this.movieModel.find(
       {
         $or: [
-          { $expr: { $lt: ["$indexedAt", "$updatedAt"] } },
+          { $expr: { $gt: ["$loadedAt", "$indexedAt"] } },
           { indexedAt: { $lte: freshnessDate } },
         ],
       },
@@ -60,13 +60,11 @@ export class IndexerService {
 
     console.info(`Movies indexed: ${moviesIds}`);
 
-    // Adding 1 minute for safety reasons
-    const indexedAt = addMinutes(new Date(), 1);
     await this.movieModel.updateMany(
       { _id: { $in: moviesIds } },
-      { indexedAt },
+      { indexedAt: new Date() },
     );
 
-    console.info(`Updated indexedAt fot movies: ${moviesIds}`);
+    console.info(`Updated indexedAt for movies: ${moviesIds}`);
   }
 }
