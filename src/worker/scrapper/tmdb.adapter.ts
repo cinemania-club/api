@@ -91,6 +91,6 @@ export class TmdbAdapter {
     const first_air_date =
       series.first_air_date && new Date(series.first_air_date);
 
-    return { ...series, first_air_date };
+    return { ...series, _id: series.id, first_air_date };
   }
 }

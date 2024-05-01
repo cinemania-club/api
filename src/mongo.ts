@@ -1,12 +1,5 @@
 import { isEmpty } from "lodash";
 
-export function addMongoId<T, U>(data: U, id: T) {
-  return {
-    ...data,
-    _id: id,
-  };
-}
-
 export function $criteria<T>(criteria: T, apply: boolean) {
   return apply ? criteria : {};
 }

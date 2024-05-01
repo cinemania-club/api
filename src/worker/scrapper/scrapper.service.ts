@@ -2,7 +2,6 @@ import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
 import { Queue } from "bull";
 import { POPULAR_MOVIES_PAGES_LIMIT } from "src/constants";
-import { addMongoId } from "src/mongo";
 import { MovieService } from "src/movie/movie.service";
 import { SeriesService } from "src/series/series.service";
 import { TmdbAdapter } from "./tmdb.adapter";
@@ -45,7 +44,6 @@ export class ScrapperService {
 
   async getSeriesDetails(id: number) {
     const series = await this.tmdbAdapter.getSeriesDetails(id);
-    const seriesWithId = addMongoId(series, series.id);
-    await this.seriesService.saveSeries(seriesWithId);
+    await this.seriesService.saveSeries(series);
   }
 }
