@@ -4,6 +4,7 @@ import { Queue } from "bull";
 import { POPULAR_MOVIES_PAGES_LIMIT } from "src/constants";
 import { addMongoId } from "src/mongo";
 import { MovieRepository } from "src/movie/movie.repository";
+import { MovieService } from "src/movie/movie.service";
 import { SeriesRepository } from "src/series/series.repository";
 import { TmdbAdapter } from "./tmdb.adapter";
 
@@ -14,14 +15,18 @@ export class ScrapperService {
     @InjectQueue("tmdb") private tmdbQueue: Queue,
     private movieRepository: MovieRepository,
     private seriesRepository: SeriesRepository,
+    private movieService: MovieService,
   ) {}
 
   async getPopular(page: number) {
     const movies = await this.tmdbAdapter.getPopular(page);
 
-    const jobs = movies.results.map((movie) => ({
+    const movieIds = movies.results.map((m) => m.id);
+    const moviesToReload = await this.movieService.getOutdated(movieIds);
+
+    const jobs = moviesToReload.map((id) => ({
       name: "getMovieDetails",
-      data: { id: movie.id },
+      data: { id },
     }));
 
     await this.tmdbQueue.addBulk(jobs);

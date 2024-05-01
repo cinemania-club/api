@@ -18,7 +18,7 @@ import { MovieService } from "./movie.service";
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     AuthModule,
   ],
-  exports: [MovieRepository],
+  exports: [MovieRepository, MovieService],
   controllers: [MovieController],
   providers: [MovieService, MovieRepository],
 })
