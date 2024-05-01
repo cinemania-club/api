@@ -1,15 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios, { AxiosInstance } from "axios";
+import { Movie } from "src/movie/movie.schema";
 
 type MoviesList = {
-  results: Movie[];
+  results: TmdbMovie[];
   page: number;
   total_pages: number;
   total_results: number;
 };
 
-type Movie = {
+type TmdbMovie = Omit<Movie, "_id" | keyof TmdbMovieFields> & TmdbMovieFields;
+type TmdbMovieFields = {
   id: number;
   release_date: string;
 };
@@ -47,12 +49,15 @@ export class TmdbAdapter {
   async getMovieDetails(id: number) {
     console.info(`[Scrapper] Fetching movie from TMDB: ${id}`);
 
-    const response = await this.instance.get<Movie>("/movie/" + id.toString(), {
-      params: {
-        language: "pt-BR",
-        append_to_response: "watch/providers",
+    const response = await this.instance.get<TmdbMovie>(
+      "/movie/" + id.toString(),
+      {
+        params: {
+          language: "pt-BR",
+          append_to_response: "watch/providers",
+        },
       },
-    });
+    );
 
     const movie = response.data;
     const release_date = movie.release_date && new Date(movie.release_date);
