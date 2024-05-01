@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { Series } from "./series.schema";
 
 @Injectable()
-export class SeriesRepository {
+export class SeriesService {
   constructor(@InjectModel(Series.name) private seriesModel: Model<Series>) {}
 
   async saveSeries(series: Series) {

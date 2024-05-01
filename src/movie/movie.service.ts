@@ -10,6 +10,8 @@ import { MovieVote } from "./movie-vote.schema";
 import { MOVIE_FRESHNESS_DURATION } from "./movie.constant";
 import { MovieFiltersDto, SortCriteria } from "./movie.dto";
 
+type UnpersistedMovie = Omit<Movie, "loadedAt">;
+
 type Catalog = {
   total: number;
   items: Movie[];
@@ -172,6 +174,14 @@ export class MovieService {
     }));
 
     return result;
+  }
+
+  async saveMovie(movie: UnpersistedMovie) {
+    await this.movieModel.updateOne(
+      { _id: movie._id },
+      { ...movie, loadedAt: new Date() },
+      { upsert: true },
+    );
   }
 
   async getOutdated(ids: number[]) {

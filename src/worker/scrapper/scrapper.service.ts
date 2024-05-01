@@ -3,9 +3,8 @@ import { Injectable } from "@nestjs/common";
 import { Queue } from "bull";
 import { POPULAR_MOVIES_PAGES_LIMIT } from "src/constants";
 import { addMongoId } from "src/mongo";
-import { MovieRepository } from "src/movie/movie.repository";
 import { MovieService } from "src/movie/movie.service";
-import { SeriesRepository } from "src/series/series.repository";
+import { SeriesService } from "src/series/series.service";
 import { TmdbAdapter } from "./tmdb.adapter";
 
 @Injectable()
@@ -13,8 +12,7 @@ export class ScrapperService {
   constructor(
     private tmdbAdapter: TmdbAdapter,
     @InjectQueue("tmdb") private tmdbQueue: Queue,
-    private movieRepository: MovieRepository,
-    private seriesRepository: SeriesRepository,
+    private seriesService: SeriesService,
     private movieService: MovieService,
   ) {}
 
@@ -42,12 +40,12 @@ export class ScrapperService {
 
   async getMovieDetails(id: number) {
     const movie = await this.tmdbAdapter.getMovieDetails(id);
-    await this.movieRepository.saveMovie(movie);
+    await this.movieService.saveMovie(movie);
   }
 
   async getSeriesDetails(id: number) {
     const series = await this.tmdbAdapter.getSeriesDetails(id);
     const seriesWithId = addMongoId(series, series.id);
-    await this.seriesRepository.saveSeries(seriesWithId);
+    await this.seriesService.saveSeries(seriesWithId);
   }
 }
