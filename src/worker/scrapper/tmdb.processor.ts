@@ -9,18 +9,6 @@ export class TmdbProcessor extends BaseProcessor {
     super();
   }
 
-  @Process("getTopRated")
-  async getTopRated(job: Job<{ page: number }>) {
-    const { page } = job.data;
-    console.info(`[Scrapper] Start processing top rated movies. Page: ${page}`);
-
-    const movies = await this.scrapperService.getTopRated(page);
-
-    console.info(
-      `[Scrapper] Finish processing top rated movies. Page: ${movies.page}/${movies.total_pages}`,
-    );
-  }
-
   @Process("getPopular")
   async getPopular(job: Job<{ page: number }>) {
     const { page } = job.data;
@@ -30,20 +18,6 @@ export class TmdbProcessor extends BaseProcessor {
 
     console.info(
       `[Scrapper] Finish processing popular movies. Page: ${movies.page}/${movies.total_pages}`,
-    );
-  }
-
-  @Process("getChanges")
-  async getChanges(job: Job<{ date: Date; page: number }>) {
-    const { date, page } = job.data;
-    console.info(
-      `[Scrapper] Start processing changes for date ${date}, page ${page}`,
-    );
-
-    const changes = await this.scrapperService.getChanges(date, page);
-
-    console.info(
-      `[Scrapper] Finish processing changes for date ${date}, page ${changes.page}/${changes.total_pages}`,
     );
   }
 

@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios, { AxiosInstance } from "axios";
-import { formatISO } from "date-fns";
 
 type MoviesList = {
   results: Movie[];
@@ -35,40 +34,11 @@ export class TmdbAdapter {
     });
   }
 
-  async getTopRated(page: number) {
-    console.info(
-      `[Scrapper] Fetching top rated movies from TMDB. Page: ${page}`,
-    );
-
-    const response = await this.instance.get<MoviesList>("/movie/top_rated", {
-      params: { page },
-    });
-
-    return response.data;
-  }
-
   async getPopular(page: number) {
     console.info(`[Scrapper] Fetching popular movies from TMDB. Page: ${page}`);
 
     const response = await this.instance.get<MoviesList>("/movie/popular", {
       params: { page },
-    });
-
-    return response.data;
-  }
-
-  async getChanges(date: Date, page: number) {
-    const isoDate = formatISO(date, { representation: "date" });
-    console.info(
-      `[Scrapper] Fetching changes from TMDB. Date: ${isoDate}, page: ${page}`,
-    );
-
-    const response = await this.instance.get<MoviesList>("/movie/changes", {
-      params: {
-        start_date: isoDate,
-        end_date: isoDate,
-        page,
-      },
     });
 
     return response.data;
