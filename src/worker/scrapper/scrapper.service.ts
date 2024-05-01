@@ -1,7 +1,10 @@
 import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
 import { Queue } from "bull";
-import { POPULAR_MOVIES_PAGES_LIMIT } from "src/constants";
+import {
+  POPULAR_MOVIES_PAGES_LIMIT,
+  POPULAR_SERIES_PAGES_LIMIT,
+} from "src/constants";
 import { MovieService } from "src/movie/movie.service";
 import { SeriesService } from "src/series/series.service";
 import { TmdbAdapter } from "./tmdb.adapter";
@@ -40,6 +43,28 @@ export class ScrapperService {
   async getMovieDetails(id: number) {
     const movie = await this.tmdbAdapter.getMovieDetails(id);
     await this.movieService.saveMovie(movie);
+  }
+
+  async getPopularSeries(page: number) {
+    const series = await this.tmdbAdapter.getPopularSeries(page);
+
+    const seriesIds = series.results.map((s) => s.id);
+    const seriesToReload = await this.seriesService.getOutdated(seriesIds);
+
+    const jobs = seriesToReload.map((id) => ({
+      name: "getSeriesDetails",
+      data: { id },
+    }));
+
+    await this.tmdbQueue.addBulk(jobs);
+    if (
+      series.page < series.total_pages &&
+      series.page < POPULAR_SERIES_PAGES_LIMIT
+    ) {
+      this.tmdbQueue.add("getPopularSeries", { page: series.page + 1 });
+    }
+
+    return series;
   }
 
   async getSeriesDetails(id: number) {

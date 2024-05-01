@@ -20,6 +20,12 @@ export class ScrapperController {
     await this.tmdbQueue.add("getMovieDetails", { id });
   }
 
+  @Post("/get-popular-series")
+  async getPopularSeries() {
+    console.info(`[Admin] Processing popular series`);
+    await this.tmdbQueue.add("getPopularSeries", { page: 1 });
+  }
+
   @Post("/get-series")
   async getSeries(@Body("id") id: number) {
     console.info(`[Admin] Enqueuing series with id ${id}`);

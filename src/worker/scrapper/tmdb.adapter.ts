@@ -2,14 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios, { AxiosInstance } from "axios";
 
-type MoviesList = {
-  results: TmdbMovie[];
+type ItemList<T> = {
+  results: T[];
   page: number;
   total_pages: number;
   total_results: number;
 };
 
-export type TmdbMovie = {
+type TmdbMovie = {
   id: number;
   backdrop_path: string;
   poster_path: string;
@@ -28,7 +28,7 @@ type TmdbMovieGenre = {
   name: string;
 };
 
-type Series = {
+type TmdbSeries = {
   id: number;
   first_air_date: string;
 };
@@ -51,9 +51,10 @@ export class TmdbAdapter {
   async getPopularMovies(page: number) {
     console.info(`[Scrapper] Fetching popular movies from TMDB. Page: ${page}`);
 
-    const response = await this.instance.get<MoviesList>("/movie/popular", {
-      params: { page },
-    });
+    const response = await this.instance.get<ItemList<TmdbMovie>>(
+      "/movie/popular",
+      { params: { page } },
+    );
 
     return response.data;
   }
@@ -77,15 +78,29 @@ export class TmdbAdapter {
     return { ...movie, _id: movie.id, release_date };
   }
 
+  async getPopularSeries(page: number) {
+    console.info(`[Scrapper] Fetching popular series from TMDB. Page: ${page}`);
+
+    const response = await this.instance.get<ItemList<TmdbSeries>>(
+      "/tv/popular",
+      { params: { page } },
+    );
+
+    return response.data;
+  }
+
   async getSeriesDetails(id: number) {
     console.info(`[Scrapper] Fetching series from TMDB: ${id}`);
 
-    const response = await this.instance.get<Series>("/tv/" + id.toString(), {
-      params: {
-        language: "pt-BR",
-        append_to_response: "watch/providers",
+    const response = await this.instance.get<TmdbSeries>(
+      "/tv/" + id.toString(),
+      {
+        params: {
+          language: "pt-BR",
+          append_to_response: "watch/providers",
+        },
       },
-    });
+    );
 
     const series = response.data;
     const first_air_date =
