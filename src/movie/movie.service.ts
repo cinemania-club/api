@@ -7,7 +7,7 @@ import { MOVIES_PAGE_SIZE } from "src/constants";
 import { $and, $criteria } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
 import { MovieVote } from "./movie-vote.schema";
-import { MOVIE_FRESHNESS_DURATION } from "./movie.constant";
+import { MOVIE_FRESHNESS_DURATION } from "./movie.constants";
 import { MovieFiltersDto, SortCriteria } from "./movie.dto";
 
 type UnpersistedMovie = Omit<Movie, "loadedAt">;

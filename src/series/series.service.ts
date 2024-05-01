@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { sub } from "date-fns";
 import { difference } from "lodash";
 import { Model } from "mongoose";
-import { SERIES_FRESHNESS_DURATION } from "./series.constant";
+import { SERIES_FRESHNESS_DURATION } from "./series.constants";
 import { Series } from "./series.schema";
 
 type UnpersistedSeries = Omit<Series, "loadedAt">;

@@ -1,32 +1,44 @@
 import { Injectable } from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { InjectModel } from "@nestjs/mongoose";
-import { addMinutes, subDays } from "date-fns";
+import { addMinutes, sub } from "date-fns";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Movie } from "src/movie/movie.schema";
+import {
+  MOVIES_BATCH_SIZE,
+  MOVIES_FRESHNESS_DURATION,
+} from "./indexer.constants";
 
 @Injectable()
-export class MovieService {
+export class IndexerService {
   constructor(
     @InjectModel(Movie.name) private movieModel: Model<Movie>,
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
   async indexMovies() {
-    const lastMonth = subDays(new Date(), 30);
+    console.info(`Starting to index movies`);
+
+    const freshnessDate = sub(new Date(), MOVIES_FRESHNESS_DURATION);
     const movies = await this.movieModel.find(
       {
         $or: [
           { $expr: { $lt: ["$indexedAt", "$updatedAt"] } },
-          { indexedAt: { $lte: lastMonth } },
+          { indexedAt: { $lte: freshnessDate } },
         ],
       },
       { original_title: 1, title: 1, tagline: 1, overview: 1 },
-      { limit: 20 },
+      { limit: MOVIES_BATCH_SIZE },
     );
 
-    if (!movies.length) return;
+    if (!movies.length) {
+      console.info(`No movies to index`);
+      return;
+    }
+
+    const moviesIds = movies.map((movie) => movie._id);
+    console.info(`Indexing movies: ${moviesIds}`);
 
     const operations = movies
       .map((movie) => [
@@ -41,7 +53,6 @@ export class MovieService {
       operations,
     });
 
-    const moviesIds = movies.map((movie) => movie._id);
     if (result.errors) {
       console.info(`Failed to index movies: ${moviesIds}`);
       return;
@@ -56,6 +67,6 @@ export class MovieService {
       { indexedAt },
     );
 
-    console.info(`Updated indexedAt: ${moviesIds}`);
+    console.info(`Updated indexedAt fot movies: ${moviesIds}`);
   }
 }

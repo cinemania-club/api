@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { BRT, isProduction } from "src/constants";
-import { MovieService } from "./movie.service";
+import { IndexerService } from "./indexer.service";
 
 @Injectable()
-export class MovieScheduler {
-  constructor(private movieService: MovieService) {}
+export class IndexerScheduler {
+  constructor(private movieService: IndexerService) {}
 
   @Cron("*/30 * * * * *", { timeZone: BRT, disabled: !isProduction })
   async indexMovies() {

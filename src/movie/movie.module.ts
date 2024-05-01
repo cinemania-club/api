@@ -17,7 +17,10 @@ import { MovieService } from "./movie.service";
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     AuthModule,
   ],
-  exports: [MovieService],
+  exports: [
+    MongooseModule.forFeature([{ name: Movie.name, schema: MovieSchema }]),
+    MovieService,
+  ],
   controllers: [MovieController],
   providers: [MovieService],
 })
