@@ -2,6 +2,7 @@ import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { REDIS_URL } from "src/constants";
 import { MovieModule } from "src/movie/movie.module";
+import { SeriesModule } from "src/series/series.module";
 import { ScrapperScheduler } from "./scrapper.scheduler";
 import { ScrapperService } from "./scrapper.service";
 import { TmdbAdapter } from "./tmdb.adapter";
@@ -15,6 +16,7 @@ import { TmdbProcessor } from "./tmdb.processor";
       limiter: { max: 1, duration: 1000 },
     }),
     MovieModule,
+    SeriesModule,
   ],
   providers: [ScrapperService, TmdbProcessor, TmdbAdapter, ScrapperScheduler],
 })

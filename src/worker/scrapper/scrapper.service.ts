@@ -6,6 +6,7 @@ import { Model } from "mongoose";
 import { POPULAR_MOVIES_PAGES_LIMIT } from "src/constants";
 import { addMongoId } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
+import { SeriesRepository } from "src/series/series.repository";
 import { TmdbAdapter } from "./tmdb.adapter";
 
 @Injectable()
@@ -14,6 +15,7 @@ export class ScrapperService {
     private tmdbAdapter: TmdbAdapter,
     @InjectQueue("tmdb") private tmdbQueue: Queue,
     @InjectModel(Movie.name) private movieModel: Model<Movie>,
+    private seriesRepository: SeriesRepository,
   ) {}
 
   async getTopRated(page: number) {
@@ -72,5 +74,11 @@ export class ScrapperService {
 
     const movieWithId = addMongoId(movie, movie.id);
     await this.movieModel.updateOne({ _id: id }, movieWithId, { upsert: true });
+  }
+
+  async getSeriesDetails(id: number) {
+    const series = await this.tmdbAdapter.getSeriesDetails(id);
+    const seriesWithId = addMongoId(series, series.id);
+    this.seriesRepository.saveSeries(seriesWithId);
   }
 }

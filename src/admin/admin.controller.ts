@@ -36,6 +36,12 @@ export class ScrapperController {
     await this.tmdbQueue.add("getMovieDetails", { id });
   }
 
+  @Post("/get-series")
+  async getSeries(@Body("id") id: number) {
+    console.info(`[Admin] Enqueuing series with id ${id}`);
+    await this.tmdbQueue.add("getSeriesDetails", { id });
+  }
+
   @Post("/flush")
   flush() {
     console.info(`[Admin] Flush TMDB queue`);
