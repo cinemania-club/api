@@ -4,6 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import * as Joi from "joi";
 import { isWorker, MONGO_URL } from "src/constants";
+import { MovieModule } from "./movie/movie.module";
 import { ScrapperModule } from "./scrapper/scrapper.module";
 
 // The following code is a workaround to disable worker env validation in ApiModule context
@@ -24,6 +25,7 @@ const DISABLE_ENV_VALIDATION = () => ({});
     ScheduleModule.forRoot(),
     MongooseModule.forRoot(MONGO_URL),
     ScrapperModule,
+    MovieModule,
   ],
 })
 export class WorkerModule {}

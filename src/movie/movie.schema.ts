@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, SchemaTypes } from "mongoose";
 
 export type MovieDocument = HydratedDocument<Movie>;
 
@@ -14,7 +14,10 @@ export class Movie {
   poster_path: string;
 
   @Prop()
+  original_title: string;
+  @Prop()
   title: string;
+
   @Prop()
   genres: MovieGenre[];
   @Prop()
@@ -28,7 +31,12 @@ export class Movie {
   popularity: number;
 
   @Prop()
+  tagline: string;
+  @Prop()
   overview: string;
+
+  @Prop({ type: SchemaTypes.Date })
+  indexedAt: Date;
 }
 
 @Schema()

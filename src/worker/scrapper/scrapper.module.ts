@@ -1,5 +1,6 @@
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
+import { REDIS_URL } from "src/constants";
 import { MovieModule } from "src/movie/movie.module";
 import { ScrapperScheduler } from "./scrapper.scheduler";
 import { ScrapperService } from "./scrapper.service";
@@ -8,7 +9,7 @@ import { TmdbProcessor } from "./tmdb.processor";
 
 @Module({
   imports: [
-    BullModule.forRoot({ redis: { host: "redis", port: 6379 } }),
+    BullModule.forRoot({ redis: REDIS_URL }),
     BullModule.registerQueue({
       name: "tmdb",
       limiter: { max: 1, duration: 1000 },
