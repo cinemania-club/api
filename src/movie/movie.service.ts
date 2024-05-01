@@ -133,7 +133,6 @@ export class MovieService {
       filterOriginCountry,
       filterProductionCountries,
       filterProductionCompanies,
-      skipPreviousResults,
       skipAdult,
     ]);
 
@@ -144,6 +143,7 @@ export class MovieService {
         $facet: {
           total: [{ $count: "count" }],
           items: [
+            { $match: skipPreviousResults },
             { $sort: SORT_QUERY[sortCriteria] },
             { $limit: MOVIES_PAGE_SIZE },
           ],
