@@ -15,8 +15,8 @@ export class ScrapperService {
     private movieService: MovieService,
   ) {}
 
-  async getPopular(page: number) {
-    const movies = await this.tmdbAdapter.getPopular(page);
+  async getPopularMovies(page: number) {
+    const movies = await this.tmdbAdapter.getPopularMovies(page);
 
     const movieIds = movies.results.map((m) => m.id);
     const moviesToReload = await this.movieService.getOutdated(movieIds);
@@ -31,7 +31,7 @@ export class ScrapperService {
       movies.page < movies.total_pages &&
       movies.page < POPULAR_MOVIES_PAGES_LIMIT
     ) {
-      this.tmdbQueue.add("getPopular", { page: movies.page + 1 });
+      this.tmdbQueue.add("getPopularMovies", { page: movies.page + 1 });
     }
 
     return movies;

@@ -8,10 +8,10 @@ import { Admin } from "src/auth/auth.guard";
 export class ScrapperController {
   constructor(@InjectQueue("tmdb") private tmdbQueue: Queue) {}
 
-  @Post("/get-popular")
-  async getPopular() {
+  @Post("/get-popular-movies")
+  async getPopularMovies() {
     console.info(`[Admin] Processing popular movies`);
-    await this.tmdbQueue.add("getPopular", { page: 1 });
+    await this.tmdbQueue.add("getPopularMovies", { page: 1 });
   }
 
   @Post("/get-movie")

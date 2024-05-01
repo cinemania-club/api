@@ -9,12 +9,12 @@ export class TmdbProcessor extends BaseProcessor {
     super();
   }
 
-  @Process("getPopular")
-  async getPopular(job: Job<{ page: number }>) {
+  @Process("getPopularMovies")
+  async getPopularMovies(job: Job<{ page: number }>) {
     const { page } = job.data;
     console.info(`[Scrapper] Start processing popular movies. Page: ${page}`);
 
-    const movies = await this.scrapperService.getPopular(page);
+    const movies = await this.scrapperService.getPopularMovies(page);
 
     console.info(
       `[Scrapper] Finish processing popular movies. Page: ${movies.page}/${movies.total_pages}`,

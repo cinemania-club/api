@@ -48,7 +48,7 @@ export class TmdbAdapter {
     });
   }
 
-  async getPopular(page: number) {
+  async getPopularMovies(page: number) {
     console.info(`[Scrapper] Fetching popular movies from TMDB. Page: ${page}`);
 
     const response = await this.instance.get<MoviesList>("/movie/popular", {
