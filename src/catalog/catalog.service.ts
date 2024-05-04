@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { $and, $criteria } from "src/mongo";
+import { $and, $criteria, $eq } from "src/mongo";
 import { FilterCatalogDto } from "./catalog.dto";
 import { DEFAULT_SORT_CRITERIA, PAGE_SIZE } from "./constants";
 import { CatalogItem } from "./item.schema";
@@ -152,9 +152,16 @@ export class CatalogService {
 
     result.items = result.items.map((item) => ({
       ...item,
-      userRating: ratings.find((rating) => rating.itemId === item._id)?.stars,
+      rating: {
+        all: this.normalizeVote(item.voteAverage),
+        user: ratings.find((rating) => $eq(rating.itemId, item._id))?.stars,
+      },
     }));
 
     return result;
+  }
+
+  private normalizeVote(vote: number, min = 1, max = 10) {
+    return (4 * (vote - min)) / (max - min) + 1;
   }
 }

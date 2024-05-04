@@ -6,7 +6,7 @@ import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { CatalogItemDto, FilterCatalogDto, RatingDto } from "./catalog.dto";
 import { CatalogService } from "./catalog.service";
-import { ONBOARDING_VOTES } from "./constants";
+import { CATALOG_FIELDS, ONBOARDING_VOTES } from "./constants";
 import { Rating } from "./rating.schema";
 
 @Controller("/catalog")
@@ -37,19 +37,7 @@ export class CatalogController {
     return {
       onboarding,
       total: result.total,
-      items: result.items.map((item) =>
-        pick(item, [
-          "_id",
-          "title",
-          "genres",
-          "runtime",
-          "release_date",
-          "vote_average",
-          "poster_path",
-          "overview",
-          "userVote",
-        ]),
-      ),
+      items: result.items.map((item) => pick(item, CATALOG_FIELDS)),
     };
   }
 

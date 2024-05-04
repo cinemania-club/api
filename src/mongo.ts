@@ -1,4 +1,9 @@
 import { isEmpty } from "lodash";
+import { ObjectId } from "mongoose";
+
+export function $eq(doc1: ObjectId, doc2: ObjectId) {
+  return doc1.toString() === doc2.toString();
+}
 
 export function $criteria<T>(criteria: T, apply: boolean) {
   return apply ? criteria : {};
