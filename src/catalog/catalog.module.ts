@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { SearchModule } from "src/search/search.module";
 import { CatalogController } from "./catalog.controller";
+import { CatalogService } from "./catalog.service";
 import { CatalogItem, CatalogSchema } from "./item.schema";
 import { LoaderService } from "./loader.service";
 import { Rating, RatingSchema } from "./rating.schema";
@@ -16,6 +17,6 @@ import { Rating, RatingSchema } from "./rating.schema";
   ],
   exports: [LoaderService],
   controllers: [CatalogController],
-  providers: [LoaderService],
+  providers: [LoaderService, CatalogService],
 })
 export class CatalogModule {}

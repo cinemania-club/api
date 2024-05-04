@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Param, Req } from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
@@ -7,57 +7,16 @@ import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { SEARCH_PAGE_SIZE } from "src/constants";
 import { MovieVote } from "./movie-vote.schema";
-import { MovieDetailsDto, MovieFiltersDto, SearchDto } from "./movie.dto";
+import { MovieDetailsDto, SearchDto } from "./movie.dto";
 import { Movie } from "./movie.schema";
-import { MovieService } from "./movie.service";
-
-const ONBOARDING_VOTES = 10;
 
 @Controller("/movies")
 export class MovieController {
   constructor(
-    private movieService: MovieService,
     @InjectModel(MovieVote.name) private movieVoteModel: Model<MovieVote>,
     @InjectModel(Movie.name) private moviesModel: Model<Movie>,
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
-
-  @Anonymous()
-  @Post()
-  async getMovies(@Req() req: Request, @Body() filters: MovieFiltersDto) {
-    const result = await this.movieService.getMovies(
-      filters,
-      req.payload!.userId,
-    );
-
-    const votes = await this.movieVoteModel.countDocuments({
-      userId: req.payload!.userId,
-      stars: { $ne: null },
-    });
-
-    let onboarding = null;
-    if (votes < ONBOARDING_VOTES) {
-      onboarding = { votes, target: ONBOARDING_VOTES };
-    }
-
-    return {
-      onboarding,
-      total: result.total,
-      items: result.items.map((movie) =>
-        pick(movie, [
-          "_id",
-          "title",
-          "genres",
-          "runtime",
-          "release_date",
-          "vote_average",
-          "poster_path",
-          "overview",
-          "userVote",
-        ]),
-      ),
-    };
-  }
 
   @Anonymous()
   @Get("/search")

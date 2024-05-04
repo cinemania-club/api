@@ -1,15 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { MOVIES_PAGE_SIZE } from "src/constants";
 import { $and, $criteria } from "src/mongo";
-import { Movie } from "src/movie/movie.schema";
-import { MovieVote } from "./movie-vote.schema";
-import { MovieFiltersDto, SortCriteria } from "./movie.dto";
+import { FilterCatalogDto } from "./catalog.dto";
+import { DEFAULT_SORT_CRITERIA, PAGE_SIZE } from "./constants";
+import { CatalogItem } from "./item.schema";
+import { Rating } from "./rating.schema";
+import { SortCriteria } from "./types";
 
 type Catalog = {
   total: number;
-  items: Movie[];
+  items: CatalogItem[];
 };
 
 const SORT_QUERY: Record<SortCriteria, Record<string, 1 | -1>> = {
@@ -23,16 +24,14 @@ const SORT_QUERY: Record<SortCriteria, Record<string, 1 | -1>> = {
   [SortCriteria.CREATED_AT_DESC]: { createdAt: -1 },
 };
 
-const DEFAULT_SORT_CRITERIA = SortCriteria.POPULARITY_DESC;
-
 @Injectable()
-export class MovieService {
+export class CatalogService {
   constructor(
-    @InjectModel(Movie.name) private movieModel: Model<Movie>,
-    @InjectModel(MovieVote.name) private movieVoteModel: Model<MovieVote>,
+    @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
   ) {}
 
-  async getMovies(filters: MovieFiltersDto, userId: Types.ObjectId) {
+  async getCatalog(filters: FilterCatalogDto, userId: Types.ObjectId) {
     const filterStreamings = $criteria(
       {
         "watch/providers.results.BR.flatrate": {
@@ -137,7 +136,7 @@ export class MovieService {
     ]);
 
     const sortCriteria = filters.sort || DEFAULT_SORT_CRITERIA;
-    const [result] = await this.movieModel.aggregate<Catalog>([
+    const [result] = await this.catalogModel.aggregate<Catalog>([
       { $match: filter },
       {
         $facet: {
@@ -145,7 +144,7 @@ export class MovieService {
           items: [
             { $match: skipPreviousResults },
             { $sort: SORT_QUERY[sortCriteria] },
-            { $limit: MOVIES_PAGE_SIZE },
+            { $limit: PAGE_SIZE },
           ],
         },
       },
@@ -157,15 +156,15 @@ export class MovieService {
       },
     ]);
 
-    const movieIds = result.items.map((movie) => movie._id);
-    const userVotes = await this.movieVoteModel.find({
-      userId: userId,
-      movieId: { $in: movieIds },
+    const itemIds = result.items.map((item) => item._id);
+    const ratings = await this.ratingModel.find({
+      userId,
+      itemId: { $in: itemIds },
     });
 
-    result.items = result.items.map((movie) => ({
-      ...movie,
-      userVote: userVotes.find((vote) => vote.movieId === movie._id)?.stars,
+    result.items = result.items.map((item) => ({
+      ...item,
+      userRating: ratings.find((rating) => rating.itemId === item._id)?.stars,
     }));
 
     return result;

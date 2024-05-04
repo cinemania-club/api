@@ -6,7 +6,6 @@ import { ELASTICSEARCH_URL } from "src/constants";
 import { MovieVote, MovieVoteSchema } from "./movie-vote.schema";
 import { MovieController } from "./movie.controller";
 import { Movie, MovieSchema } from "./movie.schema";
-import { MovieService } from "./movie.service";
 
 @Module({
   imports: [
@@ -19,9 +18,8 @@ import { MovieService } from "./movie.service";
   ],
   exports: [
     MongooseModule.forFeature([{ name: Movie.name, schema: MovieSchema }]),
-    MovieService,
   ],
   controllers: [MovieController],
-  providers: [MovieService],
+  providers: [],
 })
 export class MovieModule {}

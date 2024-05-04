@@ -11,5 +11,4 @@ export const MONGO_URL = "mongodb://mongo/cinemania";
 export const ELASTICSEARCH_URL = "http://elasticsearch:9200";
 export const REDIS_URL = { host: "redis", port: 6379 };
 
-export const MOVIES_PAGE_SIZE = 100;
 export const SEARCH_PAGE_SIZE = 100;

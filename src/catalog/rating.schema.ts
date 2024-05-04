@@ -6,10 +6,10 @@ export type RatingDocument = HydratedDocument<Rating>;
 @Schema({ timestamps: true })
 export class Rating {
   @Prop({ type: SchemaTypes.ObjectId, required: true })
-  itemId: ObjectId;
+  userId: ObjectId;
 
   @Prop({ type: SchemaTypes.ObjectId, required: true })
-  userId: ObjectId;
+  itemId: ObjectId;
 
   @Prop({ type: SchemaTypes.Number })
   stars?: number;
