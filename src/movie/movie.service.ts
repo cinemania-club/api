@@ -1,16 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { sub } from "date-fns";
-import { difference } from "lodash";
 import { Model, Types } from "mongoose";
 import { MOVIES_PAGE_SIZE } from "src/constants";
 import { $and, $criteria } from "src/mongo";
 import { Movie } from "src/movie/movie.schema";
 import { MovieVote } from "./movie-vote.schema";
-import { MOVIE_FRESHNESS_DURATION } from "./movie.constants";
 import { MovieFiltersDto, SortCriteria } from "./movie.dto";
-
-type UnpersistedMovie = Omit<Movie, "loadedAt">;
 
 type Catalog = {
   total: number;
@@ -174,31 +169,5 @@ export class MovieService {
     }));
 
     return result;
-  }
-
-  async saveMovie(movie: UnpersistedMovie) {
-    await this.movieModel.updateOne(
-      { _id: movie._id },
-      { ...movie, loadedAt: new Date() },
-      { upsert: true },
-    );
-  }
-
-  async getOutdated(ids: number[]) {
-    const freshnessDate = sub(new Date(), MOVIE_FRESHNESS_DURATION);
-    const upToDateMovies = await this.movieModel.aggregate<{ _id: number }>([
-      {
-        $match: {
-          _id: { $in: ids },
-          loadedAt: { $gte: freshnessDate },
-        },
-      },
-      { $project: { _id: 1 } },
-    ]);
-
-    const upToDateIds = upToDateMovies.map((movie) => movie._id);
-    const outdatedIds = difference(ids, upToDateIds);
-
-    return outdatedIds;
   }
 }
