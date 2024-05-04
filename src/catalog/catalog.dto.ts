@@ -16,16 +16,6 @@ export class FilterCatalogDto {
   @IsOptional()
   streamings: number[];
 
-  @IsInt()
-  @Min(0)
-  @IsOptional()
-  minRuntime: number;
-
-  @IsInt()
-  @Min(0)
-  @IsOptional()
-  maxRuntime: number;
-
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()
@@ -36,13 +26,23 @@ export class FilterCatalogDto {
   @IsOptional()
   requiredGenres: number[];
 
-  @IsDateString()
+  @IsInt()
+  @Min(0)
   @IsOptional()
-  minReleaseDate: string;
+  runtimeMin: number;
+
+  @IsInt()
+  @Min(0)
+  @IsOptional()
+  runtimeMax: number;
 
   @IsDateString()
   @IsOptional()
-  maxReleaseDate: string;
+  airDateMin: string;
+
+  @IsDateString()
+  @IsOptional()
+  airDateMax: string;
 
   @IsArray()
   @IsString({ each: true })

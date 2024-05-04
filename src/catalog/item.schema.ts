@@ -22,12 +22,12 @@ export class CatalogItem {
   streamings: number[];
 
   @Prop({ type: SchemaTypes.String, required: true })
-  backdrop_path: string;
+  backdropPath: string;
   @Prop({ type: SchemaTypes.String, required: true })
-  poster_path: string;
+  posterPath: string;
 
   @Prop({ type: SchemaTypes.String, required: true })
-  original_title: string;
+  originalTitle: string;
   @Prop({ type: SchemaTypes.String, required: true })
   title: string;
   @Prop({ type: SchemaTypes.String, required: true })
@@ -40,28 +40,28 @@ export class CatalogItem {
   @Prop({ type: SchemaTypes.Number, required: true })
   runtime: number;
   @Prop({ type: SchemaTypes.Date, required: true })
-  release_date: Date;
-  @Prop({ type: SchemaTypes.Date })
-  last_air_date?: Date;
+  firstAirDate: Date;
+  @Prop({ type: SchemaTypes.Date, required: true })
+  lastAirDate: Date;
 
   @Prop({ type: SchemaTypes.Number, required: true })
   popularity: number;
   @Prop({ type: SchemaTypes.Number, required: true })
-  vote_average: number;
+  voteAverage: number;
   @Prop({ type: SchemaTypes.Number, required: true })
-  vote_count: number;
+  voteCount: number;
 
   @Prop({ type: SchemaTypes.String, required: true })
-  original_language: string;
+  originalLanguage: string;
   @Prop({ type: [SchemaTypes.String], required: true })
-  spoken_languages: string[];
+  spokenLanguages: string[];
 
   @Prop({ type: [SchemaTypes.String], required: true })
-  origin_country: string[];
+  originCountry: string[];
   @Prop({ type: [SchemaTypes.String], required: true })
-  production_countries: string[];
+  productionCountries: string[];
   @Prop({ type: [SchemaTypes.Number], required: true })
-  production_companies: number[];
+  productionCompanies: number[];
 
   @Prop({ type: SchemaTypes.Date, required: true })
   loadedAt: Date;

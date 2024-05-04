@@ -37,16 +37,6 @@ export class CatalogService {
       !!filters.streamings?.length,
     );
 
-    const filterMinRuntime = $criteria(
-      { runtime: { $gte: filters.minRuntime } },
-      !!filters.minRuntime,
-    );
-
-    const filterMaxRuntime = $criteria(
-      { runtime: { $lte: filters.maxRuntime } },
-      !!filters.maxRuntime,
-    );
-
     const filterGenres = $criteria(
       { genres: { $elemMatch: { $in: filters.genres } } },
       !!filters.genres?.length,
@@ -58,18 +48,26 @@ export class CatalogService {
       })),
     );
 
-    const minReleaseDate =
-      filters.minReleaseDate && new Date(filters.minReleaseDate);
-    const filterMinReleaseDate = $criteria(
-      { release_date: { $gte: minReleaseDate } },
-      !!filters.minReleaseDate,
+    const filterRuntimeMin = $criteria(
+      { runtime: { $gte: filters.runtimeMin } },
+      !!filters.runtimeMin,
     );
 
-    const maxReleaseDate =
-      filters.maxReleaseDate && new Date(filters.maxReleaseDate);
-    const filterMaxReleaseDate = $criteria(
-      { release_date: { $lte: maxReleaseDate } },
-      !!filters.maxReleaseDate,
+    const filterRuntimeMax = $criteria(
+      { runtime: { $lte: filters.runtimeMax } },
+      !!filters.runtimeMax,
+    );
+
+    const airDateMax = filters.airDateMax && new Date(filters.airDateMax);
+    const filterFirstAirDate = $criteria(
+      { firstAirDate: { $lte: airDateMax } },
+      !!airDateMax,
+    );
+
+    const airDateMin = filters.airDateMin && new Date(filters.airDateMin);
+    const filterLastAirDate = $criteria(
+      { lastAirDate: { $gte: airDateMin } },
+      !!airDateMin,
     );
 
     const filterOriginalLanguage = $criteria(
@@ -112,12 +110,12 @@ export class CatalogService {
 
     const filter = $and([
       filterStreamings,
-      filterMinRuntime,
-      filterMaxRuntime,
       filterGenres,
       filterRequiredGenres,
-      filterMinReleaseDate,
-      filterMaxReleaseDate,
+      filterRuntimeMin,
+      filterRuntimeMax,
+      filterFirstAirDate,
+      filterLastAirDate,
       filterOriginalLanguage,
       filterSpokenLanguage,
       filterOriginCountry,
