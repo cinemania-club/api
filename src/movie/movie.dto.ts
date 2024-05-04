@@ -6,7 +6,6 @@ import {
   IsNumberString,
   IsOptional,
   IsString,
-  Max,
   Min,
 } from "class-validator";
 
@@ -102,15 +101,4 @@ export class SearchDto {
 export class MovieDetailsDto {
   @IsNumberString()
   id: number;
-}
-
-export class VoteMovieDto {
-  @IsInt()
-  movieId: number;
-
-  @IsInt()
-  @Min(1)
-  @Max(5)
-  @IsOptional()
-  stars?: number;
 }

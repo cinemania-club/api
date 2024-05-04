@@ -7,12 +7,7 @@ import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { SEARCH_PAGE_SIZE } from "src/constants";
 import { MovieVote } from "./movie-vote.schema";
-import {
-  MovieDetailsDto,
-  MovieFiltersDto,
-  SearchDto,
-  VoteMovieDto,
-} from "./movie.dto";
+import { MovieDetailsDto, MovieFiltersDto, SearchDto } from "./movie.dto";
 import { Movie } from "./movie.schema";
 import { MovieService } from "./movie.service";
 
@@ -134,19 +129,6 @@ export class MovieController {
         ],
       ),
     };
-  }
-
-  @Anonymous()
-  @Post("/vote")
-  async vote(@Req() req: Request, @Body() vote: VoteMovieDto) {
-    await this.movieVoteModel.updateOne(
-      {
-        movieId: vote.movieId,
-        userId: req.payload!.userId,
-      },
-      { stars: vote.stars || null },
-      { upsert: true },
-    );
   }
 
   private calculateScaledVote(vote: number) {
