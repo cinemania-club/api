@@ -4,7 +4,7 @@ import { pick } from "lodash";
 import { CatalogItem } from "src/catalog/item.schema";
 
 @Injectable()
-export class IndexerService {
+export class SearchService {
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
   async indexCatalogItem(item: CatalogItem) {
