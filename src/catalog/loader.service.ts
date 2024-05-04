@@ -3,15 +3,17 @@ import { InjectModel } from "@nestjs/mongoose";
 import { sub } from "date-fns";
 import { difference, pick } from "lodash";
 import { Model } from "mongoose";
+import { IndexerService } from "src/indexer/indexer.service";
 import { CATALOG_ITEM_FRESHNESS } from "./constants";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";
 
-type UnpersistedItem = Omit<CatalogItem, "loadedAt">;
+type UnpersistedItem = Omit<CatalogItem, "_id" | "loadedAt">;
 
 @Injectable()
 export class LoaderService {
   constructor(
     @InjectModel(CatalogItem.name) private catalogItemModel: Model<CatalogItem>,
+    private indexerService: IndexerService,
   ) {}
 
   async getOutdated(format: CatalogItemFormat, ids: number[]) {
@@ -36,10 +38,12 @@ export class LoaderService {
   }
 
   async load(item: UnpersistedItem) {
-    await this.catalogItemModel.updateOne(
+    const result = await this.catalogItemModel.findOneAndUpdate(
       pick(item, "format", "id"),
       { ...item, loadedAt: new Date() },
-      { upsert: true },
+      { upsert: true, new: true },
     );
+
+    await this.indexerService.indexCatalogItem(result);
   }
 }
