@@ -1,5 +1,9 @@
 import { isEmpty } from "lodash";
-import { ObjectId } from "mongoose";
+import { ObjectId, Types } from "mongoose";
+
+export function $oid(id: string) {
+  return new Types.ObjectId(id);
+}
 
 export function $eq(doc1: ObjectId, doc2: ObjectId) {
   return doc1.toString() === doc2.toString();

@@ -144,21 +144,34 @@ export class CatalogService {
       },
     ]);
 
-    const itemIds = result.items.map((item) => item._id);
+    return {
+      ...result,
+      items: await this.addRatings(result.items, userId),
+    };
+  }
+
+  async getCatalogItem(itemId: Types.ObjectId, userId: Types.ObjectId) {
+    const doc = await this.catalogModel.findById(itemId).lean();
+    if (!doc) return { item: null };
+
+    const [item] = await this.addRatings([doc], userId);
+    return item;
+  }
+
+  private async addRatings(items: CatalogItem[], userId: Types.ObjectId) {
+    const itemIds = items.map((item) => item._id);
     const ratings = await this.ratingModel.find({
       userId,
       itemId: { $in: itemIds },
     });
 
-    result.items = result.items.map((item) => ({
+    return items.map((item) => ({
       ...item,
       rating: {
         all: this.normalizeVote(item.voteAverage),
         user: ratings.find((rating) => $eq(rating.itemId, item._id))?.stars,
       },
     }));
-
-    return result;
   }
 
   private normalizeVote(vote: number, min = 1, max = 10) {

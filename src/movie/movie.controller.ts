@@ -1,19 +1,16 @@
-import { Body, Controller, Get, Param, Req } from "@nestjs/common";
+import { Body, Controller, Get } from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { InjectModel } from "@nestjs/mongoose";
-import { Request } from "express";
 import { keyBy, pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { SEARCH_PAGE_SIZE } from "src/constants";
-import { MovieVote } from "./movie-vote.schema";
-import { MovieDetailsDto, SearchDto } from "./movie.dto";
+import { SearchDto } from "./movie.dto";
 import { Movie } from "./movie.schema";
 
 @Controller("/movies")
 export class MovieController {
   constructor(
-    @InjectModel(MovieVote.name) private movieVoteModel: Model<MovieVote>,
     @InjectModel(Movie.name) private moviesModel: Model<Movie>,
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
@@ -53,44 +50,5 @@ export class MovieController {
         ]),
       ),
     };
-  }
-
-  @Anonymous()
-  @Get("/:id")
-  async getMovie(@Req() req: Request, @Param() movieDto: MovieDetailsDto) {
-    const movie = await this.moviesModel.findById(movieDto.id).lean();
-    if (!movie) return { movie: null };
-
-    const vote = await this.movieVoteModel.findOne({
-      userId: req.payload!.userId,
-      movieId: movieDto.id,
-    });
-    const userVote = vote?.stars || null;
-
-    return {
-      movie: pick(
-        {
-          ...movie,
-          genres: movie.genres.map((genre) => genre.name),
-          scaledVoteAverage: this.calculateScaledVote(movie.vote_average),
-          userVote,
-        },
-        [
-          "_id",
-          "title",
-          "backdrop_path",
-          "genres",
-          "release_date",
-          "runtime",
-          "overview",
-          "scaledVoteAverage",
-          "userVote",
-        ],
-      ),
-    };
-  }
-
-  private calculateScaledVote(vote: number) {
-    return (4 * (vote - 1)) / 9 + 1;
   }
 }

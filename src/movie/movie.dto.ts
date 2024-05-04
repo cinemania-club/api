@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsNumberString, IsString } from "class-validator";
+import { IsArray, IsInt, IsString } from "class-validator";
 
 export class SearchDto {
   @IsString()
@@ -7,9 +7,4 @@ export class SearchDto {
   @IsArray()
   @IsInt({ each: true })
   skip: number[];
-}
-
-export class MovieDetailsDto {
-  @IsNumberString()
-  id: number;
 }

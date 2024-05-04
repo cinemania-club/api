@@ -1,12 +1,17 @@
-import { Body, Controller, Param, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
+import { $oid } from "src/mongo";
 import { CatalogItemDto, FilterCatalogDto, RatingDto } from "./catalog.dto";
 import { CatalogService } from "./catalog.service";
-import { CATALOG_FIELDS, ONBOARDING_VOTES } from "./constants";
+import {
+  CATALOG_FIELDS,
+  CATALOG_ITEM_FIELDS,
+  ONBOARDING_VOTES,
+} from "./constants";
 import { Rating } from "./rating.schema";
 
 @Controller("/catalog")
@@ -39,6 +44,17 @@ export class CatalogController {
       total: result.total,
       items: result.items.map((item) => pick(item, CATALOG_FIELDS)),
     };
+  }
+
+  @Anonymous()
+  @Get("/:id")
+  async getItem(@Req() req: Request, @Param() params: CatalogItemDto) {
+    const item = await this.catalogService.getCatalogItem(
+      $oid(params.id),
+      req.payload!.userId,
+    );
+
+    return { item: pick(item, CATALOG_ITEM_FIELDS) };
   }
 
   @Anonymous()
