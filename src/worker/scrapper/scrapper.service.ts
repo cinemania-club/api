@@ -47,6 +47,12 @@ export class ScrapperService {
       format: CatalogItemFormat.MOVIE,
       genres: movie.genres.map((e) => e.id),
       release_date: new Date(movie.release_date),
+      spoken_languages: movie.spoken_languages.map((e) => e.iso_639_1),
+      production_countries: movie.production_countries.map((e) => e.iso_3166_1),
+      production_companies: movie.production_companies.map((e) => e.id),
+      streamings: movie["watch/providers"].results.BR.flatrate.map(
+        (e) => e.provider_id,
+      ),
     });
   }
 
@@ -87,6 +93,14 @@ export class ScrapperService {
       runtime: series.episode_run_time[0],
       release_date: new Date(series.first_air_date),
       last_air_date: new Date(series.last_air_date),
+      spoken_languages: series.spoken_languages.map((e) => e.iso_639_1),
+      production_countries: series.production_countries.map(
+        (e) => e.iso_3166_1,
+      ),
+      production_companies: series.production_companies.map((e) => e.id),
+      streamings: series["watch/providers"].results.BR.flatrate.map(
+        (e) => e.provider_id,
+      ),
     });
   }
 }

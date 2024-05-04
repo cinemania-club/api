@@ -33,11 +33,7 @@ export class CatalogService {
 
   async getCatalog(filters: FilterCatalogDto, userId: Types.ObjectId) {
     const filterStreamings = $criteria(
-      {
-        "watch/providers.results.BR.flatrate": {
-          $elemMatch: { provider_id: { $in: filters.streamings } },
-        },
-      },
+      { streamings: { $elemMatch: { $in: filters.streamings } } },
       !!filters.streamings?.length,
     );
 
@@ -52,13 +48,13 @@ export class CatalogService {
     );
 
     const filterGenres = $criteria(
-      { genres: { $elemMatch: { id: { $in: filters.genres } } } },
+      { genres: { $elemMatch: { $in: filters.genres } } },
       !!filters.genres?.length,
     );
 
     const filterRequiredGenres = $and(
-      filters.requiredGenres?.map((genreId) => ({
-        genres: { $elemMatch: { id: genreId } },
+      filters.requiredGenres?.map((genre) => ({
+        genres: { $elemMatch: { $eq: genre } },
       })),
     );
 
@@ -82,11 +78,7 @@ export class CatalogService {
     );
 
     const filterSpokenLanguage = $criteria(
-      {
-        spoken_languages: {
-          $elemMatch: { iso_639_1: { $in: filters.spokenLanguage } },
-        },
-      },
+      { spoken_languages: { $elemMatch: { $in: filters.spokenLanguage } } },
       !!filters.spokenLanguage?.length,
     );
 
@@ -98,7 +90,7 @@ export class CatalogService {
     const filterProductionCountries = $criteria(
       {
         production_countries: {
-          $elemMatch: { iso_3166_1: { $in: filters.productionCountries } },
+          $elemMatch: { $in: filters.productionCountries },
         },
       },
       !!filters.productionCountries?.length,
@@ -107,7 +99,7 @@ export class CatalogService {
     const filterProductionCompanies = $criteria(
       {
         production_companies: {
-          $elemMatch: { id: { $in: filters.productionCompanies } },
+          $elemMatch: { $in: filters.productionCompanies },
         },
       },
       !!filters.productionCompanies?.length,
@@ -118,7 +110,6 @@ export class CatalogService {
       !!filters.skip,
     );
 
-    const skipAdult = { adult: false };
     const filter = $and([
       filterStreamings,
       filterMinRuntime,
@@ -132,7 +123,6 @@ export class CatalogService {
       filterOriginCountry,
       filterProductionCountries,
       filterProductionCompanies,
-      skipAdult,
     ]);
 
     const sortCriteria = filters.sort || DEFAULT_SORT_CRITERIA;

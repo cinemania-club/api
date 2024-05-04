@@ -9,42 +9,80 @@ type ItemList<T> = {
   total_results: number;
 };
 
-type TmdbMovie = {
+type TmdbItem = {
   id: number;
   backdrop_path: string;
   poster_path: string;
-  original_title: string;
-  title: string;
   tagline: string;
   overview: string;
   genres: Genre[];
-  release_date: string;
-  runtime: number;
   popularity: number;
   vote_average: number;
   vote_count: number;
+  original_language: string;
+  spoken_languages: SpokenLanguage[];
+  origin_country: string[];
+  production_countries: ProductionCountry[];
+  production_companies: ProductionCompany[];
+  "watch/providers": WatchProviders;
 };
 
-type TmdbSeries = {
-  id: number;
-  backdrop_path: string;
-  poster_path: string;
+type TmdbMovie = TmdbItem & {
+  original_title: string;
+  title: string;
+  release_date: string;
+  runtime: number;
+};
+
+type TmdbSeries = TmdbItem & {
   original_name: string;
   name: string;
-  tagline: string;
-  overview: string;
-  genres: Genre[];
-  episode_run_time: number[];
   first_air_date: string;
   last_air_date: string;
-  popularity: number;
-  vote_average: number;
-  vote_count: number;
+  episode_run_time: number[];
 };
 
 type Genre = {
   id: number;
   name: string;
+};
+
+type SpokenLanguage = {
+  english_name: string;
+  iso_639_1: string;
+  name: string;
+};
+
+type ProductionCountry = {
+  iso_3166_1: string;
+  name: string;
+};
+
+type ProductionCompany = {
+  id: number;
+  logo_path: string;
+  name: string;
+  origin_country: string;
+};
+
+type WatchProviders = {
+  results: {
+    BR: {
+      link: string;
+      ads: WatchProvider[];
+      buy: WatchProvider[];
+      flatrate: WatchProvider[];
+      free: WatchProvider[];
+      rent: WatchProvider[];
+    };
+  };
+};
+
+type WatchProvider = {
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+  display_priority: number;
 };
 
 @Injectable()

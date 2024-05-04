@@ -18,6 +18,9 @@ export class CatalogItem {
   @Prop({ type: SchemaTypes.Number, required: true })
   id: number;
 
+  @Prop({ type: [SchemaTypes.Number], required: true })
+  streamings: number[];
+
   @Prop({ type: SchemaTypes.String, required: true })
   backdrop_path: string;
   @Prop({ type: SchemaTypes.String, required: true })
@@ -47,6 +50,18 @@ export class CatalogItem {
   vote_average: number;
   @Prop({ type: SchemaTypes.Number, required: true })
   vote_count: number;
+
+  @Prop({ type: SchemaTypes.String, required: true })
+  original_language: string;
+  @Prop({ type: [SchemaTypes.String], required: true })
+  spoken_languages: string[];
+
+  @Prop({ type: [SchemaTypes.String], required: true })
+  origin_country: string[];
+  @Prop({ type: [SchemaTypes.String], required: true })
+  production_countries: string[];
+  @Prop({ type: [SchemaTypes.Number], required: true })
+  production_companies: number[];
 
   @Prop({ type: SchemaTypes.Date, required: true })
   loadedAt: Date;
