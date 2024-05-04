@@ -13,5 +13,3 @@ export const REDIS_URL = { host: "redis", port: 6379 };
 
 export const MOVIES_PAGE_SIZE = 100;
 export const SEARCH_PAGE_SIZE = 100;
-export const POPULAR_MOVIES_PAGES_LIMIT = 1000;
-export const POPULAR_SERIES_PAGES_LIMIT = 1000;

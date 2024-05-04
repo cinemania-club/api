@@ -15,26 +15,36 @@ type TmdbMovie = {
   poster_path: string;
   original_title: string;
   title: string;
-  genres: TmdbMovieGenre[];
-  release_date: string;
-  runtime: number;
-  vote_average: number;
-  popularity: number;
   tagline: string;
   overview: string;
-};
-type TmdbMovieGenre = {
-  id: number;
-  name: string;
+  genres: Genre[];
+  release_date: string;
+  runtime: number;
+  popularity: number;
+  vote_average: number;
+  vote_count: number;
 };
 
 type TmdbSeries = {
   id: number;
+  backdrop_path: string;
+  poster_path: string;
   original_name: string;
   name: string;
   tagline: string;
   overview: string;
+  genres: Genre[];
+  episode_run_time: number[];
   first_air_date: string;
+  last_air_date: string;
+  popularity: number;
+  vote_average: number;
+  vote_count: number;
+};
+
+type Genre = {
+  id: number;
+  name: string;
 };
 
 @Injectable()
@@ -76,10 +86,7 @@ export class TmdbAdapter {
       },
     );
 
-    const movie = response.data;
-    const release_date = movie.release_date && new Date(movie.release_date);
-
-    return { ...movie, _id: movie.id, release_date };
+    return response.data;
   }
 
   async getPopularSeries(page: number) {
@@ -106,10 +113,6 @@ export class TmdbAdapter {
       },
     );
 
-    const series = response.data;
-    const first_air_date =
-      series.first_air_date && new Date(series.first_air_date);
-
-    return { ...series, _id: series.id, first_air_date };
+    return response.data;
   }
 }
