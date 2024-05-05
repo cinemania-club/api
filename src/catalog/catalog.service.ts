@@ -34,6 +34,11 @@ export class CatalogService {
   ) {}
 
   async getCatalog(filters: FilterCatalogDto, userId: Types.ObjectId) {
+    const filterFormats = $criteria(
+      { format: { $in: filters.formats } },
+      !!filters.formats?.length,
+    );
+
     const filterStreamings = $criteria(
       { streamings: { $elemMatch: { $in: filters.streamings } } },
       !!filters.streamings?.length,
@@ -111,6 +116,7 @@ export class CatalogService {
     );
 
     const filter = $and([
+      filterFormats,
       filterStreamings,
       filterGenres,
       filterRequiredGenres,

@@ -9,9 +9,15 @@ import {
   Max,
   Min,
 } from "class-validator";
+import { CatalogItemFormat } from "./item.schema";
 import { SortCriteria } from "./types";
 
 export class FilterCatalogDto {
+  @IsArray()
+  @IsEnum(CatalogItemFormat, { each: true })
+  @IsOptional()
+  formats: CatalogItemFormat[];
+
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()
