@@ -1,11 +1,9 @@
 import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { pick } from "lodash";
-import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { $oid } from "src/mongo";
-import { Rating } from "../rating/rating.schema";
+import { RatingService } from "src/rating/rating.service";
 import {
   CatalogItemDto,
   FilterCatalogDto,
@@ -16,15 +14,15 @@ import { CatalogService } from "./catalog.service";
 import {
   CATALOG_FIELDS,
   CATALOG_ITEM_FIELDS,
-  ONBOARDING_VOTES,
+  ONBOARDING_TARGET_RATINGS,
 } from "./constants";
 import { CatalogItemFormat } from "./item.schema";
 
 @Controller("/catalog")
 export class CatalogController {
   constructor(
-    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     private catalogService: CatalogService,
+    private ratingService: RatingService,
   ) {}
 
   @Anonymous()
@@ -35,14 +33,12 @@ export class CatalogController {
       req.payload!.userId,
     );
 
-    const votes = await this.ratingModel.countDocuments({
-      userId: req.payload!.userId,
-      stars: { $ne: null },
-    });
-
+    const currentRatings = await this.ratingService.countUserRatings(
+      req.payload!.userId,
+    );
     let onboarding = null;
-    if (votes < ONBOARDING_VOTES) {
-      onboarding = { votes, target: ONBOARDING_VOTES };
+    if (currentRatings < ONBOARDING_TARGET_RATINGS) {
+      onboarding = { currentRatings, targetRatings: ONBOARDING_TARGET_RATINGS };
     }
 
     return {
@@ -89,13 +85,10 @@ export class CatalogController {
     @Param() params: CatalogItemDto,
     @Body() rating: RatingDto,
   ) {
-    await this.ratingModel.findOneAndUpdate(
-      {
-        itemId: params.id,
-        userId: req.payload!.userId,
-      },
-      { stars: rating.stars || null },
-      { upsert: true },
+    await this.ratingService.rateItem(
+      req.payload!.userId.toString(),
+      params.id,
+      rating.stars,
     );
   }
 }

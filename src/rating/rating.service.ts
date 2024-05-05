@@ -14,6 +14,21 @@ type RatingSource = {
 export class RatingService {
   constructor(@InjectModel(Rating.name) private ratingModel: Model<Rating>) {}
 
+  async rateItem(userId: string, itemId: string, stars?: number) {
+    await this.ratingModel.findOneAndUpdate(
+      { itemId, userId },
+      { stars: stars || null },
+      { upsert: true },
+    );
+  }
+
+  async countUserRatings(userId: Types.ObjectId) {
+    return await this.ratingModel.countDocuments({
+      userId,
+      stars: { $ne: null },
+    });
+  }
+
   async getUserRatings(itemIds: ObjectId[], userId: Types.ObjectId) {
     return await this.ratingModel.find({
       userId,
