@@ -25,7 +25,7 @@ export class PlaylistController {
 
   @Anonymous()
   @Post("/add")
-  async addMovies(@Req() req: Request, @Body() dto: AddItemDto) {
+  async addItems(@Req() req: Request, @Body() dto: AddItemDto) {
     await this.playlistModel.updateMany(
       { userId: req.payload!.userId, _id: { $in: dto.playlists } },
       { $addToSet: { items: dto.itemId } },
