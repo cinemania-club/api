@@ -4,6 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import * as Joi from "joi";
 import { MONGO_URL } from "src/constants";
+import { CatalogWorker } from "../catalog/worker/catalog.worker";
 import { ScrapperModule } from "./scrapper/scrapper.module";
 
 const ENABLE_ENV_VALIDATION = null;
@@ -22,6 +23,7 @@ const ENABLE_ENV_VALIDATION = null;
     ScheduleModule.forRoot(),
     MongooseModule.forRoot(MONGO_URL),
     ScrapperModule,
+    CatalogWorker,
   ],
 })
 export class WorkerModule {}

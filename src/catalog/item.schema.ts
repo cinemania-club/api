@@ -65,6 +65,9 @@ export class CatalogItem {
 
   @Prop({ type: SchemaTypes.Date, required: true })
   loadedAt: Date;
+
+  @Prop({ type: SchemaTypes.Number })
+  rating?: number;
 }
 
 export const CatalogSchema = SchemaFactory.createForClass(CatalogItem);

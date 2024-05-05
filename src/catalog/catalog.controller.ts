@@ -5,6 +5,7 @@ import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { $oid } from "src/mongo";
+import { Rating } from "../rating/rating.schema";
 import {
   CatalogItemDto,
   FilterCatalogDto,
@@ -18,7 +19,6 @@ import {
   ONBOARDING_VOTES,
 } from "./constants";
 import { CatalogItemFormat } from "./item.schema";
-import { Rating } from "./rating.schema";
 
 @Controller("/catalog")
 export class CatalogController {
