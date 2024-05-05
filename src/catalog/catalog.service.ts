@@ -2,9 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { $and, $criteria, $eq } from "src/mongo";
-import { FilterCatalogDto } from "./catalog.dto";
+import { SearchService } from "src/search/search.service";
+import { FilterCatalogDto, SearchDto } from "./catalog.dto";
 import { DEFAULT_SORT_CRITERIA, PAGE_SIZE } from "./constants";
-import { CatalogItem } from "./item.schema";
+import { CatalogItem, CatalogItemFormat } from "./item.schema";
 import { Rating } from "./rating.schema";
 import { SortCriteria } from "./types";
 
@@ -29,6 +30,7 @@ export class CatalogService {
   constructor(
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
+    private searchService: SearchService,
   ) {}
 
   async getCatalog(filters: FilterCatalogDto, userId: Types.ObjectId) {
@@ -157,6 +159,22 @@ export class CatalogService {
     const [item] = await this.addRatings([doc], userId);
     return item;
   }
+
+  async search(format: CatalogItemFormat, dto: SearchDto) {
+    const ids = await this.searchService.searchCatalogItem(
+      format,
+      dto.query,
+      dto.skip,
+    );
+
+    const items = await this.catalogModel.find({ _id: { $in: ids } });
+
+    return ids
+      .map((id) => items.find((e) => e._id.toString() === id))
+      .filter((e) => e);
+  }
+
+  // PRIVATE METHODS
 
   private async addRatings(items: CatalogItem[], userId: Types.ObjectId) {
     const itemIds = items.map((item) => item._id);

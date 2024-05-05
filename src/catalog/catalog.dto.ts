@@ -3,6 +3,7 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
   Max,
@@ -90,4 +91,15 @@ export class RatingDto {
   @Max(5)
   @IsOptional()
   stars?: number;
+}
+
+export class SearchDto {
+  @IsString()
+  @IsNotEmpty()
+  query: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  skip: string[];
 }

@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { pick } from "lodash";
-import { CatalogItem } from "src/catalog/item.schema";
+import { PAGE_SIZE } from "src/catalog/constants";
+import { CatalogItem, CatalogItemFormat } from "src/catalog/item.schema";
 
 @Injectable()
 export class SearchService {
@@ -23,5 +24,25 @@ export class SearchService {
         `Failed to index catalog item: ${item.format}, ${item.id}, ${id}. Error: ${error}`,
       );
     }
+  }
+
+  async searchCatalogItem(
+    format: CatalogItemFormat,
+    query: string,
+    skip: string[],
+  ) {
+    const result = await this.elasticsearchService.search({
+      index: format.toLowerCase(),
+      _source: [],
+      size: PAGE_SIZE,
+      query: {
+        bool: {
+          must: { multi_match: { query } },
+          must_not: { ids: { values: skip } },
+        },
+      },
+    });
+
+    return result.hits.hits.map((hit) => hit._id);
   }
 }
