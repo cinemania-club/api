@@ -1,11 +1,13 @@
 import { isEmpty } from "lodash";
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
+
+export type Oid = Types.ObjectId;
 
 export function $oid(id: string) {
   return new Types.ObjectId(id);
 }
 
-export function $eq(doc1: ObjectId, doc2: ObjectId) {
+export function $eq(doc1: Oid | string, doc2: Oid | string) {
   return doc1.toString() === doc2.toString();
 }
 

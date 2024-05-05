@@ -1,15 +1,16 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, ObjectId, SchemaTypes } from "mongoose";
+import { HydratedDocument, SchemaTypes } from "mongoose";
+import { Oid } from "src/mongo";
 
 export type RatingDocument = HydratedDocument<Rating>;
 
 @Schema({ timestamps: true })
 export class Rating {
   @Prop({ type: SchemaTypes.ObjectId, required: true })
-  userId: ObjectId;
+  userId: Oid;
 
   @Prop({ type: SchemaTypes.ObjectId, required: true })
-  itemId: ObjectId;
+  itemId: Oid;
 
   @Prop({ type: SchemaTypes.Number })
   stars?: number;

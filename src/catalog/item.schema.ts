@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, ObjectId, SchemaTypes } from "mongoose";
+import { HydratedDocument, SchemaTypes } from "mongoose";
+import { Oid } from "src/mongo";
 
 export type CatalogItemDocument = HydratedDocument<CatalogItem>;
 
@@ -11,7 +12,7 @@ export enum CatalogItemFormat {
 @Schema({ collection: "catalog", timestamps: true })
 export class CatalogItem {
   @Prop({ type: SchemaTypes.ObjectId })
-  _id: ObjectId;
+  _id: Oid;
 
   @Prop({ type: SchemaTypes.String, enum: CatalogItemFormat, required: true })
   format: CatalogItemFormat;

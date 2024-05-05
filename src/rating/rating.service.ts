@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, ObjectId, Types } from "mongoose";
-import { $eq } from "src/mongo";
+import { Model } from "mongoose";
+import { $eq, Oid } from "src/mongo";
 import { Rating } from "./rating.schema";
 
 type RatingSource = {
-  _id: ObjectId;
+  _id: Oid;
   rating: number;
   count: number;
 };
@@ -22,14 +22,14 @@ export class RatingService {
     );
   }
 
-  async countUserRatings(userId: Types.ObjectId) {
+  async countUserRatings(userId: Oid) {
     return await this.ratingModel.countDocuments({
       userId,
       stars: { $ne: null },
     });
   }
 
-  async getUserRatings(itemIds: ObjectId[], userId: Types.ObjectId) {
+  async getUserRatings(itemIds: Oid[], userId: Oid) {
     return await this.ratingModel.find({
       userId,
       itemId: { $in: itemIds },

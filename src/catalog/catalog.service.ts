@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
-import { $and, $criteria, $eq } from "src/mongo";
+import { Model } from "mongoose";
+import { $and, $criteria, $eq, $oid, Oid } from "src/mongo";
 import { RatingService } from "src/rating/rating.service";
 import { SearchService } from "src/search/search.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
@@ -33,7 +33,7 @@ export class CatalogService {
     private searchService: SearchService,
   ) {}
 
-  async getCatalog(filters: FilterCatalogDto, userId: Types.ObjectId) {
+  async getCatalog(filters: FilterCatalogDto, userId: Oid) {
     const filterFormats = $criteria(
       { format: { $in: filters.formats } },
       !!filters.formats?.length,
@@ -111,7 +111,7 @@ export class CatalogService {
     );
 
     const skipPreviousResults = $criteria(
-      { _id: { $nin: filters.skip.map((e) => new Types.ObjectId(e)) } },
+      { _id: { $nin: filters.skip.map((e) => $oid(e)) } },
       !!filters.skip?.length,
     );
 
@@ -162,7 +162,7 @@ export class CatalogService {
     return result;
   }
 
-  async getCatalogItem(itemId: Types.ObjectId, userId: Types.ObjectId) {
+  async getCatalogItem(itemId: Oid, userId: Oid) {
     const doc = await this.catalogModel.findById(itemId).lean();
     if (!doc) return { item: null };
 
@@ -170,11 +170,7 @@ export class CatalogService {
     return item;
   }
 
-  async search(
-    userId: Types.ObjectId,
-    format: CatalogItemFormat,
-    dto: SearchDto,
-  ) {
+  async search(userId: Oid, format: CatalogItemFormat, dto: SearchDto) {
     const ids = await this.searchService.searchCatalogItem(
       format,
       dto.query,
@@ -191,7 +187,7 @@ export class CatalogService {
 
   // PRIVATE METHODS
 
-  async addRatings(items: CatalogItem[], userId: Types.ObjectId) {
+  async addRatings(items: CatalogItem[], userId: Oid) {
     const ids = items.map((item) => item._id);
     const ratings = await this.ratingService.getUserRatings(ids, userId);
 

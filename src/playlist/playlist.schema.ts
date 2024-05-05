@@ -1,12 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, ObjectId, SchemaTypes } from "mongoose";
+import { HydratedDocument, SchemaTypes } from "mongoose";
+import { Oid } from "src/mongo";
 
 export type PlaylistDocument = HydratedDocument<Playlist>;
 
 @Schema({ timestamps: true })
 export class Playlist {
   @Prop({ type: SchemaTypes.ObjectId })
-  userId: ObjectId;
+  userId: Oid;
 
   @Prop({ type: SchemaTypes.String })
   name: string;
