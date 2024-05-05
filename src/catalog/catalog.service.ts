@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, Types } from "mongoose";
+import { Model, ObjectId, Types } from "mongoose";
 import { $and, $criteria, $eq } from "src/mongo";
 import { SearchService } from "src/search/search.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
@@ -23,6 +23,12 @@ const SORT_QUERY: Record<SortCriteria, Record<string, 1 | -1>> = {
   [SortCriteria.RELEASE_DATE_DESC]: { release_date: -1 },
   [SortCriteria.CREATED_AT_ASC]: { createdAt: 1 },
   [SortCriteria.CREATED_AT_DESC]: { createdAt: -1 },
+};
+
+type AverageRating = {
+  _id: ObjectId;
+  average: number;
+  count: number;
 };
 
 @Injectable()
@@ -184,21 +190,61 @@ export class CatalogService {
 
   private async addRatings(items: CatalogItem[], userId: Types.ObjectId) {
     const itemIds = items.map((item) => item._id);
-    const ratings = await this.ratingModel.find({
+
+    const all = await this.ratingModel.aggregate<AverageRating>([
+      { $match: { itemId: { $in: itemIds } } },
+      {
+        $group: {
+          _id: "$itemId",
+          stars: { $sum: "$stars" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          average: { $divide: ["$stars", "$count"] },
+          count: 1,
+        },
+      },
+    ]);
+
+    const user = await this.ratingModel.find({
       userId,
       itemId: { $in: itemIds },
     });
 
     return items.map((item) => ({
       ...item,
-      rating: {
-        all: this.normalizeVote(item.voteAverage),
-        user: ratings.find((rating) => $eq(rating.itemId, item._id))?.stars,
-      },
+      rating: this.calculateRatings(item, all, user),
     }));
   }
 
-  private normalizeVote(vote: number, min = 1, max = 10) {
-    return (4 * (vote - min)) / (max - min) + 1;
+  private calculateRatings(
+    item: CatalogItem,
+    all: AverageRating[],
+    user: Rating[],
+  ) {
+    const internal = all.find((e) => $eq(e._id, item._id));
+
+    return {
+      all: this.weightedRating(item, internal),
+      user: user.find((rating) => $eq(rating.itemId, item._id))?.stars,
+    };
+  }
+
+  private weightedRating(external: CatalogItem, internal?: AverageRating) {
+    const normalizedVoteAverage = this.normalizeRating(external.voteAverage);
+    if (!internal) return normalizedVoteAverage;
+
+    const internalFactor = internal.count * internal.average;
+    const externalFactor = external.voteCount * normalizedVoteAverage;
+    const weights = internal.count + external.voteCount;
+
+    return (internalFactor + externalFactor) / weights;
+  }
+
+  private normalizeRating(stars: number, min = 1, max = 10) {
+    return (4 * (stars - min)) / (max - min) + 1;
   }
 }
