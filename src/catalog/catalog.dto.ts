@@ -16,74 +16,74 @@ export class FilterCatalogDto {
   @IsArray()
   @IsEnum(CatalogItemFormat, { each: true })
   @IsOptional()
-  formats: CatalogItemFormat[];
+  formats?: CatalogItemFormat[];
 
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()
-  streamings: number[];
+  streamings?: number[];
 
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()
-  genres: number[];
+  genres?: number[];
 
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()
-  requiredGenres: number[];
+  requiredGenres?: number[];
 
   @IsInt()
   @Min(0)
   @IsOptional()
-  runtimeMin: number;
+  runtimeMin?: number;
 
   @IsInt()
   @Min(0)
   @IsOptional()
-  runtimeMax: number;
+  runtimeMax?: number;
 
   @IsDateString()
   @IsOptional()
-  airDateMin: string;
+  airDateMin?: string;
 
   @IsDateString()
   @IsOptional()
-  airDateMax: string;
+  airDateMax?: string;
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  originalLanguage: string[];
+  originalLanguage?: string[];
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  spokenLanguage: string[];
+  spokenLanguage?: string[];
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  originCountry: number[];
+  originCountry?: number[];
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  productionCountries: number[];
+  productionCountries?: number[];
 
   @IsArray()
   @IsInt({ each: true })
   @IsOptional()
-  productionCompanies: number[];
+  productionCompanies?: number[];
 
   @IsArray()
-  @IsInt({ each: true })
+  @IsString({ each: true })
   @IsOptional()
-  skip: number[];
+  skip?: string[];
 
   @IsEnum(SortCriteria)
   @IsOptional()
-  sort: SortCriteria;
+  sort?: SortCriteria;
 }
 
 export class CatalogItemDto {

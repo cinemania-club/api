@@ -111,8 +111,8 @@ export class CatalogService {
     );
 
     const skipPreviousResults = $criteria(
-      { _id: { $nin: filters.skip } },
-      !!filters.skip,
+      { _id: { $nin: filters.skip.map((e) => new Types.ObjectId(e)) } },
+      !!filters.skip?.length,
     );
 
     const filter = $and([

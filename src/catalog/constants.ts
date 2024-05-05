@@ -20,13 +20,12 @@ export const CATALOG_FIELDS = [
 export const CATALOG_ITEM_FIELDS = [
   "_id",
   "format",
-  "backdrop_path",
+  "backdropPath",
   "title",
   "genres",
   "runtime",
   "firstAirDate",
   "lastAirDate",
-  "overview",
   "rating",
 ];
 
