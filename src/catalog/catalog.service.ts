@@ -194,7 +194,7 @@ export class CatalogService {
       ...item,
       ratings: {
         general: item.rating,
-        user: ratings.find((e) => $eq(e.itemId, item._id))?.stars || null,
+        user: ratings.find((e) => $eq(e.itemId, item._id))?.stars,
       },
     }));
   }
