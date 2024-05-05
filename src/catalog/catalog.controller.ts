@@ -50,13 +50,15 @@ export class CatalogController {
 
   @Anonymous()
   @Get("/search")
-  async search(@Body() dto: SearchDto) {
+  async search(@Req() req: Request, @Body() dto: SearchDto) {
     const movies = await this.catalogService.search(
+      req.payload!.userId,
       CatalogItemFormat.MOVIE,
       dto,
     );
 
     const series = await this.catalogService.search(
+      req.payload!.userId,
       CatalogItemFormat.SERIES,
       dto,
     );

@@ -170,18 +170,23 @@ export class CatalogService {
     return item;
   }
 
-  async search(format: CatalogItemFormat, dto: SearchDto) {
+  async search(
+    userId: Types.ObjectId,
+    format: CatalogItemFormat,
+    dto: SearchDto,
+  ) {
     const ids = await this.searchService.searchCatalogItem(
       format,
       dto.query,
       dto.skip,
     );
 
-    const items = await this.catalogModel.find({ _id: { $in: ids } });
-
-    return ids
+    const items = await this.catalogModel.find({ _id: { $in: ids } }).lean();
+    const result = ids
       .map((id) => items.find((e) => e._id.toString() === id))
       .filter((e) => e);
+
+    return await this.addRatings(result, userId);
   }
 
   // PRIVATE METHODS
