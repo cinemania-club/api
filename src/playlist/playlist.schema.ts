@@ -11,8 +11,8 @@ export class Playlist {
   @Prop({ type: SchemaTypes.String })
   name: string;
 
-  @Prop({ type: [Number] })
-  movies: number[];
+  @Prop({ type: [SchemaTypes.String] })
+  items: string[];
 }
 
 export const PlaylistSchema = SchemaFactory.createForClass(Playlist);
