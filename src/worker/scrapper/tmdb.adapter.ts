@@ -67,7 +67,7 @@ type ProductionCompany = {
 
 type WatchProviders = {
   results: {
-    BR: {
+    BR?: {
       link: string;
       ads: WatchProvider[];
       buy: WatchProvider[];

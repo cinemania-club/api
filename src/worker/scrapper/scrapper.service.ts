@@ -58,9 +58,10 @@ export class ScrapperService {
       originCountry: movie.origin_country,
       productionCountries: movie.production_countries.map((e) => e.iso_3166_1),
       productionCompanies: movie.production_companies.map((e) => e.id),
-      streamings: movie["watch/providers"].results.BR.flatrate.map(
-        (e) => e.provider_id,
-      ),
+      streamings:
+        movie["watch/providers"].results.BR?.flatrate?.map(
+          (e) => e.provider_id,
+        ) || [],
     });
   }
 
@@ -110,9 +111,10 @@ export class ScrapperService {
       spokenLanguages: series.spoken_languages.map((e) => e.iso_639_1),
       productionCountries: series.production_countries.map((e) => e.iso_3166_1),
       productionCompanies: series.production_companies.map((e) => e.id),
-      streamings: series["watch/providers"].results.BR.flatrate.map(
-        (e) => e.provider_id,
-      ),
+      streamings:
+        series["watch/providers"].results.BR?.flatrate?.map(
+          (e) => e.provider_id,
+        ) || [],
     });
   }
 }
