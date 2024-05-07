@@ -2,19 +2,19 @@ import { IsArray, IsString } from "class-validator";
 
 export class PlaylistDto {
   @IsString()
-  id: string;
+  id!: string;
 }
 
 export class CreatePlaylistDto {
   @IsString()
-  name: string;
+  name!: string;
 }
 
 export class AddItemDto {
   @IsString()
-  itemId: string;
+  itemId!: string;
 
   @IsArray()
   @IsString({ each: true })
-  playlists: string[];
+  playlists!: string[];
 }

@@ -36,13 +36,15 @@ export class CatalogController {
     const currentRatings = await this.ratingService.countUserRatings(
       req.payload!.userId,
     );
-    let onboarding = null;
-    if (currentRatings < ONBOARDING_TARGET_RATINGS) {
-      onboarding = { currentRatings, targetRatings: ONBOARDING_TARGET_RATINGS };
-    }
+
+    const isOnboarding = currentRatings < ONBOARDING_TARGET_RATINGS;
+    const onboarding = {
+      currentRatings,
+      targetRatings: ONBOARDING_TARGET_RATINGS,
+    };
 
     return {
-      onboarding,
+      onboarding: isOnboarding ? onboarding : null,
       total: result.total,
       items: result.items.map((item) => pick(item, CATALOG_FIELDS)),
     };

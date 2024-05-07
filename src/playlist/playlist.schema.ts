@@ -6,14 +6,14 @@ export type PlaylistDocument = HydratedDocument<Playlist>;
 
 @Schema({ timestamps: true })
 export class Playlist {
-  @Prop({ type: SchemaTypes.ObjectId })
-  userId: Oid;
+  @Prop({ type: SchemaTypes.ObjectId, required: true })
+  userId!: Oid;
 
-  @Prop({ type: SchemaTypes.String })
-  name: string;
+  @Prop({ type: SchemaTypes.String, required: true })
+  name!: string;
 
-  @Prop({ type: [SchemaTypes.String] })
-  items: string[];
+  @Prop({ type: [SchemaTypes.String], required: true })
+  items!: string[];
 }
 
 export const PlaylistSchema = SchemaFactory.createForClass(Playlist);

@@ -7,7 +7,7 @@ import { MONGO_URL } from "src/constants";
 import { CatalogWorker } from "../catalog/worker/catalog.worker";
 import { ScrapperModule } from "./scrapper/scrapper.module";
 
-const ENABLE_ENV_VALIDATION = null;
+const ENABLE_ENV_VALIDATION = undefined;
 
 @Module({
   imports: [

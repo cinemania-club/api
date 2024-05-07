@@ -11,63 +11,63 @@ export enum CatalogItemFormat {
 
 @Schema({ collection: "catalog", timestamps: true })
 export class CatalogItem {
-  @Prop({ type: SchemaTypes.ObjectId })
-  _id: Oid;
+  @Prop({ type: SchemaTypes.ObjectId, required: true })
+  _id!: Oid;
 
   @Prop({ type: SchemaTypes.String, enum: CatalogItemFormat, required: true })
-  format: CatalogItemFormat;
+  format!: CatalogItemFormat;
   @Prop({ type: SchemaTypes.Number, required: true })
-  id: number;
+  id!: number;
 
   @Prop({ type: [SchemaTypes.Number], required: true })
-  streamings: number[];
+  streamings!: number[];
 
   @Prop({ type: SchemaTypes.String, required: true })
-  backdropPath: string;
+  backdropPath!: string;
   @Prop({ type: SchemaTypes.String, required: true })
-  posterPath: string;
+  posterPath!: string;
 
   @Prop({ type: SchemaTypes.String, required: true })
-  originalTitle: string;
+  originalTitle!: string;
   @Prop({ type: SchemaTypes.String, required: true })
-  title: string;
+  title!: string;
   @Prop({ type: SchemaTypes.String, required: true })
-  tagline: string;
+  tagline!: string;
   @Prop({ type: SchemaTypes.String, required: true })
-  overview: string;
+  overview!: string;
 
   @Prop({ type: [SchemaTypes.Number], required: true })
-  genres: number[];
+  genres!: number[];
   @Prop({ type: SchemaTypes.Number, required: true })
-  runtime: number;
+  runtime!: number;
   @Prop({ type: SchemaTypes.Date, required: true })
-  firstAirDate: Date;
+  firstAirDate!: Date;
   @Prop({ type: SchemaTypes.Date, required: true })
-  lastAirDate: Date;
+  lastAirDate!: Date;
 
   @Prop({ type: SchemaTypes.Number, required: true })
-  popularity: number;
+  popularity!: number;
   @Prop({ type: SchemaTypes.Number, required: true })
-  voteAverage: number;
+  voteAverage!: number;
   @Prop({ type: SchemaTypes.Number, required: true })
-  voteCount: number;
+  voteCount!: number;
 
   @Prop({ type: SchemaTypes.String, required: true })
-  originalLanguage: string;
+  originalLanguage!: string;
   @Prop({ type: [SchemaTypes.String], required: true })
-  spokenLanguages: string[];
+  spokenLanguages!: string[];
 
   @Prop({ type: [SchemaTypes.String], required: true })
-  originCountry: string[];
+  originCountry!: string[];
   @Prop({ type: [SchemaTypes.String], required: true })
-  productionCountries: string[];
+  productionCountries!: string[];
   @Prop({ type: [SchemaTypes.Number], required: true })
-  productionCompanies: number[];
+  productionCompanies!: number[];
 
   @Prop({ type: SchemaTypes.Date, required: true })
-  loadedAt: Date;
+  loadedAt!: Date;
 
-  @Prop({ type: SchemaTypes.Number })
+  @Prop({ type: SchemaTypes.Number, required: false })
   rating?: number;
 }
 

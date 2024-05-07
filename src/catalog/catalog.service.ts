@@ -111,7 +111,7 @@ export class CatalogService {
     );
 
     const skipPreviousResults = $criteria(
-      { _id: { $nin: filters.skip.map((e) => $oid(e)) } },
+      { _id: { $nin: filters.skip?.map((e) => $oid(e)) } },
       !!filters.skip?.length,
     );
 
@@ -179,8 +179,8 @@ export class CatalogService {
 
     const items = await this.catalogModel.find({ _id: { $in: ids } }).lean();
     const result = ids
-      .map((id) => items.find((e) => e._id.toString() === id))
-      .filter((e) => e);
+      .map((id) => items.find((e) => $eq(e._id, id)))
+      .filter((e) => e) as CatalogItem[];
 
     return await this.addRatings(result, userId);
   }

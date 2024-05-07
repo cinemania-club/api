@@ -29,7 +29,7 @@ export class SearchService {
   async searchCatalogItem(
     format: CatalogItemFormat,
     query: string,
-    skip: string[],
+    skip?: string[],
   ) {
     const result = await this.elasticsearchService.search({
       index: format.toLowerCase(),

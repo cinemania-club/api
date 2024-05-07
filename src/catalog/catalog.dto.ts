@@ -88,7 +88,7 @@ export class FilterCatalogDto {
 
 export class CatalogItemDto {
   @IsString()
-  id: string;
+  id!: string;
 }
 
 export class RatingDto {
@@ -102,10 +102,10 @@ export class RatingDto {
 export class SearchDto {
   @IsString()
   @IsNotEmpty()
-  query: string;
+  query!: string;
 
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
-  skip: string[];
+  skip?: string[];
 }
