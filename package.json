@@ -17,11 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "open:api": "docker exec -it cm-api sh",
-    "open:worker": "docker exec -it cm-worker sh",
-    "open:mongo": "docker exec -it cm-mongo sh",
-    "open:redis": "docker exec -it cm-redis sh"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.13.1",
