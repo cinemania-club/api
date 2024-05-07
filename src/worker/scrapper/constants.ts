@@ -1,1 +1,1 @@
-export const POPULAR_ITEMS_PAGES_LIMIT = 1000;
+export const POPULAR_ITEMS_PAGES_LIMIT = 500;
