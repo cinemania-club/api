@@ -30,15 +30,15 @@ type TmdbItem = {
 type TmdbMovie = TmdbItem & {
   original_title: string;
   title: string;
-  release_date: string;
+  release_date?: string;
   runtime: number;
 };
 
 type TmdbSeries = TmdbItem & {
   original_name: string;
   name: string;
-  first_air_date: string;
-  last_air_date: string;
+  first_air_date?: string;
+  last_air_date?: string;
   episode_run_time: number[];
 };
 

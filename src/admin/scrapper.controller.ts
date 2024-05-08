@@ -5,7 +5,7 @@ import { Admin } from "src/auth/auth.guard";
 
 @Admin()
 @Controller("/admin/scrapper")
-export class ScrapperController {
+export class ScrapperAdminController {
   constructor(@InjectQueue("tmdb") private tmdbQueue: Queue) {}
 
   @Post("/get-popular-movies")
@@ -33,8 +33,8 @@ export class ScrapperController {
   }
 
   @Post("/flush")
-  flush() {
+  async flush() {
     console.info(`[Admin] Flush TMDB queue`);
-    this.tmdbQueue.empty();
+    await this.tmdbQueue.empty();
   }
 }

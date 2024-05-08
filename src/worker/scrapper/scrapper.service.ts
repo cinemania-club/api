@@ -49,8 +49,12 @@ export class ScrapperService {
       posterPath: movie.poster_path,
       originalTitle: movie.original_title,
       genres: movie.genres.map((e) => e.id),
-      firstAirDate: new Date(movie.release_date),
-      lastAirDate: new Date(movie.release_date),
+      firstAirDate: movie.release_date
+        ? new Date(movie.release_date)
+        : undefined,
+      lastAirDate: movie.release_date
+        ? new Date(movie.release_date)
+        : undefined,
       voteAverage: movie.vote_average,
       voteCount: movie.vote_count,
       originalLanguage: movie.original_language,
@@ -102,8 +106,12 @@ export class ScrapperService {
       title: series.name,
       genres: series.genres.map((e) => e.id),
       runtime: series.episode_run_time[0],
-      firstAirDate: new Date(series.first_air_date),
-      lastAirDate: new Date(series.last_air_date),
+      firstAirDate: series.first_air_date
+        ? new Date(series.first_air_date)
+        : undefined,
+      lastAirDate: series.last_air_date
+        ? new Date(series.last_air_date)
+        : undefined,
       voteAverage: series.vote_average,
       voteCount: series.vote_count,
       originalLanguage: series.original_language,

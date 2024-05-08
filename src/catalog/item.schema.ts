@@ -40,10 +40,10 @@ export class CatalogItem {
   genres!: number[];
   @Prop({ type: SchemaTypes.Number, required: true })
   runtime!: number;
-  @Prop({ type: SchemaTypes.Date, required: true })
-  firstAirDate!: Date;
-  @Prop({ type: SchemaTypes.Date, required: true })
-  lastAirDate!: Date;
+  @Prop({ type: SchemaTypes.Date, required: false })
+  firstAirDate?: Date;
+  @Prop({ type: SchemaTypes.Date, required: false })
+  lastAirDate?: Date;
 
   @Prop({ type: SchemaTypes.Number, required: true })
   popularity!: number;

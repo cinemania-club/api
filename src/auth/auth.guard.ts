@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate {
     if (accessLevel === AccessLevel.AUTHENTICATED) return isAuthenticated;
 
     const isAdmin = user.admin;
-    if (accessLevel === AccessLevel.ADMIN) return isAdmin;
+    if (accessLevel === AccessLevel.ADMIN) return isAdmin || false;
 
     return false;
   }

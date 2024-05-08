@@ -12,14 +12,11 @@ import { TmdbProcessor } from "./tmdb.processor";
     BullModule.forRoot({ redis: REDIS_URL }),
     BullModule.registerQueue({
       name: "tmdb",
-      limiter: { max: 1, duration: 1000 },
+      limiter: { max: 1, duration: 100 },
     }),
     CatalogModule,
   ],
-  exports: [
-    BullModule.forRoot({ redis: REDIS_URL }),
-    BullModule.registerQueue({ name: "tmdb" }),
-  ],
+  exports: [],
   providers: [ScrapperService, TmdbProcessor, TmdbAdapter, ScrapperScheduler],
 })
 export class ScrapperModule {}
