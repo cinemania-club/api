@@ -17,4 +17,4 @@ import { UserModule } from "./user/user.module";
     UserModule,
   ],
 })
-export class ApiModule {}
+export class AppModule {}
