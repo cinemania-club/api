@@ -1,7 +1,7 @@
 import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import * as Sentry from "@sentry/node";
-import { AppModule } from "./app.module";
+import { MainModule } from "./main.module";
 import { SentryFilter } from "./sentry.filter";
 
 async function bootstrap() {
@@ -10,7 +10,7 @@ async function bootstrap() {
     environment: process.env.NODE_ENV,
   });
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(MainModule);
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new SentryFilter(httpAdapter));

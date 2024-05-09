@@ -14,19 +14,6 @@ services:
     volumes:
       - .:/app
 
-  worker:
-    container_name: cm-worker
-    image: node:20.10.0-alpine
-    working_dir: /app
-    command: yarn start:dev
-    environment:
-      - NODE_ENV=development
-      - MODE=worker
-    ports:
-      - 3001:3000
-    volumes:
-      - .:/app
-
   mongo:
     container_name: cm-mongo
     image: mongo:7.0.4
