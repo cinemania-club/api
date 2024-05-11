@@ -1,3 +1,5 @@
+import { BullAdapter } from "@bull-board/api/bullAdapter";
+import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { CatalogModule } from "src/catalog/catalog.module";
@@ -12,9 +14,12 @@ import { TmdbProcessor } from "./tmdb.processor";
       name: "tmdb",
       limiter: { max: 1, duration: 100 },
     }),
+    BullBoardModule.forFeature({
+      name: "tmdb",
+      adapter: BullAdapter,
+    }),
     CatalogModule,
   ],
-  exports: [],
   providers: [ScrapperService, TmdbProcessor, TmdbAdapter, ScrapperScheduler],
 })
 export class ScrapperModule {}

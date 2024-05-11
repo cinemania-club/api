@@ -1,3 +1,5 @@
+import { ExpressAdapter } from "@bull-board/express";
+import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
@@ -17,6 +19,10 @@ import { UserModule } from "./user/user.module";
     MongooseModule.forRoot(MONGO_URL),
     ScheduleModule.forRoot(),
     BullModule.forRoot({ redis: REDIS_URL }),
+    BullBoardModule.forRoot({
+      route: "/queues",
+      adapter: ExpressAdapter,
+    }),
     AdminModule,
     CatalogModule,
     PlaylistModule,
