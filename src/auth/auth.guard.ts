@@ -46,7 +46,7 @@ export class AuthGuard implements CanActivate {
 
     if (accessLevel === AccessLevel.ANONYMOUS) return true;
 
-    const isAuthenticated = user.token === authorization;
+    const isAuthenticated = false; //user.token === authorization;
     if (accessLevel === AccessLevel.AUTHENTICATED) return isAuthenticated;
 
     const isAdmin = user.admin;
