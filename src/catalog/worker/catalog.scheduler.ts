@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { Queue } from "bull";
 import { BRT, isProduction } from "src/constants";
-import { CALCULATE_RATINGS } from "src/worker/scheduler";
+import { CALCULATE_RATINGS } from "src/scheduler";
 
 @Injectable()
 export class CatalogScheduler {
