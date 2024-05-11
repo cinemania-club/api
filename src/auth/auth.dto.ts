@@ -29,3 +29,11 @@ export class SignUpDto {
   @IsStrongPassword()
   password!: string;
 }
+
+export class SignInDto {
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  password!: string;
+}

@@ -1,3 +1,7 @@
+// Force to load envs before anything else
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import * as Sentry from "@sentry/node";
