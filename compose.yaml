@@ -34,6 +34,8 @@ services:
     image: elasticsearch:8.13.0
     ports:
       - 9200:9200
+    volumes:
+      - cm.elasticsearch.data:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -53,4 +55,6 @@ volumes:
   cm.mongo.config:
     driver: local
   cm.mongo.db:
+    driver: local
+  cm.elasticsearch.data:
     driver: local
