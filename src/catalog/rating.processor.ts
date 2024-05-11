@@ -1,5 +1,5 @@
 import { Process, Processor } from "@nestjs/bull";
-import { BaseProcessor } from "../../processor";
+import { BaseProcessor } from "../processor";
 import { CatalogRatingService } from "./rating.service";
 
 @Processor("catalogRating")

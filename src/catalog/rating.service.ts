@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { RatingService } from "src/rating/rating.service";
-import { CatalogItem } from "../item.schema";
+import { CatalogItem } from "./item.schema";
 
 @Injectable()
 export class CatalogRatingService {

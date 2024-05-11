@@ -7,7 +7,6 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AdminModule } from "./admin/admin.module";
 import { CatalogModule } from "./catalog/catalog.module";
-import { CatalogWorker } from "./catalog/worker/catalog.worker";
 import { MONGO_URL, REDIS_URL } from "./constants";
 import { PlaylistModule } from "./playlist/playlist.module";
 import { ScrapperModule } from "./scrapper/scrapper.module";
@@ -28,7 +27,6 @@ import { UserModule } from "./user/user.module";
     PlaylistModule,
     UserModule,
     ScrapperModule,
-    CatalogWorker,
   ],
 })
 export class MainModule {}
