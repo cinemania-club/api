@@ -1,4 +1,4 @@
-import { OnQueueActive, OnQueueFailed } from "@nestjs/bull";
+import { OnQueueActive, OnQueueCompleted, OnQueueFailed } from "@nestjs/bull";
 import * as Sentry from "@sentry/node";
 import { Job } from "bull";
 
@@ -13,6 +13,18 @@ export abstract class BaseProcessor {
     };
 
     console.info(`Job started: ${JSON.stringify(details)}`);
+  }
+
+  @OnQueueCompleted()
+  jobFinished(job: Job) {
+    const details = {
+      queue: job.queue.name,
+      name: job.name,
+      id: job.id,
+      data: job.data,
+    };
+
+    console.info(`Job finished: ${JSON.stringify(details)}`);
   }
 
   @OnQueueFailed()

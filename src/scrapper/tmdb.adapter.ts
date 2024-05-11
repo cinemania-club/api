@@ -101,7 +101,7 @@ export class TmdbAdapter {
   }
 
   async getPopularMovies(page: number) {
-    console.info(`[Scrapper] Fetching popular movies from TMDB. Page: ${page}`);
+    console.info(`TMDB request - popular movies. Page: ${page}`);
 
     const response = await this.instance.get<ItemList<TmdbMovie>>(
       "/movie/popular",
@@ -112,7 +112,7 @@ export class TmdbAdapter {
   }
 
   async getMovieDetails(id: number) {
-    console.info(`[Scrapper] Fetching movie from TMDB: ${id}`);
+    console.info(`TMDB request - movie details: ${id}`);
 
     const response = await this.instance.get<TmdbMovie>(
       "/movie/" + id.toString(),
@@ -128,7 +128,7 @@ export class TmdbAdapter {
   }
 
   async getPopularSeries(page: number) {
-    console.info(`[Scrapper] Fetching popular series from TMDB. Page: ${page}`);
+    console.info(`TMDB request - popular series. Page: ${page}`);
 
     const response = await this.instance.get<ItemList<TmdbSeries>>(
       "/tv/popular",
@@ -139,7 +139,7 @@ export class TmdbAdapter {
   }
 
   async getSeriesDetails(id: number) {
-    console.info(`[Scrapper] Fetching series from TMDB: ${id}`);
+    console.info(`TMDB request - series details: ${id}`);
 
     const response = await this.instance.get<TmdbSeries>(
       "/tv/" + id.toString(),

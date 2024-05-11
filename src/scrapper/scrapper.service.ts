@@ -3,7 +3,6 @@ import { Injectable } from "@nestjs/common";
 import { Queue } from "bull";
 import { CatalogItemFormat } from "src/catalog/item.schema";
 import { LoaderService } from "src/catalog/loader.service";
-import { POPULAR_ITEMS_PAGES_LIMIT } from "./constants";
 import { TmdbAdapter } from "./tmdb.adapter";
 
 @Injectable()
@@ -29,13 +28,6 @@ export class ScrapperService {
     }));
 
     await this.tmdbQueue.addBulk(jobs);
-    if (
-      movies.page < movies.total_pages &&
-      movies.page < POPULAR_ITEMS_PAGES_LIMIT
-    ) {
-      this.tmdbQueue.add("getPopularMovies", { page: movies.page + 1 });
-    }
-
     return movies;
   }
 
@@ -84,13 +76,6 @@ export class ScrapperService {
     }));
 
     await this.tmdbQueue.addBulk(jobs);
-    if (
-      series.page < series.total_pages &&
-      series.page < POPULAR_ITEMS_PAGES_LIMIT
-    ) {
-      this.tmdbQueue.add("getPopularSeries", { page: series.page + 1 });
-    }
-
     return series;
   }
 

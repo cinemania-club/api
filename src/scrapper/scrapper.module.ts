@@ -3,12 +3,15 @@ import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { CatalogModule } from "src/catalog/catalog.module";
+import { ScrapperController } from "./scrapper.controller";
 import { ScrapperScheduler } from "./scrapper.scheduler";
 import { ScrapperService } from "./scrapper.service";
 import { TmdbAdapter } from "./tmdb.adapter";
 import { TmdbProcessor } from "./tmdb.processor";
 
 @Module({
+  controllers: [ScrapperController],
+  providers: [ScrapperService, TmdbProcessor, TmdbAdapter, ScrapperScheduler],
   imports: [
     BullModule.registerQueue({
       name: "tmdb",
@@ -20,6 +23,5 @@ import { TmdbProcessor } from "./tmdb.processor";
     }),
     CatalogModule,
   ],
-  providers: [ScrapperService, TmdbProcessor, TmdbAdapter, ScrapperScheduler],
 })
 export class ScrapperModule {}

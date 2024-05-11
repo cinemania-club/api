@@ -11,45 +11,21 @@ export class TmdbProcessor extends BaseProcessor {
 
   @Process("getPopularMovies")
   async getPopularMovies(job: Job<{ page: number }>) {
-    const { page } = job.data;
-    console.info(`[Scrapper] Start processing popular movies. Page: ${page}`);
-
-    const movies = await this.scrapperService.getPopularMovies(page);
-
-    console.info(
-      `[Scrapper] Finish processing popular movies. Page: ${movies.page}/${movies.total_pages}`,
-    );
+    await this.scrapperService.getPopularMovies(job.data.page);
   }
 
   @Process("getMovieDetails")
   async getMovieDetails(job: Job<{ id: number }>) {
-    const { id } = job.data;
-    console.info(`[Scrapper] Start processing movie with id ${id}`);
-
-    await this.scrapperService.getMovieDetails(id);
-
-    console.info(`[Scrapper] Finish processing movie with id ${id}`);
+    await this.scrapperService.getMovieDetails(job.data.id);
   }
 
   @Process("getPopularSeries")
   async getPopularSeries(job: Job<{ page: number }>) {
-    const { page } = job.data;
-    console.info(`[Scrapper] Start processing popular series. Page: ${page}`);
-
-    const series = await this.scrapperService.getPopularSeries(page);
-
-    console.info(
-      `[Scrapper] Finish processing popular series. Page: ${series.page}/${series.total_pages}`,
-    );
+    await this.scrapperService.getPopularSeries(job.data.page);
   }
 
   @Process("getSeriesDetails")
   async getSeriesDetails(job: Job<{ id: number }>) {
-    const { id } = job.data;
-    console.info(`[Scrapper] Start processing series with id ${id}`);
-
-    await this.scrapperService.getSeriesDetails(id);
-
-    console.info(`[Scrapper] Finish processing series with id ${id}`);
+    await this.scrapperService.getSeriesDetails(job.data.id);
   }
 }
