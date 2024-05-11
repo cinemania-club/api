@@ -28,6 +28,8 @@ services:
     image: redis:7.2.3-alpine
     ports:
       - 6379:6379
+    volumes:
+      - cm.redis.data:/data
 
   elasticsearch:
     container_name: cm-elasticsearch
@@ -55,6 +57,8 @@ volumes:
   cm.mongo.config:
     driver: local
   cm.mongo.db:
+    driver: local
+  cm.redis.data:
     driver: local
   cm.elasticsearch.data:
     driver: local
