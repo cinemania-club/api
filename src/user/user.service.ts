@@ -7,6 +7,8 @@ import { LIST_PAGE_SIZE } from "src/constants";
 import { SearchDto } from "./user.dto";
 import { User } from "./user.schema";
 
+type UnpersistedUser = Pick<User, "_id" | "username" | "email" | "name">;
+
 @Injectable()
 export class UserService {
   constructor(
@@ -14,7 +16,7 @@ export class UserService {
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
-  async signUp(user: User) {
+  async signUp(user: UnpersistedUser) {
     await this.checkUniqueField(
       "_id",
       user._id.toString(),
