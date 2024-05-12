@@ -6,6 +6,7 @@ import { Request } from "express";
 import { Model } from "mongoose";
 import { Anonymous, Public } from "src/auth/auth.guard";
 import { Oid } from "src/mongo";
+import { UserService } from "src/user/user.service";
 import { CreateAuthDto, SignInDto, SignUpDto } from "./auth.dto";
 import { Auth } from "./auth.schema";
 import { PASSWORD_SALT_ROUNDS } from "./constants";
@@ -15,6 +16,7 @@ export class AuthController {
   constructor(
     @InjectModel(Auth.name) private authModel: Model<Auth>,
     private jwtService: JwtService,
+    private userService: UserService,
   ) {}
 
   @Public()
@@ -26,14 +28,10 @@ export class AuthController {
   @Anonymous()
   @Post("/sign-up")
   async signUp(@Req() req: Request, @Body() dto: SignUpDto) {
-    const usernameInUse = await this.authModel.exists({
-      "user.username": dto.username,
-    });
-    if (usernameInUse) throw new Error("Username already in use");
-
     const auth = (await this.authModel.findById(req.payload!.userId))!;
-    if (auth.user)
-      throw new Error("Sign up is only available for anonymous users");
+    if (auth.user) throw new Error("Usuário já cadastrado");
+
+    await this.userService.signUp({ ...dto, _id: auth._id });
 
     const hashedPassword = await bcrypt.hash(
       dto.password,
@@ -41,10 +39,10 @@ export class AuthController {
     );
 
     await this.authModel.findByIdAndUpdate(req.payload!.userId, {
-      user: { ...dto, password: hashedPassword },
+      user: { email: dto.email, password: hashedPassword },
     });
 
-    return this.generateJwtToken(req.payload!.userId, auth.admin);
+    return await this.generateJwtToken(req.payload!.userId, auth.admin);
   }
 
   @Public()
@@ -56,7 +54,7 @@ export class AuthController {
 
     if (!auth || !valid) throw new Error("Invalid email or password");
 
-    return this.generateJwtToken(auth._id, auth.admin);
+    return await this.generateJwtToken(auth._id, auth.admin);
   }
 
   // PRIVATE METHODS

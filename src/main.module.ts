@@ -9,6 +9,7 @@ import { CatalogModule } from "./catalog/catalog.module";
 import { MONGO_URL, REDIS_URL } from "./constants";
 import { PlaylistModule } from "./playlist/playlist.module";
 import { ScrapperModule } from "./scrapper/scrapper.module";
+import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ScrapperModule } from "./scrapper/scrapper.module";
     CatalogModule,
     PlaylistModule,
     ScrapperModule,
+    UserModule,
   ],
 })
 export class MainModule {}

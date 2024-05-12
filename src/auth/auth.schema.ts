@@ -1,27 +1,22 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, SchemaTypes } from "mongoose";
+import { Oid } from "src/mongo";
 
 export type AuthDocument = HydratedDocument<Auth>;
 
 class User {
   @Prop({ type: SchemaTypes.String, required: true })
-  username!: string;
+  email!: string;
 
   @Prop({ type: SchemaTypes.String, required: true })
   password!: string;
-
-  @Prop({ type: SchemaTypes.String, required: true })
-  name!: string;
-
-  @Prop({ type: SchemaTypes.String, required: true })
-  email!: string;
-
-  @Prop({ type: SchemaTypes.String, required: false })
-  phone?: string;
 }
 
 @Schema({ timestamps: true })
 export class Auth {
+  @Prop({ type: SchemaTypes.ObjectId, required: true })
+  _id!: Oid;
+
   @Prop({ type: SchemaTypes.String, required: true })
   uuid!: string;
 
