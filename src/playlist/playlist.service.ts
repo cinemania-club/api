@@ -1,6 +1,7 @@
 import { InjectModel } from "@nestjs/mongoose";
 import { pick, uniqWith } from "lodash";
 import { Model } from "mongoose";
+import { CATALOG_FIELDS } from "src/catalog/constants";
 import { CatalogHydration } from "src/catalog/hydration/hydration.service";
 import { $eq, Oid } from "src/mongo";
 import { PLAYLIST_FIELDS } from "./constants";
@@ -21,9 +22,10 @@ export class PlaylistService {
 
     return playlists.map((e) => ({
       ...pick(e, PLAYLIST_FIELDS),
-      items: items.map((playlistItem) =>
-        items.find((item) => $eq(playlistItem._id, item._id)),
-      ),
+      items: items.map((playlistItem) => {
+        const item = items.find((item) => $eq(playlistItem._id, item._id));
+        return pick(item, CATALOG_FIELDS);
+      }),
     }));
   }
 }
