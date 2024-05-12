@@ -1,11 +1,16 @@
 import { Injectable } from "@nestjs/common";
+import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { InjectModel } from "@nestjs/mongoose";
+import { pick } from "lodash";
 import { Model } from "mongoose";
 import { User } from "./user.schema";
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly elasticsearchService: ElasticsearchService,
+  ) {}
 
   async signUp(user: User) {
     await this.checkUniqueField(
@@ -23,6 +28,12 @@ export class UserService {
     );
 
     await this.userModel.create(user);
+
+    await this.elasticsearchService.index({
+      index: "user",
+      id: user._id.toString(),
+      document: pick(user, "username", "name"),
+    });
   }
 
   private async checkUniqueField(
