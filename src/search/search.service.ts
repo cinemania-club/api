@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { pick } from "lodash";
-import { PAGE_SIZE } from "src/catalog/constants";
 import { CatalogItem, CatalogItemFormat } from "src/catalog/item.schema";
+import { LIST_PAGE_SIZE } from "src/constants";
 
 @Injectable()
 export class SearchService {
@@ -34,7 +34,7 @@ export class SearchService {
     const result = await this.elasticsearchService.search({
       index: format.toLowerCase(),
       _source: [],
-      size: PAGE_SIZE,
+      size: LIST_PAGE_SIZE,
       query: {
         bool: {
           must: { multi_match: { query } },

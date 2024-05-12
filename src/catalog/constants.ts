@@ -1,7 +1,6 @@
 import { SortCriteria } from "./types";
 
 export const ONBOARDING_TARGET_RATINGS = 1;
-export const PAGE_SIZE = 100;
 export const DEFAULT_SORT_CRITERIA = SortCriteria.POPULARITY_DESC;
 
 export const CATALOG_FIELDS = [

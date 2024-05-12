@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { LIST_PAGE_SIZE } from "src/constants";
 import { $and, $criteria, $eq, $oid, Oid } from "src/mongo";
 import { RatingService } from "src/rating/rating.service";
 import { SearchService } from "src/search/search.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
-import { DEFAULT_SORT_CRITERIA, PAGE_SIZE } from "./constants";
+import { DEFAULT_SORT_CRITERIA } from "./constants";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";
 import { SortCriteria } from "./types";
 
@@ -146,7 +147,7 @@ export class CatalogService {
             { $match: skipPreviousResults },
             ...addHasRating,
             { $sort: SORT_QUERY[sortCriteria] },
-            { $limit: PAGE_SIZE },
+            { $limit: LIST_PAGE_SIZE },
           ],
         },
       },

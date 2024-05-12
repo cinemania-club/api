@@ -3,6 +3,8 @@ import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { InjectModel } from "@nestjs/mongoose";
 import { pick } from "lodash";
 import { Model } from "mongoose";
+import { LIST_PAGE_SIZE } from "src/constants";
+import { SearchDto } from "./user.dto";
 import { User } from "./user.schema";
 
 @Injectable()
@@ -34,6 +36,23 @@ export class UserService {
       id: user._id.toString(),
       document: pick(user, "username", "name"),
     });
+  }
+
+  async search(dto: SearchDto) {
+    const result = await this.elasticsearchService.search({
+      index: "user",
+      _source: [],
+      size: LIST_PAGE_SIZE,
+      query: {
+        bool: {
+          must: { multi_match: { query: dto.query } },
+          must_not: { ids: { values: dto.skip } },
+        },
+      },
+    });
+
+    const ids = result.hits.hits.map((hit) => hit._id);
+    return this.userModel.find({ _id: { $in: ids } });
   }
 
   private async checkUniqueField(
