@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { SearchService } from "src/catalog/search.service";
 import { LIST_PAGE_SIZE } from "src/constants";
-import { $and, $criteria, $eq, $oid, Oid } from "src/mongo";
+import { $and, $criteria, $oid, Oid } from "src/mongo";
 import { RatingService } from "src/rating/rating.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
 import { CatalogExternal } from "./catalog.external";
@@ -150,6 +150,7 @@ export class CatalogService {
             ...addHasRating,
             { $sort: SORT_QUERY[sortCriteria] },
             { $limit: LIST_PAGE_SIZE },
+            { $project: { _id: 1 } },
           ],
         },
       },
@@ -161,7 +162,8 @@ export class CatalogService {
       },
     ]);
 
-    result.items = await this.addRatings(result.items, userId);
+    const oids = result.items.map((item) => item._id);
+    result.items = await this.catalogExternal.hydrateItems(oids, userId);
     return result;
   }
 
@@ -179,20 +181,5 @@ export class CatalogService {
 
     const oids = ids.map((id) => $oid(id));
     return await this.catalogExternal.hydrateItems(oids, userId);
-  }
-
-  // PRIVATE METHODS
-
-  private async addRatings(items: CatalogItem[], userId: Oid) {
-    const ids = items.map((item) => item._id);
-    const ratings = await this.ratingService.getUserRatings(ids, userId);
-
-    return items.map((item) => ({
-      ...item,
-      ratings: {
-        general: item.rating,
-        user: ratings.find((e) => $eq(e.itemId, item._id))?.stars,
-      },
-    }));
   }
 }
