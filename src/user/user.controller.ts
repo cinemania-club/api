@@ -4,6 +4,7 @@ import { Request } from "express";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
+import { USER_FIELDS } from "./constants";
 import { SearchDto, SetStreamingsDto } from "./user.dto";
 import { User } from "./user.schema";
 import { UserService } from "./user.service";
@@ -19,7 +20,7 @@ export class UserController {
   @Get("/search")
   async search(@Body() dto: SearchDto) {
     const users = await this.userService.search(dto);
-    return users.map((e) => pick(e, "_id", "username", "name"));
+    return users.map((e) => pick(e, USER_FIELDS));
   }
 
   @Anonymous()
