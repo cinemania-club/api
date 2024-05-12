@@ -5,6 +5,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
+import { AuthModule } from "./auth/auth.module";
 import { CatalogModule } from "./catalog/catalog.module";
 import { MONGO_URL, REDIS_URL } from "./constants";
 import { PlaylistModule } from "./playlist/playlist.module";
@@ -21,6 +22,7 @@ import { UserModule } from "./user/user.module";
       route: "/queues",
       adapter: ExpressAdapter,
     }),
+    AuthModule,
     CatalogModule,
     PlaylistModule,
     ScrapperModule,

@@ -1,5 +1,11 @@
 import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
+export class UserDto {
+  @IsString()
+  @IsNotEmpty()
+  id!: string;
+}
+
 export class SearchDto {
   @IsString()
   @IsNotEmpty()

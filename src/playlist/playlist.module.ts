@@ -1,16 +1,17 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { AuthModule } from "src/auth/auth.module";
 import { PlaylistController } from "./playlist.controller";
 import { Playlist, PlaylistSchema } from "./playlist.schema";
+import { PlaylistService } from "./playlist.service";
 
 @Module({
+  controllers: [PlaylistController],
+  providers: [PlaylistService],
   imports: [
-    AuthModule,
     MongooseModule.forFeature([
       { name: Playlist.name, schema: PlaylistSchema },
     ]),
   ],
-  controllers: [PlaylistController],
+  exports: [PlaylistService],
 })
 export class PlaylistModule {}
