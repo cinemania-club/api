@@ -6,8 +6,8 @@ import { LIST_PAGE_SIZE } from "src/constants";
 import { $and, $criteria, $oid, Oid } from "src/mongo";
 import { RatingService } from "src/rating/rating.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
-import { CatalogExternal } from "./catalog.external";
 import { DEFAULT_SORT_CRITERIA } from "./constants";
+import { CatalogHydration } from "./hydration/hydration.service";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";
 import { SortCriteria } from "./types";
 
@@ -33,7 +33,7 @@ export class CatalogService {
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
     private ratingService: RatingService,
     private searchService: SearchService,
-    private catalogExternal: CatalogExternal,
+    private catalogHydration: CatalogHydration,
   ) {}
 
   async getCatalog(filters: FilterCatalogDto, userId: Oid) {
@@ -163,12 +163,12 @@ export class CatalogService {
     ]);
 
     const oids = result.items.map((item) => item._id);
-    result.items = await this.catalogExternal.hydrateItems(oids, userId);
+    result.items = await this.catalogHydration.hydrateItems(oids, userId);
     return result;
   }
 
   async getCatalogItem(itemId: Oid, userId: Oid) {
-    const [doc] = await this.catalogExternal.hydrateItems([itemId], userId);
+    const [doc] = await this.catalogHydration.hydrateItems([itemId], userId);
     return doc;
   }
 
@@ -180,6 +180,6 @@ export class CatalogService {
     );
 
     const oids = ids.map((id) => $oid(id));
-    return await this.catalogExternal.hydrateItems(oids, userId);
+    return await this.catalogHydration.hydrateItems(oids, userId);
   }
 }

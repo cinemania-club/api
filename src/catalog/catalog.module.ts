@@ -8,9 +8,9 @@ import { ELASTICSEARCH_URL } from "src/constants";
 import { RatingModule } from "src/rating/rating.module";
 import { CatalogAdminController } from "./admin.controller";
 import { CatalogController } from "./catalog.controller";
-import { CatalogExternal } from "./catalog.external";
 import { CatalogScheduler } from "./catalog.scheduler";
 import { CatalogService } from "./catalog.service";
+import { HydrationModule } from "./hydration/hydration.module";
 import { CatalogItem, CatalogSchema } from "./item.schema";
 import { LoaderService } from "./loader.service";
 import { CatalogRatingProcessor } from "./rating.processor";
@@ -26,7 +26,6 @@ import { SearchService } from "./search.service";
     LoaderService,
     CatalogService,
     SearchService,
-    CatalogExternal,
   ],
   imports: [
     MongooseModule.forFeature([
@@ -42,7 +41,8 @@ import { SearchService } from "./search.service";
       adapter: BullAdapter,
     }),
     RatingModule,
+    HydrationModule,
   ],
-  exports: [LoaderService, CatalogExternal],
+  exports: [LoaderService],
 })
 export class CatalogModule {}

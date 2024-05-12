@@ -6,6 +6,7 @@ import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { $oid } from "src/mongo";
 import { PlaylistService } from "src/playlist/playlist.service";
+import { RatingExternal } from "src/rating/rating.external";
 import { USER_FIELDS } from "./constants";
 import { SearchDto, SetStreamingsDto, UserDto } from "./user.dto";
 import { User } from "./user.schema";
@@ -16,6 +17,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private playlistService: PlaylistService,
+    private ratingExternal: RatingExternal,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
@@ -31,9 +33,13 @@ export class UserController {
   async getUserDetails(@Param() params: UserDto) {
     const oid = $oid(params.id);
     const user = (await this.userModel.findById(oid))!;
-    const playlists = await this.playlistService.getUserPlaylists(oid);
 
-    return { ...pick(user, USER_FIELDS), playlists };
+    return {
+      ...pick(user, USER_FIELDS),
+      likes: await this.ratingExternal.getHighRatedItems(oid),
+      dislikes: await this.ratingExternal.getLowRatedItems(oid),
+      playlists: await this.playlistService.getUserPlaylists(oid),
+    };
   }
 
   @Anonymous()

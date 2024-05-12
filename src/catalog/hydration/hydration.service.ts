@@ -2,14 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { $eq, Oid } from "src/mongo";
-import { RatingService } from "src/rating/rating.service";
-import { CatalogItem } from "./item.schema";
+import { Rating } from "src/rating/rating.schema";
+import { CatalogItem } from "../item.schema";
 
 @Injectable()
-export class CatalogExternal {
+export class CatalogHydration {
   constructor(
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
-    private ratingService: RatingService,
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
   ) {}
 
   async hydrateItems(itemIds: Oid[], userId: Oid) {
@@ -28,7 +28,10 @@ export class CatalogExternal {
 
   private async addRatings(items: CatalogItem[], userId: Oid) {
     const ids = items.map((item) => item._id);
-    const ratings = await this.ratingService.getUserRatings(ids, userId);
+    const ratings = await this.ratingModel.find({
+      userId,
+      itemId: { $in: ids },
+    });
 
     return items.map((item) => ({
       ...item,
