@@ -166,11 +166,8 @@ export class CatalogService {
   }
 
   async getCatalogItem(itemId: Oid, userId: Oid) {
-    const doc = await this.catalogModel.findById(itemId).lean();
-    if (!doc) return { item: null };
-
-    const [item] = await this.addRatings([doc], userId);
-    return item;
+    const [doc] = await this.catalogExternal.hydrateItems([itemId], userId);
+    return doc;
   }
 
   async search(userId: Oid, format: CatalogItemFormat, dto: SearchDto) {
