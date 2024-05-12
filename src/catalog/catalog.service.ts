@@ -6,6 +6,7 @@ import { LIST_PAGE_SIZE } from "src/constants";
 import { $and, $criteria, $eq, $oid, Oid } from "src/mongo";
 import { RatingService } from "src/rating/rating.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
+import { CatalogExternal } from "./catalog.external";
 import { DEFAULT_SORT_CRITERIA } from "./constants";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";
 import { SortCriteria } from "./types";
@@ -32,6 +33,7 @@ export class CatalogService {
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
     private ratingService: RatingService,
     private searchService: SearchService,
+    private catalogExternal: CatalogExternal,
   ) {}
 
   async getCatalog(filters: FilterCatalogDto, userId: Oid) {
@@ -178,12 +180,8 @@ export class CatalogService {
       dto.skip,
     );
 
-    const items = await this.catalogModel.find({ _id: { $in: ids } }).lean();
-    const result = ids
-      .map((id) => items.find((e) => $eq(e._id, id)))
-      .filter((e) => e) as CatalogItem[];
-
-    return await this.addRatings(result, userId);
+    const oids = ids.map((id) => $oid(id));
+    return await this.catalogExternal.hydrateItems(oids, userId);
   }
 
   // PRIVATE METHODS
