@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { SearchService } from "src/catalog/search.service";
 import { LIST_PAGE_SIZE } from "src/constants";
 import { $and, $criteria, $eq, $oid, Oid } from "src/mongo";
 import { RatingService } from "src/rating/rating.service";
-import { SearchService } from "src/search/search.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
 import { DEFAULT_SORT_CRITERIA } from "./constants";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";

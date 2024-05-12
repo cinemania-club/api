@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { sub } from "date-fns";
 import { difference, pick } from "lodash";
 import { Model } from "mongoose";
-import { SearchService } from "src/search/search.service";
+import { SearchService } from "src/catalog/search.service";
 import { CATALOG_ITEM_FRESHNESS } from "./constants";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";
 
