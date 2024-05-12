@@ -14,4 +14,4 @@ import { CatalogHydration } from "./hydration.service";
   ],
   exports: [CatalogHydration],
 })
-export class HydrationModule {}
+export class CatalogHydrationModule {}

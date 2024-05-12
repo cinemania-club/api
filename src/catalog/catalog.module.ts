@@ -10,7 +10,7 @@ import { CatalogAdminController } from "./admin.controller";
 import { CatalogController } from "./catalog.controller";
 import { CatalogScheduler } from "./catalog.scheduler";
 import { CatalogService } from "./catalog.service";
-import { HydrationModule } from "./hydration/hydration.module";
+import { CatalogHydrationModule } from "./hydration/hydration.module";
 import { CatalogItem, CatalogSchema } from "./item.schema";
 import { LoaderService } from "./loader.service";
 import { CatalogRatingProcessor } from "./rating.processor";
@@ -41,7 +41,7 @@ import { SearchService } from "./search.service";
       adapter: BullAdapter,
     }),
     RatingModule,
-    HydrationModule,
+    CatalogHydrationModule,
   ],
   exports: [LoaderService],
 })

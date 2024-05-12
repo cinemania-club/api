@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { HydrationModule } from "src/catalog/hydration/hydration.module";
+import { CatalogHydrationModule } from "src/catalog/hydration/hydration.module";
 import { PlaylistController } from "./playlist.controller";
 import { Playlist, PlaylistSchema } from "./playlist.schema";
 import { PlaylistService } from "./playlist.service";
@@ -12,7 +12,7 @@ import { PlaylistService } from "./playlist.service";
     MongooseModule.forFeature([
       { name: Playlist.name, schema: PlaylistSchema },
     ]),
-    HydrationModule,
+    CatalogHydrationModule,
   ],
   exports: [PlaylistService],
 })
