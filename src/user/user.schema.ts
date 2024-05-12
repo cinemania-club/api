@@ -20,6 +20,9 @@ export class User {
 
   @Prop({ type: SchemaTypes.String, required: false })
   phone?: string;
+
+  @Prop({ type: [SchemaTypes.String], required: true, default: [] })
+  streamings!: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

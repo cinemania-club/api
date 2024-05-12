@@ -10,3 +10,9 @@ export class SearchDto {
   @IsOptional()
   skip?: string[];
 }
+
+export class SetStreamingsDto {
+  @IsArray()
+  @IsString({ each: true })
+  streamings!: string[];
+}
