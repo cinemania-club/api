@@ -4,6 +4,7 @@ import { Request } from "express";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
+import { $oid } from "src/mongo";
 import { PlaylistService } from "src/playlist/playlist.service";
 import { USER_FIELDS } from "./constants";
 import { SearchDto, SetStreamingsDto, UserDto } from "./user.dto";
@@ -28,8 +29,9 @@ export class UserController {
   @Anonymous()
   @Get("/:id")
   async getUserDetails(@Param() params: UserDto) {
-    const user = (await this.userModel.findById(params.id))!;
-    const playlists = await this.playlistService.getUserPlaylists(params.id);
+    const oid = $oid(params.id);
+    const user = (await this.userModel.findById(oid))!;
+    const playlists = await this.playlistService.getUserPlaylists(oid);
 
     return { ...pick(user, USER_FIELDS), playlists };
   }

@@ -188,7 +188,7 @@ export class CatalogService {
 
   // PRIVATE METHODS
 
-  async addRatings(items: CatalogItem[], userId: Oid) {
+  private async addRatings(items: CatalogItem[], userId: Oid) {
     const ids = items.map((item) => item._id);
     const ratings = await this.ratingService.getUserRatings(ids, userId);
 
