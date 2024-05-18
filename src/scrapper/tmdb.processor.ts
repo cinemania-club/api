@@ -1,14 +1,11 @@
-import { InjectQueue, Process, Processor } from "@nestjs/bull";
-import { Job, Queue } from "bull";
+import { Process, Processor } from "@nestjs/bull";
+import { Job } from "bull";
 import { BaseProcessor } from "../processor";
 import { ScrapperService } from "./scrapper.service";
 
 @Processor("tmdb")
 export class TmdbProcessor extends BaseProcessor {
-  constructor(
-    @InjectQueue("tmdb") private tmdbQueue: Queue,
-    private scrapperService: ScrapperService,
-  ) {
+  constructor(private scrapperService: ScrapperService) {
     super();
   }
 
@@ -30,14 +27,5 @@ export class TmdbProcessor extends BaseProcessor {
   @Process("getSeriesDetails")
   async getSeriesDetails(job: Job<{ id: number }>) {
     await this.scrapperService.getSeriesDetails(job.data.id);
-  }
-
-  async enqueuePopularMovies(pages: number[]) {
-    const jobs = pages.map((page) => ({
-      name: "getPopularMovies",
-      data: { page },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
   }
 }

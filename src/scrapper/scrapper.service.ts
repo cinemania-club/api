@@ -1,6 +1,4 @@
-import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
-import { Queue } from "bull";
 import { CatalogItemFormat } from "src/catalog/item.schema";
 import { LoaderService } from "src/catalog/loader.service";
 import { TmdbAdapter } from "./tmdb.adapter";
@@ -10,7 +8,6 @@ import { TmdbEnqueuer } from "./tmdb.enqueuer";
 export class ScrapperService {
   constructor(
     private tmdbAdapter: TmdbAdapter,
-    @InjectQueue("tmdb") private tmdbQueue: Queue,
     private loaderService: LoaderService,
     private tmdbEnqueuer: TmdbEnqueuer,
   ) {}
