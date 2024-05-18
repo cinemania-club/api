@@ -4,11 +4,15 @@ import { Queue } from "bull";
 import { first, last, range } from "lodash";
 import { Admin } from "src/auth/auth.guard";
 import { POPULAR_ITEMS_PAGES_LIMIT } from "./constants";
+import { TmdbEnqueuer } from "./tmdb.enqueuer";
 
 @Admin()
 @Controller("/scrapper")
 export class ScrapperController {
-  constructor(@InjectQueue("tmdb") private tmdbQueue: Queue) {}
+  constructor(
+    @InjectQueue("tmdb") private tmdbQueue: Queue,
+    private tmdbEnqueuer: TmdbEnqueuer,
+  ) {}
 
   @Post("/get-popular-movies")
   async getPopularMovies() {
@@ -20,12 +24,7 @@ export class ScrapperController {
       `Scrapping popular movies. First: ${firstPage}, last: ${lastPage}`,
     );
 
-    const jobs = pages.map((page) => ({
-      name: "getPopularMovies",
-      data: { page },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
+    this.tmdbEnqueuer.enqueuePopularMovies(pages);
   }
 
   @Post("/get-movie")

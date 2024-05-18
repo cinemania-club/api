@@ -7,11 +7,18 @@ import { ScrapperController } from "./scrapper.controller";
 import { ScrapperScheduler } from "./scrapper.scheduler";
 import { ScrapperService } from "./scrapper.service";
 import { TmdbAdapter } from "./tmdb.adapter";
+import { TmdbEnqueuer } from "./tmdb.enqueuer";
 import { TmdbProcessor } from "./tmdb.processor";
 
 @Module({
   controllers: [ScrapperController],
-  providers: [ScrapperService, TmdbProcessor, TmdbAdapter, ScrapperScheduler],
+  providers: [
+    ScrapperService,
+    TmdbProcessor,
+    TmdbAdapter,
+    ScrapperScheduler,
+    TmdbEnqueuer,
+  ],
   imports: [
     BullModule.registerQueue({
       name: "tmdb",
