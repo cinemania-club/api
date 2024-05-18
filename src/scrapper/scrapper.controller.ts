@@ -1,6 +1,4 @@
-import { InjectQueue } from "@nestjs/bull";
 import { Body, Controller, Post } from "@nestjs/common";
-import { Queue } from "bull";
 import { first, last, range } from "lodash";
 import { Admin } from "src/auth/auth.guard";
 import { POPULAR_ITEMS_PAGES_LIMIT } from "./constants";
@@ -9,10 +7,7 @@ import { TmdbEnqueuer } from "./tmdb.enqueuer";
 @Admin()
 @Controller("/scrapper")
 export class ScrapperController {
-  constructor(
-    @InjectQueue("tmdb") private tmdbQueue: Queue,
-    private tmdbEnqueuer: TmdbEnqueuer,
-  ) {}
+  constructor(private tmdbEnqueuer: TmdbEnqueuer) {}
 
   @Post("/get-popular-movies")
   async getPopularMovies() {
@@ -24,13 +19,13 @@ export class ScrapperController {
       `Scrapping popular movies. First: ${firstPage}, last: ${lastPage}`,
     );
 
-    this.tmdbEnqueuer.enqueuePopularMovies(pages);
+    await this.tmdbEnqueuer.enqueuePopularMovies(pages);
   }
 
   @Post("/get-movie")
   async getMovie(@Body("id") id: number) {
     console.info(`Scrapping movie: ${id}`);
-    await this.tmdbQueue.add("getMovieDetails", { id });
+    await this.tmdbEnqueuer.enqueueMovieDetails(id);
   }
 
   @Post("/get-popular-series")
@@ -43,23 +38,18 @@ export class ScrapperController {
       `Scrapping popular series. First: ${firstPage}, last: ${lastPage}`,
     );
 
-    const jobs = pages.map((page) => ({
-      name: "getPopularSeries",
-      data: { page },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
+    await this.tmdbEnqueuer.enqueuePopularSeries(pages);
   }
 
   @Post("/get-series")
   async getSeries(@Body("id") id: number) {
     console.info(`Scrapping series: ${id}`);
-    await this.tmdbQueue.add("getSeriesDetails", { id });
+    await this.tmdbEnqueuer.enqueueSeriesDetails(id);
   }
 
   @Post("/flush")
   async flush() {
     console.info(`Flush scrapper`);
-    await this.tmdbQueue.empty();
+    await this.tmdbEnqueuer.flush();
   }
 }

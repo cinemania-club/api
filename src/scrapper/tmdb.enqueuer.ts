@@ -12,4 +12,25 @@ export class TmdbEnqueuer {
 
     await this.tmdbQueue.addBulk(jobs);
   }
+
+  async enqueueMovieDetails(id: number) {
+    await this.tmdbQueue.add("getMovieDetails", { id });
+  }
+
+  async enqueuePopularSeries(pages: number[]) {
+    const jobs = pages.map((page) => ({
+      name: "getPopularSeries",
+      data: { page },
+    }));
+
+    await this.tmdbQueue.addBulk(jobs);
+  }
+
+  async enqueueSeriesDetails(id: number) {
+    await this.tmdbQueue.add("getSeriesDetails", { id });
+  }
+
+  async flush() {
+    await this.tmdbQueue.empty();
+  }
 }
