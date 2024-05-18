@@ -25,7 +25,7 @@ export class ScrapperController {
   @Post("/get-movie")
   async getMovie(@Body("id") id: number) {
     console.info(`Scrapping movie: ${id}`);
-    await this.tmdbEnqueuer.enqueueMovieDetails(id);
+    await this.tmdbEnqueuer.enqueueMovieDetails([id]);
   }
 
   @Post("/get-popular-series")
@@ -44,7 +44,7 @@ export class ScrapperController {
   @Post("/get-series")
   async getSeries(@Body("id") id: number) {
     console.info(`Scrapping series: ${id}`);
-    await this.tmdbEnqueuer.enqueueSeriesDetails(id);
+    await this.tmdbEnqueuer.enqueueSeriesDetails([id]);
   }
 
   @Post("/flush")

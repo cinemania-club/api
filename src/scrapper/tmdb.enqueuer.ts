@@ -13,8 +13,13 @@ export class TmdbEnqueuer {
     await this.tmdbQueue.addBulk(jobs);
   }
 
-  async enqueueMovieDetails(id: number) {
-    await this.tmdbQueue.add("getMovieDetails", { id });
+  async enqueueMovieDetails(ids: number[]) {
+    const jobs = ids.map((id) => ({
+      name: "getMovieDetails",
+      data: { id },
+    }));
+
+    await this.tmdbQueue.addBulk(jobs);
   }
 
   async enqueuePopularSeries(pages: number[]) {
@@ -26,8 +31,13 @@ export class TmdbEnqueuer {
     await this.tmdbQueue.addBulk(jobs);
   }
 
-  async enqueueSeriesDetails(id: number) {
-    await this.tmdbQueue.add("getSeriesDetails", { id });
+  async enqueueSeriesDetails(ids: number[]) {
+    const jobs = ids.map((id) => ({
+      name: "getSeriesDetails",
+      data: { id },
+    }));
+
+    await this.tmdbQueue.addBulk(jobs);
   }
 
   async flush() {

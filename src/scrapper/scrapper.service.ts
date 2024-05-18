@@ -4,6 +4,7 @@ import { Queue } from "bull";
 import { CatalogItemFormat } from "src/catalog/item.schema";
 import { LoaderService } from "src/catalog/loader.service";
 import { TmdbAdapter } from "./tmdb.adapter";
+import { TmdbEnqueuer } from "./tmdb.enqueuer";
 
 @Injectable()
 export class ScrapperService {
@@ -11,6 +12,7 @@ export class ScrapperService {
     private tmdbAdapter: TmdbAdapter,
     @InjectQueue("tmdb") private tmdbQueue: Queue,
     private loaderService: LoaderService,
+    private tmdbEnqueuer: TmdbEnqueuer,
   ) {}
 
   async getPopularMovies(page: number) {
@@ -22,13 +24,7 @@ export class ScrapperService {
       movieIds,
     );
 
-    const jobs = moviesToReload.map((id) => ({
-      name: "getMovieDetails",
-      data: { id },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
-    return movies;
+    await this.tmdbEnqueuer.enqueueMovieDetails(moviesToReload);
   }
 
   async getMovieDetails(id: number) {
@@ -70,13 +66,7 @@ export class ScrapperService {
       seriesIds,
     );
 
-    const jobs = seriesToReload.map((id) => ({
-      name: "getSeriesDetails",
-      data: { id },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
-    return series;
+    await this.tmdbEnqueuer.enqueueSeriesDetails(seriesToReload);
   }
 
   async getSeriesDetails(id: number) {
