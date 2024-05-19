@@ -1,5 +1,7 @@
+import { InjectQueue } from "@nestjs/bull";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Controller, Delete, Get, Inject, Param, Post } from "@nestjs/common";
+import { Queue } from "bull";
 import { Cache } from "cache-manager";
 import { Admin } from "src/auth/auth.guard";
 import { v4 as uuidv4 } from "uuid";
@@ -7,7 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 @Admin()
 @Controller("/admin/queue")
 export class QueueAdminController {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectQueue("movielens") private movielensQueue: Queue,
+  ) {}
 
   @Post("/:queue/:process")
   async enqueue(@Param() params: { queue: string; process: string }) {
@@ -26,5 +31,6 @@ export class QueueAdminController {
   async flush(@Param() params: { queue: string; process: string }) {
     const key = `${params.queue}:${params.process}`;
     await this.cacheManager.del(key);
+    this.movielensQueue.empty();
   }
 }

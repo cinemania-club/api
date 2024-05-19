@@ -26,6 +26,7 @@ import { UserModule } from "./user/user.module";
       store: () => redisStore({ url: REDIS_URL }),
     }),
     BullModule.forRoot({ redis: REDIS_URL }),
+    BullModule.registerQueue({ name: "movielens" }),
     BullBoardModule.forRoot({
       route: "/queues",
       adapter: ExpressAdapter,
