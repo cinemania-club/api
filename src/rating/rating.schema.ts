@@ -4,10 +4,18 @@ import { Oid } from "src/mongo";
 
 export type RatingDocument = HydratedDocument<Rating>;
 
+enum RatingSource {
+  INTERNAL = "INTERNAL",
+  MOVIELENS = "MOVIELENS",
+}
+
 @Schema({ timestamps: true })
 export class Rating {
-  @Prop({ type: SchemaTypes.ObjectId, required: true })
-  userId!: Oid;
+  @Prop({ type: SchemaTypes.String, enum: RatingSource, required: true })
+  source!: RatingSource;
+
+  @Prop({ type: [SchemaTypes.ObjectId, SchemaTypes.Number], required: true })
+  userId!: Oid | number;
 
   @Prop({ type: SchemaTypes.ObjectId, required: true })
   itemId!: Oid;
