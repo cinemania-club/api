@@ -17,6 +17,7 @@ export class Auth {
   @Prop({ type: SchemaTypes.ObjectId, required: true })
   _id!: Oid;
 
+  /** @todo: change string to UUID */
   @Prop({ type: SchemaTypes.String, required: true })
   uuid!: string;
 

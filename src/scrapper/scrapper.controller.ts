@@ -59,8 +59,5 @@ export class ScrapperController {
   }
 
   @Post("/flush")
-  async flush() {
-    console.info(`Flush scrapper`);
-    await this.tmdbQueue.empty();
-  }
+  async flush() {}
 }

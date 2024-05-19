@@ -1,13 +1,16 @@
 import { Process, Processor } from "@nestjs/bull";
+import { Job } from "bull";
 import { BaseProcessor } from "src/processor";
-import { MovielensService } from "./movielens.service";
 
 @Processor("movielens")
 export class MovielensProcessor extends BaseProcessor {
-  constructor(private movielensService: MovielensService) {
+  constructor() {
+    // private movielensService: MovielensService
     super();
   }
 
-  @Process("loadRatings")
-  async loadRatings() {}
+  @Process("load-ratings")
+  async loadRatings(job: Job<{ id: number }>) {
+    console.info(`Processing load-ratings job ${job.id}`);
+  }
 }

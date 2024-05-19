@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { UUID } from "crypto";
 import { HydratedDocument, SchemaTypes } from "mongoose";
 import { Oid } from "src/mongo";
 
@@ -20,6 +21,9 @@ export class MovielensRating {
 
   @Prop({ type: SchemaTypes.Number, required: true })
   timestamp!: number;
+
+  @Prop({ type: SchemaTypes.UUID, required: false })
+  enqueueId?: UUID;
 }
 
 export const MovielensRatingSchema =
