@@ -11,6 +11,7 @@ import { AuthModule } from "./auth/auth.module";
 import { CatalogModule } from "./catalog/catalog.module";
 import { MONGO_URL, REDIS_URL } from "./constants";
 import { PlaylistModule } from "./playlist/playlist.module";
+import { QueueType } from "./queue";
 import { QueueAdminController } from "./queue.controller";
 import { ScrapperModule } from "./scrapper/scrapper.module";
 import { UserModule } from "./user/user.module";
@@ -26,7 +27,7 @@ import { UserModule } from "./user/user.module";
       store: () => redisStore({ url: REDIS_URL }),
     }),
     BullModule.forRoot({ redis: REDIS_URL }),
-    BullModule.registerQueue({ name: "movielens" }),
+    BullModule.registerQueue({ name: QueueType.MOVIELENS }),
     BullBoardModule.forRoot({
       route: "/queues",
       adapter: ExpressAdapter,

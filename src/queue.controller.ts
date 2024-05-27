@@ -5,13 +5,14 @@ import { Queue } from "bull";
 import { Cache } from "cache-manager";
 import { Admin } from "src/auth/auth.guard";
 import { v4 as uuidv4 } from "uuid";
+import { QueueType } from "./queue";
 
 @Admin()
 @Controller("/admin/queue")
 export class QueueAdminController {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @InjectQueue("movielens") private movielensQueue: Queue,
+    @InjectQueue(QueueType.MOVIELENS) private movielensQueue: Queue,
   ) {}
 
   @Post("/:queue/:process")
@@ -44,7 +45,7 @@ export class QueueAdminController {
 
   private getQueue(queue: string) {
     switch (queue) {
-      case "movielens":
+      case QueueType.MOVIELENS:
         return this.movielensQueue;
       default:
         throw new Error(`Queue ${queue} not found`);
