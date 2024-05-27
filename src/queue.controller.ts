@@ -15,22 +15,39 @@ export class QueueAdminController {
   ) {}
 
   @Post("/:queue/:process")
-  async enqueue(@Param() params: { queue: string; process: string }) {
+  async start(@Param() params: { queue: string; process: string }) {
     const key = `${params.queue}:${params.process}`;
+    const queue = this.getQueue(params.queue);
+    console.info("Starting process:", key);
+
     const uuid = uuidv4();
     await this.cacheManager.set(key, uuid);
+    await queue.add(params.process);
   }
 
   @Get("/:queue/:process")
   async status(@Param() params: { queue: string; process: string }) {
     const key = `${params.queue}:${params.process}`;
-    return { status: await this.cacheManager.get(key) };
+    const status = await this.cacheManager.get(key);
+    return { status };
   }
 
   @Delete("/:queue/:process")
   async flush(@Param() params: { queue: string; process: string }) {
     const key = `${params.queue}:${params.process}`;
+    const queue = this.getQueue(params.queue);
+    console.info("Flushing process:", key);
+
     await this.cacheManager.del(key);
-    this.movielensQueue.empty();
+    await queue.empty();
+  }
+
+  private getQueue(queue: string) {
+    switch (queue) {
+      case "movielens":
+        return this.movielensQueue;
+      default:
+        throw new Error(`Queue ${queue} not found`);
+    }
   }
 }

@@ -5,12 +5,11 @@ import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Rating, RatingSchema } from "../rating.schema";
 import { MovielensLink, MovielensLinkSchema } from "./link.schema";
-import { MovielensEnqueuer } from "./movielens.enqueuer";
 import { MovielensProcessor } from "./movielens.processor";
 import { MovielensRating, MovielensRatingSchema } from "./rating.schema";
 
 @Module({
-  providers: [MovielensEnqueuer, MovielensProcessor],
+  providers: [MovielensProcessor],
   imports: [
     MongooseModule.forFeature([
       { name: Rating.name, schema: RatingSchema },
@@ -19,7 +18,7 @@ import { MovielensRating, MovielensRatingSchema } from "./rating.schema";
     ]),
     BullModule.registerQueue({
       name: "movielens",
-      limiter: { max: 1, duration: 100 },
+      limiter: { max: 1, duration: 5000 },
     }),
     BullBoardModule.forFeature({
       name: "movielens",

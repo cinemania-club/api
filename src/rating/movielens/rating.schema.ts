@@ -23,7 +23,7 @@ export class MovielensRating {
   timestamp!: number;
 
   @Prop({ type: SchemaTypes.UUID, required: false })
-  enqueueId?: UUID;
+  processId?: UUID;
 }
 
 export const MovielensRatingSchema =
