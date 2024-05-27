@@ -19,7 +19,7 @@ export class Rating {
   })
   source!: RatingSource;
 
-  @Prop({ type: [SchemaTypes.ObjectId, SchemaTypes.Number], required: true })
+  @Prop({ type: SchemaTypes.Mixed, required: true })
   userId!: Oid | number;
 
   @Prop({ type: SchemaTypes.ObjectId, required: true })
