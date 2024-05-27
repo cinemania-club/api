@@ -7,12 +7,12 @@ import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
 import { BaseProcessor } from "src/processor";
-import { QueueType } from "src/queue";
+import { ProcessType, QueueType } from "src/queue";
 import { Rating, RatingSource } from "../rating.schema";
 import { MovielensLink } from "./link.schema";
 import { MovielensRating } from "./rating.schema";
 
-const PROCESSOR = QueueType.MOVIELENS + ":load-ratings";
+const PROCESSOR = QueueType.MOVIELENS + ":" + ProcessType.LOAD_RATINGS;
 
 @Processor(QueueType.MOVIELENS)
 export class MovielensProcessor extends BaseProcessor {
@@ -31,12 +31,12 @@ export class MovielensProcessor extends BaseProcessor {
     super();
   }
 
-  @Process("load-ratings")
+  @Process(ProcessType.LOAD_RATINGS)
   async loadRatings() {
     const processId = await this.cacheManager.get(PROCESSOR);
     if (!processId) return;
 
-    await this.movielensQueue.add("load-ratings");
+    await this.movielensQueue.add(ProcessType.LOAD_RATINGS);
 
     const rating = await this.mlRatingModel.findOneAndUpdate(
       { processId: { $ne: processId } },
