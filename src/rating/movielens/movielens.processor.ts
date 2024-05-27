@@ -7,6 +7,7 @@ import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { BaseProcessor } from "src/processor";
 import { Rating, RatingSource } from "../rating.schema";
+import { MovielensLink } from "./link.schema";
 import { MovielensRating } from "./rating.schema";
 
 const PROCESSOR = "movielens:load-ratings";
@@ -18,6 +19,8 @@ export class MovielensProcessor extends BaseProcessor {
     @InjectQueue("movielens") private movielensQueue: Queue,
     @InjectModel(MovielensRating.name)
     private mlRatingModel: Model<MovielensRating>,
+    @InjectModel(MovielensLink.name)
+    private mlLinkModel: Model<MovielensLink>,
     @InjectModel(Rating.name)
     private ratingModel: Model<Rating>,
   ) {
@@ -42,11 +45,14 @@ export class MovielensProcessor extends BaseProcessor {
       return;
     }
 
+    const link = await this.mlLinkModel.findOne({ movieId: rating?.movieId });
+    if (!link) return;
+
     await this.ratingModel.findOneAndUpdate(
       {
         source: RatingSource.MOVIELENS,
         userId: rating.userId,
-        itemId: rating.movieId,
+        itemId: link.tmdbId,
       },
       { $set: { stars: rating.rating } },
       { upsert: true },
