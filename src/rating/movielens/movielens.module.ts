@@ -3,6 +3,7 @@ import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { CatalogItem, CatalogSchema } from "src/catalog/item.schema";
 import { Rating, RatingSchema } from "../rating.schema";
 import { MovielensLink, MovielensLinkSchema } from "./link.schema";
 import { MovielensProcessor } from "./movielens.processor";
@@ -15,6 +16,7 @@ import { MovielensRating, MovielensRatingSchema } from "./rating.schema";
       { name: Rating.name, schema: RatingSchema },
       { name: MovielensLink.name, schema: MovielensLinkSchema },
       { name: MovielensRating.name, schema: MovielensRatingSchema },
+      { name: CatalogItem.name, schema: CatalogSchema },
     ]),
     BullModule.registerQueue({
       name: "movielens",

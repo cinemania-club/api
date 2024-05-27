@@ -18,9 +18,9 @@ export class QueueAdminController {
   async start(@Param() params: { queue: string; process: string }) {
     const key = `${params.queue}:${params.process}`;
     const queue = this.getQueue(params.queue);
-    console.info("Starting process:", key);
-
     const uuid = uuidv4();
+    console.info(`Starting process: ${key}, ${uuid}`);
+
     await this.cacheManager.set(key, uuid);
     await queue.add(params.process);
   }

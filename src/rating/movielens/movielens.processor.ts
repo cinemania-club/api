@@ -5,6 +5,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Queue } from "bull";
 import { Cache } from "cache-manager";
 import { Model } from "mongoose";
+import { CatalogItem } from "src/catalog/item.schema";
 import { BaseProcessor } from "src/processor";
 import { Rating, RatingSource } from "../rating.schema";
 import { MovielensLink } from "./link.schema";
@@ -21,6 +22,8 @@ export class MovielensProcessor extends BaseProcessor {
     private mlRatingModel: Model<MovielensRating>,
     @InjectModel(MovielensLink.name)
     private mlLinkModel: Model<MovielensLink>,
+    @InjectModel(CatalogItem.name)
+    private itemModel: Model<CatalogItem>,
     @InjectModel(Rating.name)
     private ratingModel: Model<Rating>,
   ) {
@@ -41,18 +44,30 @@ export class MovielensProcessor extends BaseProcessor {
     );
 
     if (!rating) {
+      console.info(`No more Movielens ratings to load: ${processId}`);
       this.cacheManager.del(PROCESSOR);
       return;
     }
 
-    const link = await this.mlLinkModel.findOne({ movieId: rating?.movieId });
-    if (!link) return;
+    const link = await this.mlLinkModel.findOne({ movieId: rating.movieId });
+    if (!link) {
+      console.info(`Link not found: ${rating.movieId}, ${processId}`);
+      return;
+    }
+
+    const item = await this.itemModel.findOne({ id: link.tmdbId }, { _id: 1 });
+    if (!item) {
+      console.info(
+        `Item not found: ${link.tmdbId}, ${rating.movieId}, ${processId}`,
+      );
+      return;
+    }
 
     await this.ratingModel.findOneAndUpdate(
       {
         source: RatingSource.MOVIELENS,
         userId: rating.userId,
-        itemId: link.tmdbId,
+        itemId: item._id,
       },
       { $set: { stars: rating.rating } },
       { upsert: true },
