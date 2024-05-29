@@ -1,4 +1,7 @@
+# application
+
 .env
+console.history
 
 # compiled output
 /dist
