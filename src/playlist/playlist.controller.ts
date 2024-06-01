@@ -49,5 +49,10 @@ export class PlaylistController {
       _id: params.id,
       userId: req.payload!.userId,
     });
+
+    await this.playlistItemModel.deleteMany({
+      userId: req.payload!.userId,
+      playlistId: params.id,
+    });
   }
 }
