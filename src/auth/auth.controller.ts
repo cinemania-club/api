@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Req } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+  Req,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectModel } from "@nestjs/mongoose";
 import * as bcrypt from "bcrypt";
@@ -29,7 +36,8 @@ export class AuthController {
   @Post("/sign-up")
   async signUp(@Req() req: Request, @Body() dto: SignUpDto) {
     const auth = (await this.authModel.findById(req.payload!.userId))!;
-    if (auth.user) throw new Error("Usuário já cadastrado");
+    if (auth.user)
+      throw new HttpException("Usuário já cadastrado", HttpStatus.BAD_REQUEST);
 
     await this.userService.signUp({ ...dto, _id: auth._id });
 
