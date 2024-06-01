@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
+import { PlaylistItem } from "./playlist-item.schema";
 import { AddItemDto, CreatePlaylistDto, PlaylistDto } from "./playlist.dto";
 import { Playlist } from "./playlist.schema";
 
@@ -10,6 +11,8 @@ import { Playlist } from "./playlist.schema";
 export class PlaylistController {
   constructor(
     @InjectModel(Playlist.name) private playlistModel: Model<Playlist>,
+    @InjectModel(PlaylistItem.name)
+    private playlistItemModel: Model<PlaylistItem>,
   ) {}
 
   @Anonymous()
@@ -26,15 +29,17 @@ export class PlaylistController {
   @Anonymous()
   @Post("/add")
   async addItems(@Req() req: Request, @Body() dto: AddItemDto) {
-    await this.playlistModel.updateMany(
-      { userId: req.payload!.userId, _id: { $in: dto.playlists } },
-      { $addToSet: { items: dto.itemId } },
-    );
+    await this.playlistItemModel.deleteMany({
+      userId: req.payload!.userId,
+      itemId: dto.itemId,
+    });
 
-    await this.playlistModel.updateMany(
-      { userId: req.payload!.userId, _id: { $nin: dto.playlists } },
-      { $pull: { items: dto.itemId } },
-    );
+    const playlistItems = dto.playlists.map((playlistId) => ({
+      userId: req.payload!.userId,
+      playlistId,
+      itemId: dto.itemId,
+    }));
+    await this.playlistItemModel.create(playlistItems);
   }
 
   @Anonymous()
