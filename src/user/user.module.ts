@@ -4,6 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { CatalogModule } from "src/catalog/catalog.module";
 import { ELASTICSEARCH_URL } from "src/constants";
 import { PlaylistModule } from "src/playlist/playlist.module";
+import { Playlist, PlaylistSchema } from "src/playlist/playlist.schema";
 import { RatingModule } from "src/rating/rating.module";
 import { ConnectionController } from "./connection/connection.controller";
 import { Connection, ConnectionSchema } from "./connection/connection.schema";
@@ -15,9 +16,10 @@ import { UserService } from "./user.service";
   controllers: [UserController, ConnectionController],
   providers: [UserService],
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
       { name: Connection.name, schema: ConnectionSchema },
+      { name: Playlist.name, schema: PlaylistSchema },
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     PlaylistModule,
