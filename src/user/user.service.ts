@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { InjectModel } from "@nestjs/mongoose";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { LIST_PAGE_SIZE } from "src/constants";
+import { Playlist, PlaylistType } from "src/playlist/playlist.schema";
 import { SearchDto } from "./user.dto";
 import { User } from "./user.schema";
 
@@ -13,6 +14,7 @@ type UnpersistedUser = Pick<User, "_id" | "username" | "email" | "name">;
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Playlist.name) private playlistModel: Model<Playlist>,
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
@@ -32,6 +34,16 @@ export class UserService {
     );
 
     await this.userModel.create(user);
+    await this.playlistModel.create({
+      userId: user._id,
+      type: PlaylistType.WATCH_LATER,
+      name: "Assistir mais tarde",
+    });
+    await this.playlistModel.create({
+      userId: user._id,
+      type: PlaylistType.ARCHIVED,
+      name: "Arquivados",
+    });
 
     await this.elasticsearchService.index({
       index: "user",
@@ -63,6 +75,6 @@ export class UserService {
     message: string,
   ) {
     const duplicate = await this.userModel.exists({ [field]: value });
-    if (duplicate) throw new Error(message);
+    if (duplicate) throw new HttpException(message, HttpStatus.BAD_REQUEST);
   }
 }

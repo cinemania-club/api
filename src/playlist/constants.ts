@@ -1,1 +1,1 @@
-export const PLAYLIST_FIELDS = ["_id", "name", "items"];
+export const PLAYLIST_FIELDS = ["_id", "type", "name"];
