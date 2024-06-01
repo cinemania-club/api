@@ -25,9 +25,6 @@ export class Playlist {
 
   @Prop({ type: SchemaTypes.String, required: true })
   name!: string;
-
-  @Prop({ type: [SchemaTypes.ObjectId], required: true })
-  items!: Oid[];
 }
 
 export const PlaylistSchema = SchemaFactory.createForClass(Playlist);
