@@ -25,7 +25,10 @@ export class PlaylistService {
 
     const oids = playlistsItems.map((e) => e.itemId);
     const oidsUniq = uniqWith(oids, (a, b) => $eq(a, b));
-    const items = await this.catalogHydration.hydrateItems(oidsUniq, userId);
+    const { items } = await this.catalogHydration.hydrateItems(
+      oidsUniq,
+      userId,
+    );
 
     return playlists.map((p) => ({
       ...pick(p, PLAYLIST_FIELDS),

@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { $eq, Oid } from "src/mongo";
+import { PlaylistItem } from "src/playlist/playlist-item.schema";
 import { Playlist } from "src/playlist/playlist.schema";
 import { Rating } from "src/rating/rating.schema";
 import { CatalogItem } from "../item.schema";
@@ -12,6 +13,8 @@ export class CatalogHydration {
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     @InjectModel(Playlist.name) private playlistModel: Model<Playlist>,
+    @InjectModel(PlaylistItem.name)
+    private playlistItemModel: Model<PlaylistItem>,
   ) {}
 
   async hydrateItems(itemIds: Oid[], userId: Oid) {
@@ -24,9 +27,7 @@ export class CatalogHydration {
       .filter((e) => e) as CatalogItem[];
 
     result = await this.addRatings(result, userId);
-    result = await this.addPlaylists(result);
-
-    return result;
+    return await this.addPlaylists(result, userId);
   }
 
   // PRIVATE METHODS
@@ -47,9 +48,21 @@ export class CatalogHydration {
     }));
   }
 
-  private async addPlaylists(items: CatalogItem[]) {
-    /** @todo: terminar */
-    // const playlists = await this.playlistModel.find({ userId });
-    return items;
+  private async addPlaylists(items: CatalogItem[], userId: Oid) {
+    const playlists = await this.playlistModel.find({ userId });
+
+    const ids = items.map((item) => item._id);
+    const itemsPlaylists = await this.playlistItemModel.find({
+      userId,
+      itemId: { $in: ids },
+    });
+
+    return {
+      playlists,
+      items: items.map((item) => ({
+        ...item,
+        playlists: itemsPlaylists.map((p) => p.playlistId),
+      })),
+    };
   }
 }
