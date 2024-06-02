@@ -14,6 +14,7 @@ export const CATALOG_FIELDS = [
   "firstAirDate",
   "lastAirDate",
   "ratings",
+  "playlists",
 ];
 
 export const CATALOG_ITEM_FIELDS = [
@@ -26,6 +27,7 @@ export const CATALOG_ITEM_FIELDS = [
   "firstAirDate",
   "lastAirDate",
   "ratings",
+  "playlists",
 ];
 
 export const CATALOG_ITEM_FRESHNESS = { days: 7 };

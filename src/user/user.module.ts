@@ -5,7 +5,6 @@ import { CatalogModule } from "src/catalog/catalog.module";
 import { ELASTICSEARCH_URL } from "src/constants";
 import { PlaylistModule } from "src/playlist/playlist.module";
 import { Playlist, PlaylistSchema } from "src/playlist/playlist.schema";
-import { RatingModule } from "src/rating/rating.module";
 import { ConnectionController } from "./connection/connection.controller";
 import { Connection, ConnectionSchema } from "./connection/connection.schema";
 import { UserController } from "./user.controller";
@@ -23,7 +22,6 @@ import { UserService } from "./user.service";
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     PlaylistModule,
-    RatingModule,
     CatalogModule,
   ],
   exports: [UserService],

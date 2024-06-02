@@ -4,7 +4,6 @@ import { Model } from "mongoose";
 import { SearchService } from "src/catalog/search.service";
 import { LIST_PAGE_SIZE } from "src/constants";
 import { $and, $criteria, $oid, Oid } from "src/mongo";
-import { RatingService } from "src/rating/rating.service";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
 import { DEFAULT_SORT_CRITERIA } from "./constants";
 import { CatalogHydration } from "./hydration/hydration.service";
@@ -31,7 +30,6 @@ const SORT_QUERY: Record<SortCriteria, Record<string, 1 | -1>> = {
 export class CatalogService {
   constructor(
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
-    private ratingService: RatingService,
     private searchService: SearchService,
     private catalogHydration: CatalogHydration,
   ) {}
@@ -140,7 +138,7 @@ export class CatalogService {
     ];
 
     const sortCriteria = filters.sort || DEFAULT_SORT_CRITERIA;
-    const [result] = await this.catalogModel.aggregate<Catalog>([
+    const [query] = await this.catalogModel.aggregate<Catalog>([
       { $match: filter },
       {
         $facet: {
@@ -162,14 +160,13 @@ export class CatalogService {
       },
     ]);
 
-    const oids = result.items.map((item) => item._id);
-    result.items = await this.catalogHydration.hydrateItems(oids, userId);
-    return result;
-  }
+    const oids = query.items.map((item) => item._id);
+    const hydration = await this.catalogHydration.hydrateItems(oids, userId);
 
-  async getCatalogItem(itemId: Oid, userId: Oid) {
-    const [doc] = await this.catalogHydration.hydrateItems([itemId], userId);
-    return doc;
+    return {
+      ...query,
+      ...hydration,
+    };
   }
 
   async search(userId: Oid, format: CatalogItemFormat, dto: SearchDto) {

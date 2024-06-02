@@ -3,6 +3,7 @@ import { Request } from "express";
 import { pick } from "lodash";
 import { Anonymous } from "src/auth/auth.guard";
 import { $oid } from "src/mongo";
+import { PLAYLIST_FIELDS } from "src/playlist/constants";
 import { RatingService } from "src/rating/rating.service";
 import {
   CatalogItemDto,
@@ -16,6 +17,7 @@ import {
   CATALOG_ITEM_FIELDS,
   ONBOARDING_TARGET_RATINGS,
 } from "./constants";
+import { CatalogHydration } from "./hydration/hydration.service";
 import { CatalogItemFormat } from "./item.schema";
 
 @Controller("/catalog")
@@ -23,6 +25,7 @@ export class CatalogController {
   constructor(
     private catalogService: CatalogService,
     private ratingService: RatingService,
+    private catalogHydration: CatalogHydration,
   ) {}
 
   @Anonymous()
@@ -46,6 +49,7 @@ export class CatalogController {
     return {
       onboarding: isOnboarding ? onboarding : null,
       total: result.total,
+      playlists: result.playlists.map((p) => pick(p, PLAYLIST_FIELDS)),
       items: result.items.map((item) => pick(item, CATALOG_FIELDS)),
     };
   }
@@ -66,20 +70,26 @@ export class CatalogController {
     );
 
     return {
-      movies: movies.map((item) => pick(item, CATALOG_FIELDS)),
-      series: series.map((item) => pick(item, CATALOG_FIELDS)),
+      playlists: movies.playlists.map((p) => pick(p, PLAYLIST_FIELDS)),
+      movies: movies.items.map((item) => pick(item, CATALOG_FIELDS)),
+      series: series.items.map((item) => pick(item, CATALOG_FIELDS)),
     };
   }
 
   @Anonymous()
   @Get("/:id")
   async getItem(@Req() req: Request, @Param() params: CatalogItemDto) {
-    const item = await this.catalogService.getCatalogItem(
-      $oid(params.id),
+    const result = await this.catalogHydration.hydrateItems(
+      [$oid(params.id)],
       req.payload!.userId,
     );
 
-    return { item: pick(item, CATALOG_ITEM_FIELDS) };
+    const [item] = result.items;
+
+    return {
+      playlists: result.playlists.map((p) => pick(p, PLAYLIST_FIELDS)),
+      item: pick(item, CATALOG_ITEM_FIELDS),
+    };
   }
 
   @Anonymous()
