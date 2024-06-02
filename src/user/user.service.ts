@@ -4,7 +4,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { pick } from "lodash";
 import { Model } from "mongoose";
 import { LIST_PAGE_SIZE } from "src/constants";
-import { Playlist, PlaylistType } from "src/playlist/playlist.schema";
+import { PlaylistExternal } from "src/playlist/playlist.service";
 import { SearchDto } from "./user.dto";
 import { User } from "./user.schema";
 
@@ -14,7 +14,7 @@ type UnpersistedUser = Pick<User, "_id" | "username" | "email" | "name">;
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Playlist.name) private playlistModel: Model<Playlist>,
+    private playlistExternal: PlaylistExternal,
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
@@ -34,16 +34,7 @@ export class UserService {
     );
 
     await this.userModel.create(user);
-    await this.playlistModel.create({
-      userId: user._id,
-      type: PlaylistType.WATCH_LATER,
-      name: "Assistir mais tarde",
-    });
-    await this.playlistModel.create({
-      userId: user._id,
-      type: PlaylistType.ARCHIVED,
-      name: "Arquivados",
-    });
+    await this.playlistExternal.createUser(user._id);
 
     await this.elasticsearchService.index({
       index: "user",

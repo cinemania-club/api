@@ -5,7 +5,7 @@ import { pick } from "lodash";
 import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { $oid } from "src/mongo";
-import { PlaylistService } from "src/playlist/playlist.service";
+import { PlaylistExternal } from "src/playlist/playlist.service";
 import { USER_FIELDS } from "./constants";
 import { SearchDto, SetStreamingsDto, UserDto } from "./user.dto";
 import { User } from "./user.schema";
@@ -15,7 +15,7 @@ import { UserService } from "./user.service";
 export class UserController {
   constructor(
     private userService: UserService,
-    private playlistService: PlaylistService,
+    private playlistExternal: PlaylistExternal,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
@@ -34,7 +34,7 @@ export class UserController {
 
     return {
       ...pick(user, USER_FIELDS),
-      playlists: await this.playlistService.getUserPlaylists(oid),
+      playlists: await this.playlistExternal.getUserPlaylists(oid),
     };
   }
 

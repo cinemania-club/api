@@ -6,15 +6,22 @@ import { CatalogHydration } from "src/catalog/hydration/hydration.service";
 import { $eq, Oid } from "src/mongo";
 import { PLAYLIST_FIELDS } from "./constants";
 import { PlaylistItem } from "./playlist-item.schema";
-import { Playlist } from "./playlist.schema";
+import { Playlist, PlaylistType } from "./playlist.schema";
 
-export class PlaylistService {
+export class PlaylistExternal {
   constructor(
     @InjectModel(Playlist.name) private playlistModel: Model<Playlist>,
     @InjectModel(PlaylistItem.name)
     private playlistItemModel: Model<PlaylistItem>,
     private catalogHydration: CatalogHydration,
   ) {}
+
+  async createUser(userId: Oid) {
+    await this.playlistModel.create([
+      { userId, type: PlaylistType.WATCH_LATER, name: "Assistir mais tarde" },
+      { userId, type: PlaylistType.ARCHIVED, name: "Arquivados" },
+    ]);
+  }
 
   async getUserPlaylists(userId: Oid) {
     const playlists = await this.playlistModel.find({ userId });

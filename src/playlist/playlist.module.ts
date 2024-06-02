@@ -4,11 +4,11 @@ import { CatalogHydrationModule } from "src/catalog/hydration/hydration.module";
 import { PlaylistItem, PlaylistItemSchema } from "./playlist-item.schema";
 import { PlaylistController } from "./playlist.controller";
 import { Playlist, PlaylistSchema } from "./playlist.schema";
-import { PlaylistService } from "./playlist.service";
+import { PlaylistExternal } from "./playlist.service";
 
 @Module({
   controllers: [PlaylistController],
-  providers: [PlaylistService],
+  providers: [PlaylistExternal],
   imports: [
     MongooseModule.forFeature([
       { name: Playlist.name, schema: PlaylistSchema },
@@ -16,6 +16,6 @@ import { PlaylistService } from "./playlist.service";
     ]),
     CatalogHydrationModule,
   ],
-  exports: [PlaylistService],
+  exports: [PlaylistExternal],
 })
 export class PlaylistModule {}
