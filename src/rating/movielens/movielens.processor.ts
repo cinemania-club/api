@@ -6,19 +6,18 @@ import { Queue } from "bull";
 import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
-import { BaseProcessor } from "src/processor";
-import { ProcessType, QueueType } from "src/queue";
+import { BaseProcessor, ProcessorType, ProcessType } from "src/processor";
 import { Rating, RatingSource } from "../rating.schema";
 import { MovielensLink } from "./link.schema";
 import { MovielensRating } from "./rating.schema";
 
-const PROCESSOR = QueueType.MOVIELENS + ":" + ProcessType.LOAD_RATINGS;
+const PROCESSOR = ProcessorType.MOVIELENS + ":" + ProcessType.LOAD_RATINGS;
 
-@Processor(QueueType.MOVIELENS)
+@Processor(ProcessorType.MOVIELENS)
 export class MovielensProcessor extends BaseProcessor {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @InjectQueue(QueueType.MOVIELENS) private movielensQueue: Queue,
+    @InjectQueue(ProcessorType.MOVIELENS) private movielensQueue: Queue,
     @InjectModel(MovielensRating.name)
     private mlRatingModel: Model<MovielensRating>,
     @InjectModel(MovielensLink.name)

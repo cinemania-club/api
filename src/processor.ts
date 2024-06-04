@@ -2,6 +2,14 @@ import { OnQueueActive, OnQueueCompleted, OnQueueFailed } from "@nestjs/bull";
 import * as Sentry from "@sentry/node";
 import { Job } from "bull";
 
+export enum ProcessorType {
+  MOVIELENS = "movielens",
+}
+
+export enum ProcessType {
+  LOAD_RATINGS = "load-ratings",
+}
+
 export abstract class BaseProcessor {
   @OnQueueActive()
   jobStarted(job: Job) {
