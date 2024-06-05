@@ -64,13 +64,7 @@ export class ScrapperService {
       seriesIds,
     );
 
-    const jobs = seriesToReload.map((id) => ({
-      name: "getSeriesDetails",
-      data: { id },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
-    return series;
+    return seriesToReload;
   }
 
   async getSeries(id: number) {

@@ -56,4 +56,44 @@ export class TmdbProcessor extends BaseProcessor {
   async getMovie(job: Job<{ id: number }>) {
     await this.scrapperService.getMovie(job.data.id);
   }
+
+  @Process(ProcessType.GET_POPULAR_SERIES)
+  async getPopularSeries(job: Job<{ page?: number }>) {
+    const processId = await this.cacheManager.get(
+      ProcessorType.TMDB + ":" + ProcessType.GET_POPULAR_SERIES,
+    );
+    if (!processId) return;
+
+    const page = job.data.page || 1;
+    if (page > POPULAR_ITEMS_PAGES_LIMIT) return;
+
+    const nextPage = page + 1;
+    await this.tmdbQueue.add(ProcessType.GET_POPULAR_SERIES, {
+      page: nextPage,
+    });
+
+    const seriesToReload = await this.scrapperService.getPopularSeries(page);
+
+    const jobs = seriesToReload.map((id) => ({
+      name: ProcessType.GET_POPULAR_SERIES_ITEM,
+      data: { id },
+    }));
+
+    await this.tmdbQueue.addBulk(jobs);
+  }
+
+  @Process(ProcessType.GET_POPULAR_SERIES_ITEM)
+  async getPopularSeriesItem(job: Job<{ id: number }>) {
+    const processId = await this.cacheManager.get(
+      ProcessorType.TMDB + ":" + ProcessType.GET_POPULAR_SERIES,
+    );
+    if (!processId) return;
+
+    await this.scrapperService.getSeries(job.data.id);
+  }
+
+  @Process(ProcessType.GET_SERIES)
+  async getSeries(job: Job<{ id: number }>) {
+    await this.scrapperService.getSeries(job.data.id);
+  }
 }
