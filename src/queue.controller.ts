@@ -1,6 +1,14 @@
 import { InjectQueue } from "@nestjs/bull";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Controller, Delete, Get, Inject, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+} from "@nestjs/common";
 import { Queue } from "bull";
 import { Cache } from "cache-manager";
 import { Admin } from "src/auth/auth.guard";
@@ -17,14 +25,17 @@ export class QueueAdminController {
   ) {}
 
   @Post("/:queue/:process")
-  async start(@Param() params: { queue: string; process: string }) {
+  async start(
+    @Param() params: { queue: string; process: string },
+    @Body() payload: any,
+  ) {
     const key = `${params.queue}:${params.process}`;
     const queue = this.getQueue(params.queue);
     const uuid = uuidv4();
     console.info(`Starting process: ${key}, ${uuid}`);
 
     await this.cacheManager.set(key, uuid);
-    await queue.add(params.process);
+    await queue.add(params.process, payload);
   }
 
   @Get("/:queue/:process")
