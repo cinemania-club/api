@@ -1,6 +1,4 @@
-import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
-import { Queue } from "bull";
 import { CatalogItemFormat } from "src/catalog/item.schema";
 import { LoaderService } from "src/catalog/loader.service";
 import { TmdbAdapter } from "./tmdb.adapter";
@@ -9,7 +7,6 @@ import { TmdbAdapter } from "./tmdb.adapter";
 export class ScrapperService {
   constructor(
     private tmdbAdapter: TmdbAdapter,
-    @InjectQueue("tmdb") private tmdbQueue: Queue,
     private loaderService: LoaderService,
   ) {}
 
@@ -22,17 +19,11 @@ export class ScrapperService {
       movieIds,
     );
 
-    const jobs = moviesToReload.map((id) => ({
-      name: "getMovieDetails",
-      data: { id },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
-    return movies;
+    return moviesToReload;
   }
 
-  async getMovieDetails(id: number) {
-    const movie = await this.tmdbAdapter.getMovieDetails(id);
+  async getMovie(id: number) {
+    const movie = await this.tmdbAdapter.getMovie(id);
 
     await this.loaderService.load({
       ...movie,
@@ -70,17 +61,11 @@ export class ScrapperService {
       seriesIds,
     );
 
-    const jobs = seriesToReload.map((id) => ({
-      name: "getSeriesDetails",
-      data: { id },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
-    return series;
+    return seriesToReload;
   }
 
-  async getSeriesDetails(id: number) {
-    const series = await this.tmdbAdapter.getSeriesDetails(id);
+  async getSeries(id: number) {
+    const series = await this.tmdbAdapter.getSeries(id);
 
     await this.loaderService.load({
       ...series,

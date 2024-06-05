@@ -28,6 +28,7 @@ import { UserModule } from "./user/user.module";
     }),
     BullModule.forRoot({ redis: REDIS_URL }),
     BullModule.registerQueue({ name: ProcessorType.MOVIELENS }),
+    BullModule.registerQueue({ name: ProcessorType.TMDB }),
     BullBoardModule.forRoot({
       route: "/queues",
       adapter: ExpressAdapter,
