@@ -3,12 +3,13 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { Queue } from "bull";
 import { first, last, range } from "lodash";
 import { Admin } from "src/auth/auth.guard";
+import { ProcessorType } from "src/processor";
 import { POPULAR_ITEMS_PAGES_LIMIT } from "./constants";
 
 @Admin()
 @Controller("/scrapper")
 export class ScrapperController {
-  constructor(@InjectQueue("tmdb") private tmdbQueue: Queue) {}
+  constructor(@InjectQueue(ProcessorType.TMDB) private tmdbQueue: Queue) {}
 
   @Post("/get-popular-movies")
   async getPopularMovies() {
