@@ -22,17 +22,11 @@ export class ScrapperService {
       movieIds,
     );
 
-    const jobs = moviesToReload.map((id) => ({
-      name: "getMovieDetails",
-      data: { id },
-    }));
-
-    await this.tmdbQueue.addBulk(jobs);
-    return movies;
+    return moviesToReload;
   }
 
-  async getMovieDetails(id: number) {
-    const movie = await this.tmdbAdapter.getMovieDetails(id);
+  async getMovie(id: number) {
+    const movie = await this.tmdbAdapter.getMovie(id);
 
     await this.loaderService.load({
       ...movie,
@@ -79,7 +73,7 @@ export class ScrapperService {
     return series;
   }
 
-  async getSeriesDetails(id: number) {
+  async getSeries(id: number) {
     const series = await this.tmdbAdapter.getSeriesDetails(id);
 
     await this.loaderService.load({

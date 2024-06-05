@@ -3,10 +3,17 @@ import * as Sentry from "@sentry/node";
 import { Job } from "bull";
 
 export enum ProcessorType {
+  TMDB = "tmdb",
   MOVIELENS = "movielens",
 }
 
 export enum ProcessType {
+  GET_POPULAR_MOVIES = "get-popular-movies",
+  GET_POPULAR_MOVIE_ITEM = "get-popular-movie-item",
+  GET_MOVIE = "get-movie",
+  GET_POPULAR_SERIES = "get-popular-series",
+  GET_POPULAR_SERIES_ITEM = "get-popular-series-item",
+  GET_SERIES = "get-series",
   LOAD_RATINGS = "load-ratings",
 }
 

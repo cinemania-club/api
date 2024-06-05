@@ -13,6 +13,7 @@ export class QueueAdminController {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectQueue(ProcessorType.MOVIELENS) private movielensQueue: Queue,
+    @InjectQueue(ProcessorType.TMDB) private tmdbQueue: Queue,
   ) {}
 
   @Post("/:queue/:process")
@@ -45,6 +46,8 @@ export class QueueAdminController {
 
   private getQueue(queue: string) {
     switch (queue) {
+      case ProcessorType.TMDB:
+        return this.tmdbQueue;
       case ProcessorType.MOVIELENS:
         return this.movielensQueue;
       default:

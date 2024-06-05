@@ -111,7 +111,7 @@ export class TmdbAdapter {
     return response.data;
   }
 
-  async getMovieDetails(id: number) {
+  async getMovie(id: number) {
     console.info(`TMDB request - movie details: ${id}`);
 
     const response = await this.instance.get<TmdbMovie>(
