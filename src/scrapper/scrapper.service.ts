@@ -65,7 +65,7 @@ export class ScrapperService {
   }
 
   async getSeries(id: number) {
-    const series = await this.tmdbAdapter.getSeriesDetails(id);
+    const series = await this.tmdbAdapter.getSeries(id);
 
     await this.loaderService.load({
       ...series,
