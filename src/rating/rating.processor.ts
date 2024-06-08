@@ -41,7 +41,7 @@ export class RatingProcessor extends BaseProcessor {
       return;
     }
 
-    this.context = { id: item._id };
+    this.context = { itemId: item._id };
     await this.ratingService.calculateRating(item);
   }
 
