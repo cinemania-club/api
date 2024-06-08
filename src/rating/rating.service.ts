@@ -20,17 +20,22 @@ type RatingAvg = {
 
 @Injectable()
 export class RatingService {
-  constructor(@InjectModel(Rating.name) private ratingModel: Model<Rating>) {}
+  constructor(
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
+    @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
+  ) {}
 
   async calculateRating(item: CatalogItem) {
     const internal = await this.getInternalRatingAvg(item);
     const tmdb = this.getTmdbRatingAvg(item);
 
-    return this.joinRatingAvgs(internal, tmdb);
+    const rating = this.joinRatingAvgs(internal, tmdb);
+
+    await this.catalogModel.findByIdAndUpdate(item._id, { rating });
   }
 
   private async getInternalRatingAvg(item: CatalogItem) {
-    const [rating] = await this.ratingModel.aggregate<RatingAvg>([
+    const [rating] = await this.ratingModel.aggregate<RatingAvg | undefined>([
       { $match: { itemId: item._id } },
       {
         $group: {
@@ -52,15 +57,18 @@ export class RatingService {
   }
 
   private getTmdbRatingAvg(item: CatalogItem) {
+    if (!item.voteAverage || !item.voteCount) return;
+
     return {
       rating: normalizeRating(item.voteAverage, 0.5, 10),
       count: item.voteCount,
     };
   }
 
-  private joinRatingAvgs(...ratingAvgs: RatingAvg[]) {
-    const ratings = sum(ratingAvgs.map((e) => e.rating * e.count));
-    const count = sum(ratingAvgs.map((e) => e.count));
+  private joinRatingAvgs(...ratingAvgs: (RatingAvg | undefined)[]) {
+    const avgs = ratingAvgs.filter((e) => e) as RatingAvg[];
+    const ratings = sum(avgs.map((e) => e.rating * e.count));
+    const count = sum(avgs.map((e) => e.count));
     return ratings / count;
   }
 

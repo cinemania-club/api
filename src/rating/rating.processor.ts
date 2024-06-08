@@ -1,6 +1,5 @@
 import { Process, Processor } from "@nestjs/bull";
 import { InjectModel } from "@nestjs/mongoose";
-import { Job } from "bull";
 import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
 import { BaseProcessor, ProcessorType, ProcessType } from "../processor";
@@ -39,18 +38,5 @@ export class RatingProcessor extends BaseProcessor {
     );
 
     console.info(`Updated ratings for items: ${ids}`);
-  }
-
-  @Process(ProcessType.CALCULATE_RATING)
-  async calculateRating(job: Job<{ id: string }>) {
-    const item = await this.catalogModel.findById(job.data.id);
-    if (!item) {
-      console.info(`Item not found: ${job.data.id}`);
-      return;
-    }
-
-    const rating = await this.ratingService.calculateRating(item);
-
-    await this.catalogModel.findByIdAndUpdate(item._id, { rating });
   }
 }
