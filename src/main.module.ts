@@ -32,7 +32,9 @@ import {
 import { RatingProcessor } from "./rating/rating.processor";
 import { Rating, RatingSchema } from "./rating/rating.schema";
 import { RatingService } from "./rating/rating.service";
-import { ScrapperModule } from "./scrapper/scrapper.module";
+import { ScrapperService } from "./scrapper/scrapper.service";
+import { TmdbAdapter } from "./scrapper/tmdb.adapter";
+import { TmdbProcessor } from "./scrapper/tmdb.processor";
 import { UserModule } from "./user/user.module";
 
 @Module({
@@ -41,6 +43,9 @@ import { UserModule } from "./user/user.module";
     RatingService,
     RatingProcessor,
     MovielensProcessor,
+    ScrapperService,
+    TmdbProcessor,
+    TmdbAdapter,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   imports: [
@@ -60,7 +65,7 @@ import { UserModule } from "./user/user.module";
     }),
     BullModule.forRoot({ redis: REDIS_URL }),
     BullModule.registerQueue(
-      { name: ProcessorType.TMDB },
+      { name: ProcessorType.TMDB, limiter: { max: 1, duration: 100 } },
       { name: ProcessorType.RATING, limiter: { max: 1, duration: 1000 } },
       { name: ProcessorType.MOVIELENS, limiter: { max: 10, duration: 10 } },
     ),
@@ -80,7 +85,6 @@ import { UserModule } from "./user/user.module";
     }),
     CatalogModule,
     PlaylistModule,
-    ScrapperModule,
     UserModule,
   ],
 })
