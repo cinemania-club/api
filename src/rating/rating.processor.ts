@@ -1,16 +1,20 @@
-import { Injectable } from "@nestjs/common";
+import { Process, Processor } from "@nestjs/bull";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { RatingService } from "src/rating/rating.service";
-import { CatalogItem } from "./item.schema";
+import { CatalogItem } from "src/catalog/item.schema";
+import { BaseProcessor, ProcessorType, ProcessType } from "../processor";
+import { RatingService } from "./rating.service";
 
-@Injectable()
-export class CatalogRatingService {
+@Processor(ProcessorType.RATING)
+export class RatingProcessor extends BaseProcessor {
   constructor(
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
     private ratingService: RatingService,
-  ) {}
+  ) {
+    super();
+  }
 
+  @Process(ProcessType.CALCULATE_RATINGS)
   async calculateRatings() {
     const items = await this.catalogModel.find({});
 

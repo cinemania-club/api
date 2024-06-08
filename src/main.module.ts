@@ -14,6 +14,7 @@ import { MONGO_URL, REDIS_URL } from "./constants";
 import { PlaylistModule } from "./playlist/playlist.module";
 import { ProcessorType } from "./processor";
 import { QueueAdminController } from "./queue.controller";
+import { RatingModule } from "./rating/rating.module";
 import { ScrapperModule } from "./scrapper/scrapper.module";
 import { UserModule } from "./user/user.module";
 
@@ -45,6 +46,7 @@ import { UserModule } from "./user/user.module";
     AuthModule,
     CatalogModule,
     PlaylistModule,
+    RatingModule,
     ScrapperModule,
     UserModule,
   ],
