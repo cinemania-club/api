@@ -17,6 +17,7 @@ export enum ProcessType {
   GET_SERIES = "get-series",
   LOAD_RATINGS = "load-ratings",
   CALCULATE_RATINGS = "calculate-ratings",
+  CALCULATE_RATING = "calculate-rating",
 }
 
 export abstract class BaseProcessor {
