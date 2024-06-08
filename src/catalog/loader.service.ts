@@ -4,6 +4,7 @@ import { sub } from "date-fns";
 import { difference, pick } from "lodash";
 import { Model } from "mongoose";
 import { SearchService } from "src/catalog/search.service";
+import { RatingService } from "src/rating/rating.service";
 import { CATALOG_ITEM_FRESHNESS } from "./constants";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";
 
@@ -14,6 +15,7 @@ export class LoaderService {
   constructor(
     @InjectModel(CatalogItem.name) private catalogItemModel: Model<CatalogItem>,
     private searchService: SearchService,
+    private ratingService: RatingService,
   ) {}
 
   async getOutdated(format: CatalogItemFormat, ids: number[]) {
@@ -44,6 +46,7 @@ export class LoaderService {
       { upsert: true, new: true },
     );
 
+    await this.ratingService.calculateRating(result);
     await this.searchService.indexCatalogItem(result);
   }
 }

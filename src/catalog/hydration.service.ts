@@ -5,7 +5,7 @@ import { $eq, Oid } from "src/mongo";
 import { PlaylistItem } from "src/playlist/playlist-item.schema";
 import { Playlist } from "src/playlist/playlist.schema";
 import { Rating } from "src/rating/rating.schema";
-import { CatalogItem } from "../item.schema";
+import { CatalogItem } from "./item.schema";
 
 @Injectable()
 export class CatalogHydration {

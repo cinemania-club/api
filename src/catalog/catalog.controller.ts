@@ -19,7 +19,7 @@ import {
   CATALOG_ITEM_FIELDS,
   ONBOARDING_TARGET_RATINGS,
 } from "./constants";
-import { CatalogHydration } from "./hydration/hydration.service";
+import { CatalogHydration } from "./hydration.service";
 import { CatalogItemFormat } from "./item.schema";
 
 @Controller("/catalog")

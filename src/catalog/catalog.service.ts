@@ -6,7 +6,7 @@ import { LIST_PAGE_SIZE } from "src/constants";
 import { $and, $criteria, $oid, Oid } from "src/mongo";
 import { FilterCatalogDto, SearchDto } from "./catalog.dto";
 import { DEFAULT_SORT_CRITERIA } from "./constants";
-import { CatalogHydration } from "./hydration/hydration.service";
+import { CatalogHydration } from "./hydration.service";
 import { CatalogItem, CatalogItemFormat } from "./item.schema";
 import { SortCriteria } from "./types";
 
