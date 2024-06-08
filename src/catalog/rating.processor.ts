@@ -1,14 +1,14 @@
 import { Process, Processor } from "@nestjs/bull";
-import { BaseProcessor } from "../processor";
+import { BaseProcessor, ProcessorType, ProcessType } from "../processor";
 import { CatalogRatingService } from "./rating.service";
 
-@Processor("catalogRating")
+@Processor(ProcessorType.RATING)
 export class CatalogRatingProcessor extends BaseProcessor {
   constructor(private ratingService: CatalogRatingService) {
     super();
   }
 
-  @Process("calculateRatings")
+  @Process(ProcessType.CALCULATE_RATINGS)
   async calculateRatings() {
     await this.ratingService.calculateRatings();
   }

@@ -5,6 +5,7 @@ import { Module } from "@nestjs/common";
 import { ElasticsearchModule } from "@nestjs/elasticsearch";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ELASTICSEARCH_URL } from "src/constants";
+import { ProcessorType } from "src/processor";
 import { RatingModule } from "src/rating/rating.module";
 import { CatalogAdminController } from "./admin.controller";
 import { CatalogController } from "./catalog.controller";
@@ -33,11 +34,11 @@ import { SearchService } from "./search.service";
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     BullModule.registerQueue({
-      name: "catalogRating",
+      name: ProcessorType.RATING,
       limiter: { max: 1, duration: 1000 },
     }),
     BullBoardModule.forFeature({
-      name: "catalogRating",
+      name: ProcessorType.RATING,
       adapter: BullAdapter,
     }),
     RatingModule,
