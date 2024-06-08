@@ -1,11 +1,9 @@
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { CatalogHydrationModule } from "src/catalog/hydration/hydration.module";
 import { CatalogItem, CatalogSchema } from "src/catalog/item.schema";
 import { ProcessorType } from "src/processor";
 import { MovielensModule } from "./movielens/movielens.module";
-import { RatingExternal } from "./rating.external";
 import { RatingProcessor } from "./rating.processor";
 import { Rating, RatingSchema } from "./rating.schema";
 import { RatingService } from "./rating.service";
@@ -21,9 +19,7 @@ import { RatingService } from "./rating.service";
       name: ProcessorType.RATING,
       limiter: { max: 1, duration: 1000 },
     }),
-    CatalogHydrationModule,
     MovielensModule,
   ],
-  exports: [RatingExternal],
 })
 export class RatingModule {}
