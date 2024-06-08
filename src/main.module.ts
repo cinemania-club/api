@@ -1,3 +1,4 @@
+import { BullAdapter } from "@bull-board/api/bullAdapter";
 import { ExpressAdapter } from "@bull-board/express";
 import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bull";
@@ -27,12 +28,19 @@ import { UserModule } from "./user/user.module";
       store: () => redisStore({ url: REDIS_URL }),
     }),
     BullModule.forRoot({ redis: REDIS_URL }),
-    BullModule.registerQueue({ name: ProcessorType.MOVIELENS }),
-    BullModule.registerQueue({ name: ProcessorType.TMDB }),
+    BullModule.registerQueue(
+      { name: ProcessorType.MOVIELENS },
+      { name: ProcessorType.TMDB },
+    ),
     BullBoardModule.forRoot({
       route: "/queues",
       adapter: ExpressAdapter,
     }),
+    BullBoardModule.forFeature(
+      { name: ProcessorType.MOVIELENS, adapter: BullAdapter },
+      { name: ProcessorType.TMDB, adapter: BullAdapter },
+      { name: ProcessorType.RATING, adapter: BullAdapter },
+    ),
     AuthModule,
     CatalogModule,
     PlaylistModule,

@@ -1,5 +1,3 @@
-import { BullAdapter } from "@bull-board/api/bullAdapter";
-import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
@@ -22,10 +20,6 @@ import { MovielensRating, MovielensRatingSchema } from "./rating.schema";
     BullModule.registerQueue({
       name: ProcessorType.MOVIELENS,
       limiter: { max: 10, duration: 10 },
-    }),
-    BullBoardModule.forFeature({
-      name: ProcessorType.MOVIELENS,
-      adapter: BullAdapter,
     }),
   ],
 })

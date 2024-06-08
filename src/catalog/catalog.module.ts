@@ -1,5 +1,3 @@
-import { BullAdapter } from "@bull-board/api/bullAdapter";
-import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bull";
 import { Module } from "@nestjs/common";
 import { ElasticsearchModule } from "@nestjs/elasticsearch";
@@ -36,10 +34,6 @@ import { SearchService } from "./search.service";
     BullModule.registerQueue({
       name: ProcessorType.RATING,
       limiter: { max: 1, duration: 1000 },
-    }),
-    BullBoardModule.forFeature({
-      name: ProcessorType.RATING,
-      adapter: BullAdapter,
     }),
     RatingModule,
     CatalogHydrationModule,
