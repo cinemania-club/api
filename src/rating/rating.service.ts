@@ -63,9 +63,6 @@ export class RatingService {
       count: item.voteCount,
     };
   }
-  private normalizeRating(stars: number, min: number, max: number) {
-    return (4 * (stars - min)) / (max - min) + 1;
-  }
 
   private joinRatingAvgs(...ratingAvgs: (RatingAvg | undefined)[]) {
     const avgs = ratingAvgs.filter((e) => e) as RatingAvg[];
@@ -118,5 +115,9 @@ export class RatingService {
     const total = internal.count + external.count;
 
     return (internalFactor + externalFactor) / total;
+  }
+
+  private normalizeRating(stars: number, min: number, max: number) {
+    return (4 * (stars - min)) / (max - min) + 1;
   }
 }
