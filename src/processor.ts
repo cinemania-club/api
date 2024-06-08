@@ -17,45 +17,42 @@ export enum ProcessType {
   GET_SERIES = "get-series",
   LOAD_RATINGS = "load-ratings",
   CALCULATE_RATINGS = "calculate-ratings",
+  CALCULATE_RATING = "calculate-rating",
 }
 
 export abstract class BaseProcessor {
+  context = {};
+
   @OnQueueActive()
   jobStarted(job: Job) {
-    const details = {
-      queue: job.queue.name,
-      name: job.name,
-      id: job.id,
-      data: job.data,
-    };
-
+    const details = this.getDetails(job);
     console.info(`Job started: ${JSON.stringify(details)}`);
   }
 
   @OnQueueCompleted()
   jobFinished(job: Job) {
-    const details = {
-      queue: job.queue.name,
-      name: job.name,
-      id: job.id,
-      data: job.data,
-    };
-
+    const details = this.getDetails(job);
     console.info(`Job finished: ${JSON.stringify(details)}`);
   }
 
   @OnQueueFailed()
   jobFailed(job: Job, error: Error) {
-    const details = {
-      name: job.name,
-      id: job.id,
-      data: job.data,
-    };
-
+    const details = this.getDetails(job);
     const msg = error.stack || error.message;
+
     console.error(`Job failed: ${JSON.stringify(details)}. ${msg}`);
     Sentry.captureException(error, {
       contexts: { job: details },
     });
+  }
+
+  private getDetails(job: Job) {
+    return {
+      queue: job.queue.name,
+      name: job.name,
+      id: job.id,
+      data: job.data,
+      context: this.context,
+    };
   }
 }

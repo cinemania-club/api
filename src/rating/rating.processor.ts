@@ -2,7 +2,7 @@ import { InjectQueue, Process, Processor } from "@nestjs/bull";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Inject } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Queue } from "bull";
+import { Job, Queue } from "bull";
 import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
@@ -38,6 +38,18 @@ export class RatingProcessor extends BaseProcessor {
     if (!item) {
       console.info(`No more ratings to calculate: ${processId}`);
       this.cacheManager.del(PROCESSOR);
+      return;
+    }
+
+    this.context = { id: item._id };
+    await this.ratingService.calculateRating(item);
+  }
+
+  @Process(ProcessType.CALCULATE_RATING)
+  async calculateRating(job: Job<{ id: string }>) {
+    const item = await this.catalogModel.findById(job.data.id);
+    if (!item) {
+      console.info(`Item not found: ${job.data.id}`);
       return;
     }
 

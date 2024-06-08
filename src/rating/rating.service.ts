@@ -66,6 +66,8 @@ export class RatingService {
 
   private joinRatingAvgs(...ratingAvgs: (RatingAvg | undefined)[]) {
     const avgs = ratingAvgs.filter((e) => e) as RatingAvg[];
+    if (!avgs.length) return null;
+
     const ratings = sum(avgs.map((e) => e.rating * e.count));
     const count = sum(avgs.map((e) => e.count));
     return ratings / count;
