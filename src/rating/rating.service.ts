@@ -5,7 +5,6 @@ import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
 import { $eq, Oid } from "src/mongo";
 import { Rating } from "./rating.schema";
-import { normalizeRating } from "./util";
 
 type RatingSource = {
   _id: Oid;
@@ -60,9 +59,12 @@ export class RatingService {
     if (!item.voteAverage || !item.voteCount) return;
 
     return {
-      rating: normalizeRating(item.voteAverage, 0.5, 10),
+      rating: this.normalizeRating(item.voteAverage, 0.5, 10),
       count: item.voteCount,
     };
+  }
+  private normalizeRating(stars: number, min: number, max: number) {
+    return (4 * (stars - min)) / (max - min) + 1;
   }
 
   private joinRatingAvgs(...ratingAvgs: (RatingAvg | undefined)[]) {
@@ -108,7 +110,7 @@ export class RatingService {
   // PRIVATE METHODS
 
   private weightedRating(external: RatingSource, internal?: RatingSource) {
-    const normalizedRating = normalizeRating(external.rating, 0.5, 10);
+    const normalizedRating = this.normalizeRating(external.rating, 0.5, 10);
     if (!internal) return normalizedRating;
 
     const internalFactor = internal.count * internal.rating;
