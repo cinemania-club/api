@@ -6,6 +6,7 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
+import { ElasticsearchModule } from "@nestjs/elasticsearch";
 import { JwtModule } from "@nestjs/jwt";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
@@ -14,9 +15,13 @@ import { AuthController } from "./auth/auth.controller";
 import { AuthGuard } from "./auth/auth.guard";
 import { Auth, AuthSchema } from "./auth/auth.schema";
 import { JWT_EXPIRATION } from "./auth/constants";
-import { CatalogModule } from "./catalog/catalog.module";
+import { CatalogController } from "./catalog/catalog.controller";
+import { CatalogService } from "./catalog/catalog.service";
+import { CatalogHydrationModule } from "./catalog/hydration/hydration.module";
 import { CatalogItem, CatalogSchema } from "./catalog/item.schema";
-import { MONGO_URL, REDIS_URL } from "./constants";
+import { LoaderService } from "./catalog/loader.service";
+import { SearchService } from "./catalog/search.service";
+import { ELASTICSEARCH_URL, MONGO_URL, REDIS_URL } from "./constants";
 import { PlaylistModule } from "./playlist/playlist.module";
 import { ProcessorType } from "./processor";
 import { QueueAdminController } from "./queue.controller";
@@ -38,7 +43,7 @@ import { TmdbProcessor } from "./scrapper/tmdb.processor";
 import { UserModule } from "./user/user.module";
 
 @Module({
-  controllers: [QueueAdminController, AuthController],
+  controllers: [QueueAdminController, AuthController, CatalogController],
   providers: [
     RatingService,
     RatingProcessor,
@@ -46,6 +51,9 @@ import { UserModule } from "./user/user.module";
     ScrapperService,
     TmdbProcessor,
     TmdbAdapter,
+    LoaderService,
+    CatalogService,
+    SearchService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   imports: [
@@ -58,6 +66,7 @@ import { UserModule } from "./user/user.module";
       { name: MovielensRating.name, schema: MovielensRatingSchema },
       { name: Auth.name, schema: AuthSchema },
     ]),
+    ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     ScheduleModule.forRoot(),
     CacheModule.register({
       isGlobal: true,
@@ -83,7 +92,7 @@ import { UserModule } from "./user/user.module";
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: JWT_EXPIRATION },
     }),
-    CatalogModule,
+    CatalogHydrationModule,
     PlaylistModule,
     UserModule,
   ],

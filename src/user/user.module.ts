@@ -1,7 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ElasticsearchModule } from "@nestjs/elasticsearch";
 import { MongooseModule } from "@nestjs/mongoose";
-import { CatalogModule } from "src/catalog/catalog.module";
 import { ELASTICSEARCH_URL } from "src/constants";
 import { PlaylistModule } from "src/playlist/playlist.module";
 import { ConnectionController } from "./connection/connection.controller";
@@ -20,7 +19,6 @@ import { UserService } from "./user.service";
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     PlaylistModule,
-    CatalogModule,
   ],
   exports: [UserService],
 })
