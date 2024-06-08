@@ -102,7 +102,7 @@ import { UserService } from "./user/user.service";
     BullModule.forRoot({ redis: REDIS_URL }),
     BullModule.registerQueue(
       { name: ProcessorType.TMDB, limiter: { max: 1, duration: 100 } },
-      { name: ProcessorType.RATING, limiter: { max: 1, duration: 1000 } },
+      { name: ProcessorType.RATING, limiter: { max: 10, duration: 10 } },
       { name: ProcessorType.MOVIELENS, limiter: { max: 10, duration: 10 } },
     ),
     BullBoardModule.forRoot({

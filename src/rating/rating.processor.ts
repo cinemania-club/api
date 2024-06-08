@@ -1,13 +1,21 @@
-import { Process, Processor } from "@nestjs/bull";
+import { InjectQueue, Process, Processor } from "@nestjs/bull";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Inject } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import { Job, Queue } from "bull";
+import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
 import { BaseProcessor, ProcessorType, ProcessType } from "../processor";
 import { RatingService } from "./rating.service";
 
+const PROCESSOR = ProcessorType.RATING + ":" + ProcessType.CALCULATE_RATINGS;
+
 @Processor(ProcessorType.RATING)
 export class RatingProcessor extends BaseProcessor {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectQueue(ProcessorType.RATING) private ratingQueue: Queue,
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
     private ratingService: RatingService,
   ) {
@@ -16,27 +24,35 @@ export class RatingProcessor extends BaseProcessor {
 
   @Process(ProcessType.CALCULATE_RATINGS)
   async calculateRatings() {
-    const items = await this.catalogModel.find({});
+    const processId = await this.cacheManager.get(PROCESSOR);
+    if (!processId) return;
 
-    const ids = items.map((item) => item.id).join(",");
-    console.info(`Calculating ratings for items: ${ids}`);
+    await this.ratingQueue.add(ProcessType.CALCULATE_RATINGS);
 
-    const tmdbRatings = items.map((item) => ({
-      _id: item._id,
-      rating: item.voteAverage,
-      count: item.voteCount,
-    }));
-    const ratings = await this.ratingService.calculateRatings(tmdbRatings);
-
-    await this.catalogModel.bulkWrite(
-      ratings.map((rating) => ({
-        updateOne: {
-          filter: { _id: rating._id },
-          update: { $set: { rating: rating.rating } },
-        },
-      })),
+    const item = await this.catalogModel.findOneAndUpdate(
+      { ratingProcessId: { $ne: processId } },
+      { $set: { ratingProcessId: processId } },
+      { new: true },
     );
 
-    console.info(`Updated ratings for items: ${ids}`);
+    if (!item) {
+      console.info(`No more ratings to calculate: ${processId}`);
+      this.cacheManager.del(PROCESSOR);
+      return;
+    }
+
+    this.context = { itemId: item._id };
+    await this.ratingService.calculateRating(item);
+  }
+
+  @Process(ProcessType.CALCULATE_RATING)
+  async calculateRating(job: Job<{ id: string }>) {
+    const item = await this.catalogModel.findById(job.data.id);
+    if (!item) {
+      console.info(`Item not found: ${job.data.id}`);
+      return;
+    }
+
+    await this.ratingService.calculateRating(item);
   }
 }
