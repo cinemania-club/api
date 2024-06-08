@@ -3,7 +3,6 @@ import { ElasticsearchModule } from "@nestjs/elasticsearch";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ELASTICSEARCH_URL } from "src/constants";
 import { RatingModule } from "src/rating/rating.module";
-import { CatalogAdminController } from "./admin.controller";
 import { CatalogController } from "./catalog.controller";
 import { CatalogService } from "./catalog.service";
 import { CatalogHydrationModule } from "./hydration/hydration.module";
@@ -13,7 +12,7 @@ import { CatalogRatingService } from "./rating.service";
 import { SearchService } from "./search.service";
 
 @Module({
-  controllers: [CatalogController, CatalogAdminController],
+  controllers: [CatalogController],
   providers: [
     CatalogRatingService,
     LoaderService,
