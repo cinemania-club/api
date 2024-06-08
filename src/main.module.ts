@@ -28,25 +28,20 @@ import { UserModule } from "./user/user.module";
       store: () => redisStore({ url: REDIS_URL }),
     }),
     BullModule.forRoot({ redis: REDIS_URL }),
-    BullModule.registerQueue({ name: ProcessorType.MOVIELENS }),
-    BullModule.registerQueue({ name: ProcessorType.TMDB }),
-    BullModule.registerQueue({ name: ProcessorType.RATING }),
+    BullModule.registerQueue(
+      { name: ProcessorType.MOVIELENS },
+      { name: ProcessorType.TMDB },
+      { name: ProcessorType.RATING },
+    ),
     BullBoardModule.forRoot({
       route: "/queues",
       adapter: ExpressAdapter,
     }),
-    BullBoardModule.forFeature({
-      name: ProcessorType.MOVIELENS,
-      adapter: BullAdapter,
-    }),
-    BullBoardModule.forFeature({
-      name: ProcessorType.TMDB,
-      adapter: BullAdapter,
-    }),
-    BullBoardModule.forFeature({
-      name: ProcessorType.RATING,
-      adapter: BullAdapter,
-    }),
+    BullBoardModule.forFeature(
+      { name: ProcessorType.MOVIELENS, adapter: BullAdapter },
+      { name: ProcessorType.TMDB, adapter: BullAdapter },
+      { name: ProcessorType.RATING, adapter: BullAdapter },
+    ),
     AuthModule,
     CatalogModule,
     PlaylistModule,
