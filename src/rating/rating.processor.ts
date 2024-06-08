@@ -6,20 +6,18 @@ import { Queue } from "bull";
 import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
-import { CatalogRatingService } from "../catalog/rating.service";
 import { BaseProcessor, ProcessorType, ProcessType } from "../processor";
-import { Rating } from "./rating.schema";
+import { RatingService } from "./rating.service";
 
 const PROCESSOR = ProcessorType.RATING + ":" + ProcessType.CALCULATE_RATINGS;
 
 @Processor(ProcessorType.RATING)
-export class CatalogRatingProcessor extends BaseProcessor {
+export class RatingProcessor extends BaseProcessor {
   constructor(
-    private ratingService: CatalogRatingService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @InjectQueue(ProcessorType.RATING) private ratingQueue: Queue,
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
-    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
+    private ratingService: RatingService,
+    @InjectQueue(ProcessorType.RATING) private ratingQueue: Queue,
   ) {
     super();
   }

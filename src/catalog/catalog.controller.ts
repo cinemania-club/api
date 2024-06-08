@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { pick } from "lodash";
+import { Model } from "mongoose";
 import { Anonymous } from "src/auth/auth.guard";
 import { $oid } from "src/mongo";
 import { PLAYLIST_FIELDS } from "src/playlist/constants";
-import { RatingService } from "src/rating/rating.service";
+import { Rating } from "src/rating/rating.schema";
 import {
   CatalogItemDto,
   FilterCatalogDto,
@@ -23,8 +25,8 @@ import { CatalogItemFormat } from "./item.schema";
 @Controller("/catalog")
 export class CatalogController {
   constructor(
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     private catalogService: CatalogService,
-    private ratingService: RatingService,
     private catalogHydration: CatalogHydration,
   ) {}
 
@@ -36,9 +38,10 @@ export class CatalogController {
       req.payload!.userId,
     );
 
-    const currentRatings = await this.ratingService.countUserRatings(
-      req.payload!.userId,
-    );
+    const currentRatings = await this.ratingModel.countDocuments({
+      userId: req.payload!.userId,
+      stars: { $ne: null },
+    });
 
     const isOnboarding = currentRatings < ONBOARDING_TARGET_RATINGS;
     const onboarding = {
@@ -99,10 +102,10 @@ export class CatalogController {
     @Param() params: CatalogItemDto,
     @Body() rating: RatingDto,
   ) {
-    await this.ratingService.rateItem(
-      req.payload!.userId.toString(),
-      params.id,
-      rating.stars,
+    await this.ratingModel.findOneAndUpdate(
+      { itemId: params.id, userId: req.payload!.userId.toString() },
+      { stars: rating.stars || null },
+      { upsert: true },
     );
   }
 }

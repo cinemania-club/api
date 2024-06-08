@@ -6,11 +6,12 @@ import { CatalogItem, CatalogSchema } from "src/catalog/item.schema";
 import { ProcessorType } from "src/processor";
 import { MovielensModule } from "./movielens/movielens.module";
 import { RatingExternal } from "./rating.external";
+import { RatingProcessor } from "./rating.processor";
 import { Rating, RatingSchema } from "./rating.schema";
 import { RatingService } from "./rating.service";
 
 @Module({
-  providers: [RatingService, RatingExternal],
+  providers: [RatingService, RatingProcessor],
   imports: [
     MongooseModule.forFeature([
       { name: Rating.name, schema: RatingSchema },
