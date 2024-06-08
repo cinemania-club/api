@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CatalogItem } from "src/catalog/item.schema";
 import { $eq, Oid } from "src/mongo";
 import { Rating } from "./rating.schema";
 
@@ -12,7 +11,7 @@ type RatingSource = {
 };
 
 @Injectable()
-export class RatingService {
+export class RatingExternal {
   constructor(@InjectModel(Rating.name) private ratingModel: Model<Rating>) {}
 
   async rateItem(userId: string, itemId: string, stars?: number) {
@@ -36,8 +35,6 @@ export class RatingService {
       itemId: { $in: itemIds },
     });
   }
-
-  async calculateRating(item: CatalogItem[]) {}
 
   async calculateRatings(externalSource: RatingSource[]) {
     const ids = externalSource.map((item) => item._id);

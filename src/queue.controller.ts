@@ -22,6 +22,7 @@ export class QueueAdminController {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectQueue(ProcessorType.MOVIELENS) private movielensQueue: Queue,
     @InjectQueue(ProcessorType.TMDB) private tmdbQueue: Queue,
+    @InjectQueue(ProcessorType.RATING) private ratingQueue: Queue,
   ) {}
 
   @Post("/:queue/:process")
@@ -61,6 +62,8 @@ export class QueueAdminController {
         return this.tmdbQueue;
       case ProcessorType.MOVIELENS:
         return this.movielensQueue;
+      case ProcessorType.RATING:
+        return this.ratingQueue;
       default:
         throw new Error(`Queue ${queue} not found`);
     }

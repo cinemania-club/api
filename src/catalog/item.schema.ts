@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { UUID } from "crypto";
 import { HydratedDocument, SchemaTypes } from "mongoose";
 import { Oid } from "src/mongo";
 
@@ -69,6 +70,8 @@ export class CatalogItem {
 
   @Prop({ type: SchemaTypes.Number, required: false })
   rating?: number;
+  @Prop({ type: SchemaTypes.UUID, required: false })
+  ratingProcessId?: UUID;
 }
 
 export const CatalogSchema = SchemaFactory.createForClass(CatalogItem);
