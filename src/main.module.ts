@@ -40,10 +40,23 @@ import { RatingService } from "./rating/rating.service";
 import { ScrapperService } from "./scrapper/scrapper.service";
 import { TmdbAdapter } from "./scrapper/tmdb.adapter";
 import { TmdbProcessor } from "./scrapper/tmdb.processor";
-import { UserModule } from "./user/user.module";
+import { ConnectionController } from "./user/connection/connection.controller";
+import {
+  Connection,
+  ConnectionSchema,
+} from "./user/connection/connection.schema";
+import { UserController } from "./user/user.controller";
+import { User, UserSchema } from "./user/user.schema";
+import { UserService } from "./user/user.service";
 
 @Module({
-  controllers: [QueueAdminController, AuthController, CatalogController],
+  controllers: [
+    QueueAdminController,
+    AuthController,
+    CatalogController,
+    UserController,
+    ConnectionController,
+  ],
   providers: [
     RatingService,
     RatingProcessor,
@@ -54,6 +67,7 @@ import { UserModule } from "./user/user.module";
     LoaderService,
     CatalogService,
     SearchService,
+    UserService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   imports: [
@@ -65,6 +79,8 @@ import { UserModule } from "./user/user.module";
       { name: MovielensLink.name, schema: MovielensLinkSchema },
       { name: MovielensRating.name, schema: MovielensRatingSchema },
       { name: Auth.name, schema: AuthSchema },
+      { name: User.name, schema: UserSchema },
+      { name: Connection.name, schema: ConnectionSchema },
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     ScheduleModule.forRoot(),
@@ -94,7 +110,6 @@ import { UserModule } from "./user/user.module";
     }),
     CatalogHydrationModule,
     PlaylistModule,
-    UserModule,
   ],
 })
 export class MainModule {}
