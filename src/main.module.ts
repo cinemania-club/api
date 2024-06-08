@@ -17,12 +17,18 @@ import { Auth, AuthSchema } from "./auth/auth.schema";
 import { JWT_EXPIRATION } from "./auth/constants";
 import { CatalogController } from "./catalog/catalog.controller";
 import { CatalogService } from "./catalog/catalog.service";
-import { CatalogHydrationModule } from "./catalog/hydration/hydration.module";
+import { CatalogHydration } from "./catalog/hydration/hydration.service";
 import { CatalogItem, CatalogSchema } from "./catalog/item.schema";
 import { LoaderService } from "./catalog/loader.service";
 import { SearchService } from "./catalog/search.service";
 import { ELASTICSEARCH_URL, MONGO_URL, REDIS_URL } from "./constants";
-import { PlaylistModule } from "./playlist/playlist.module";
+import {
+  PlaylistItem,
+  PlaylistItemSchema,
+} from "./playlist/playlist-item.schema";
+import { PlaylistController } from "./playlist/playlist.controller";
+import { Playlist, PlaylistSchema } from "./playlist/playlist.schema";
+import { PlaylistExternal } from "./playlist/playlist.service";
 import { ProcessorType } from "./processor";
 import { QueueAdminController } from "./queue.controller";
 import {
@@ -56,6 +62,7 @@ import { UserService } from "./user/user.service";
     CatalogController,
     UserController,
     ConnectionController,
+    PlaylistController,
   ],
   providers: [
     RatingService,
@@ -68,6 +75,8 @@ import { UserService } from "./user/user.service";
     CatalogService,
     SearchService,
     UserService,
+    CatalogHydration,
+    PlaylistExternal,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   imports: [
@@ -81,6 +90,8 @@ import { UserService } from "./user/user.service";
       { name: Auth.name, schema: AuthSchema },
       { name: User.name, schema: UserSchema },
       { name: Connection.name, schema: ConnectionSchema },
+      { name: Playlist.name, schema: PlaylistSchema },
+      { name: PlaylistItem.name, schema: PlaylistItemSchema },
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     ScheduleModule.forRoot(),
@@ -108,8 +119,6 @@ import { UserService } from "./user/user.service";
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: JWT_EXPIRATION },
     }),
-    CatalogHydrationModule,
-    PlaylistModule,
   ],
 })
 export class MainModule {}
