@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CatalogItem } from "src/catalog/item.schema";
 import { $eq, Oid } from "src/mongo";
 import { Rating } from "./rating.schema";
 
@@ -14,30 +13,6 @@ type RatingSource = {
 @Injectable()
 export class RatingService {
   constructor(@InjectModel(Rating.name) private ratingModel: Model<Rating>) {}
-
-  async rateItem(userId: string, itemId: string, stars?: number) {
-    await this.ratingModel.findOneAndUpdate(
-      { itemId, userId },
-      { stars: stars || null },
-      { upsert: true },
-    );
-  }
-
-  async countUserRatings(userId: Oid) {
-    return await this.ratingModel.countDocuments({
-      userId,
-      stars: { $ne: null },
-    });
-  }
-
-  async getUserRatings(itemIds: Oid[], userId: Oid) {
-    return await this.ratingModel.find({
-      userId,
-      itemId: { $in: itemIds },
-    });
-  }
-
-  async calculateRating(item: CatalogItem[]) {}
 
   async calculateRatings(externalSource: RatingSource[]) {
     const ids = externalSource.map((item) => item._id);
