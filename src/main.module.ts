@@ -17,7 +17,7 @@ import { Auth, AuthSchema } from "./auth/auth.schema";
 import { JWT_EXPIRATION } from "./auth/constants";
 import { CatalogController } from "./catalog/catalog.controller";
 import { CatalogService } from "./catalog/catalog.service";
-import { CatalogHydration } from "./catalog/hydration/hydration.service";
+import { CatalogHydration } from "./catalog/hydration.service";
 import { CatalogItem, CatalogSchema } from "./catalog/item.schema";
 import { LoaderService } from "./catalog/loader.service";
 import { SearchService } from "./catalog/search.service";

@@ -2,7 +2,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { pick, uniqWith } from "lodash";
 import { Model } from "mongoose";
 import { CATALOG_FIELDS } from "src/catalog/constants";
-import { CatalogHydration } from "src/catalog/hydration/hydration.service";
+import { CatalogHydration } from "src/catalog/hydration.service";
 import { $eq, Oid } from "src/mongo";
 import { PLAYLIST_FIELDS } from "./constants";
 import { PlaylistItem } from "./playlist-item.schema";
