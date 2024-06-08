@@ -5,9 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { ELASTICSEARCH_URL } from "src/constants";
 import { ProcessorType } from "src/processor";
 import { RatingModule } from "src/rating/rating.module";
-import { CatalogAdminController } from "./admin.controller";
 import { CatalogController } from "./catalog.controller";
-import { CatalogScheduler } from "./catalog.scheduler";
 import { CatalogService } from "./catalog.service";
 import { CatalogHydrationModule } from "./hydration/hydration.module";
 import { CatalogItem, CatalogSchema } from "./item.schema";
@@ -17,9 +15,8 @@ import { CatalogRatingService } from "./rating.service";
 import { SearchService } from "./search.service";
 
 @Module({
-  controllers: [CatalogController, CatalogAdminController],
+  controllers: [CatalogController],
   providers: [
-    CatalogScheduler,
     CatalogRatingService,
     CatalogRatingProcessor,
     LoaderService,

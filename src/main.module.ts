@@ -31,6 +31,7 @@ import { UserModule } from "./user/user.module";
     BullModule.registerQueue(
       { name: ProcessorType.MOVIELENS },
       { name: ProcessorType.TMDB },
+      { name: ProcessorType.RATING },
     ),
     BullBoardModule.forRoot({
       route: "/queues",
