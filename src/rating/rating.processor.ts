@@ -41,10 +41,6 @@ export class RatingProcessor extends BaseProcessor {
       return;
     }
 
-    const rating = this.ratingService.calculateRating(item);
-
-    await this.catalogModel.findByIdAndUpdate(item._id, { rating });
-
-    console.info(`Movielens rating loaded. Process: ${processId}`);
+    await this.ratingService.calculateRating(item);
   }
 }
