@@ -15,9 +15,9 @@ const PROCESSOR = ProcessorType.RATING + ":" + ProcessType.CALCULATE_RATINGS;
 export class RatingProcessor extends BaseProcessor {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectQueue(ProcessorType.RATING) private ratingQueue: Queue,
     @InjectModel(CatalogItem.name) private catalogModel: Model<CatalogItem>,
     private ratingService: RatingService,
-    @InjectQueue(ProcessorType.RATING) private ratingQueue: Queue,
   ) {
     super();
   }
