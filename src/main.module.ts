@@ -5,10 +5,15 @@ import { BullModule } from "@nestjs/bull";
 import { CacheModule } from "@nestjs/cache-manager";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
+import { JwtModule } from "@nestjs/jwt";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { redisStore } from "cache-manager-redis-yet";
-import { AuthModule } from "./auth/auth.module";
+import { AuthController } from "./auth/auth.controller";
+import { AuthGuard } from "./auth/auth.guard";
+import { Auth, AuthSchema } from "./auth/auth.schema";
+import { JWT_EXPIRATION } from "./auth/constants";
 import { CatalogModule } from "./catalog/catalog.module";
 import { CatalogItem, CatalogSchema } from "./catalog/item.schema";
 import { MONGO_URL, REDIS_URL } from "./constants";
@@ -31,8 +36,13 @@ import { ScrapperModule } from "./scrapper/scrapper.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
-  controllers: [QueueAdminController],
-  providers: [RatingService, RatingProcessor, MovielensProcessor],
+  controllers: [QueueAdminController, AuthController],
+  providers: [
+    RatingService,
+    RatingProcessor,
+    MovielensProcessor,
+    { provide: APP_GUARD, useClass: AuthGuard },
+  ],
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(MONGO_URL),
@@ -41,6 +51,7 @@ import { UserModule } from "./user/user.module";
       { name: CatalogItem.name, schema: CatalogSchema },
       { name: MovielensLink.name, schema: MovielensLinkSchema },
       { name: MovielensRating.name, schema: MovielensRatingSchema },
+      { name: Auth.name, schema: AuthSchema },
     ]),
     ScheduleModule.forRoot(),
     CacheModule.register({
@@ -62,7 +73,11 @@ import { UserModule } from "./user/user.module";
       { name: ProcessorType.TMDB, adapter: BullAdapter },
       { name: ProcessorType.RATING, adapter: BullAdapter },
     ),
-    AuthModule,
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: JWT_EXPIRATION },
+    }),
     CatalogModule,
     PlaylistModule,
     ScrapperModule,
