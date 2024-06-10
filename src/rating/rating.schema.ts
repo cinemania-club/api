@@ -1,23 +1,19 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, SchemaTypes } from "mongoose";
 import { Oid } from "src/mongo";
+import { DataSource } from "src/types";
 
 export type RatingDocument = HydratedDocument<Rating>;
-
-export enum RatingSource {
-  INTERNAL = "INTERNAL",
-  MOVIELENS = "MOVIELENS",
-}
 
 @Schema({ timestamps: true })
 export class Rating {
   @Prop({
     type: SchemaTypes.String,
     required: true,
-    enum: RatingSource,
-    default: RatingSource.INTERNAL,
+    enum: DataSource,
+    default: DataSource.INTERNAL,
   })
-  source!: RatingSource;
+  source!: DataSource;
 
   @Prop({ type: SchemaTypes.Mixed, required: true })
   userId!: Oid | number;

@@ -7,7 +7,8 @@ import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
 import { BaseProcessor, ProcessorType, ProcessType } from "src/processor";
-import { Rating, RatingSource } from "../rating.schema";
+import { DataSource } from "src/types";
+import { Rating } from "../rating.schema";
 import { MovielensLink } from "./link.schema";
 import { MovielensRating } from "./rating.schema";
 
@@ -65,7 +66,7 @@ export class MovielensProcessor extends BaseProcessor {
 
     await this.ratingModel.findOneAndUpdate(
       {
-        source: RatingSource.MOVIELENS,
+        source: DataSource.MOVIELENS,
         userId: rating.userId,
         itemId: item._id,
       },
