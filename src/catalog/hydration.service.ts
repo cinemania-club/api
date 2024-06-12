@@ -30,8 +30,6 @@ export class CatalogHydration {
     return await this.addPlaylists(result, userId);
   }
 
-  // PRIVATE METHODS
-
   private async addRatings(items: CatalogItem[], userId: Oid) {
     const ids = items.map((item) => item._id);
     const ratings = await this.ratingModel.find({
@@ -61,7 +59,9 @@ export class CatalogHydration {
       playlists,
       items: items.map((item) => ({
         ...item,
-        playlists: itemsPlaylists.map((p) => p.playlistId),
+        playlists: itemsPlaylists
+          .filter((p) => $eq(p.itemId, item._id))
+          .map((p) => p.playlistId),
       })),
     };
   }
