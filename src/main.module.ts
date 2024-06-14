@@ -43,6 +43,8 @@ import {
 import { RatingProcessor } from "./rating/rating.processor";
 import { Rating, RatingSchema } from "./rating/rating.schema";
 import { RatingService } from "./rating/rating.service";
+import { Critic, CriticSchema } from "./recommendation/critic.schema";
+import { CriticService } from "./recommendation/critic.service";
 import { ScrapperService } from "./scrapper/scrapper.service";
 import { TmdbAdapter } from "./scrapper/tmdb.adapter";
 import { TmdbProcessor } from "./scrapper/tmdb.processor";
@@ -77,6 +79,7 @@ import { UserService } from "./user/user.service";
     UserService,
     CatalogHydration,
     PlaylistExternal,
+    CriticService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   imports: [
@@ -92,6 +95,7 @@ import { UserService } from "./user/user.service";
       { name: Connection.name, schema: ConnectionSchema },
       { name: Playlist.name, schema: PlaylistSchema },
       { name: PlaylistItem.name, schema: PlaylistItemSchema },
+      { name: Critic.name, schema: CriticSchema },
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     ScheduleModule.forRoot(),

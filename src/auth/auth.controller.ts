@@ -13,6 +13,7 @@ import { Request } from "express";
 import { Model } from "mongoose";
 import { Anonymous, Public } from "src/auth/auth.guard";
 import { Oid } from "src/mongo";
+import { CriticService } from "src/recommendation/critic.service";
 import { UserService } from "src/user/user.service";
 import { CreateAuthDto, SignInDto, SignUpDto } from "./auth.dto";
 import { Auth } from "./auth.schema";
@@ -24,12 +25,16 @@ export class AuthController {
     @InjectModel(Auth.name) private authModel: Model<Auth>,
     private jwtService: JwtService,
     private userService: UserService,
+    private criticService: CriticService,
   ) {}
 
   @Public()
   @Post()
   async create(@Body() dto: CreateAuthDto) {
     await this.authModel.updateOne({ uuid: dto.uuid }, {}, { upsert: true });
+
+    const auth = (await this.authModel.findOne({ uuid: dto.uuid }))!;
+    await this.criticService.createInternal(auth._id);
   }
 
   @Anonymous()
