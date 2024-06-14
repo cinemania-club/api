@@ -34,7 +34,7 @@ export class AuthController {
     await this.authModel.updateOne({ uuid: dto.uuid }, {}, { upsert: true });
 
     const auth = (await this.authModel.findOne({ uuid: dto.uuid }))!;
-    await this.criticService.createInternal(auth._id);
+    await this.criticService.create(auth._id);
   }
 
   @Anonymous()

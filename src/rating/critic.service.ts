@@ -9,7 +9,7 @@ import { Critic } from "./critic.schema";
 export class CriticService {
   constructor(@InjectModel(Critic.name) private criticModel: Model<Critic>) {}
 
-  async createInternal(id: Oid) {
+  async create(id: Oid) {
     await this.criticModel.updateOne(
       { source: DataSource.INTERNAL, userId: id },
       {},
