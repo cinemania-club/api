@@ -13,7 +13,7 @@ import { Request } from "express";
 import { Model } from "mongoose";
 import { Anonymous, Public } from "src/auth/auth.guard";
 import { Oid } from "src/mongo";
-import { CriticService } from "src/recommendation/critic.service";
+import { CriticService } from "src/rating/critic.service";
 import { UserService } from "src/user/user.service";
 import { CreateAuthDto, SignInDto, SignUpDto } from "./auth.dto";
 import { Auth } from "./auth.schema";

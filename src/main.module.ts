@@ -31,6 +31,8 @@ import { Playlist, PlaylistSchema } from "./playlist/playlist.schema";
 import { PlaylistExternal } from "./playlist/playlist.service";
 import { ProcessorType } from "./processor";
 import { QueueAdminController } from "./queue.controller";
+import { Critic, CriticSchema } from "./rating/critic.schema";
+import { CriticService } from "./rating/critic.service";
 import {
   MovielensLink,
   MovielensLinkSchema,
@@ -43,8 +45,6 @@ import {
 import { RatingProcessor } from "./rating/rating.processor";
 import { Rating, RatingSchema } from "./rating/rating.schema";
 import { RatingService } from "./rating/rating.service";
-import { Critic, CriticSchema } from "./recommendation/critic.schema";
-import { CriticService } from "./recommendation/critic.service";
 import { ScrapperService } from "./scrapper/scrapper.service";
 import { TmdbAdapter } from "./scrapper/tmdb.adapter";
 import { TmdbProcessor } from "./scrapper/tmdb.processor";
