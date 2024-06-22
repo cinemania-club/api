@@ -45,6 +45,8 @@ import {
 import { RatingProcessor } from "./rating/rating.processor";
 import { Rating, RatingSchema } from "./rating/rating.schema";
 import { RatingService } from "./rating/rating.service";
+import { SimilarityProcessor } from "./rating/recommendation/similarity.processor";
+import { SimilarityService } from "./rating/recommendation/similarity.service";
 import { ScrapperService } from "./scrapper/scrapper.service";
 import { TmdbAdapter } from "./scrapper/tmdb.adapter";
 import { TmdbProcessor } from "./scrapper/tmdb.processor";
@@ -72,6 +74,8 @@ import { UserService } from "./user/user.service";
     MovielensProcessor,
     ScrapperService,
     TmdbProcessor,
+    SimilarityProcessor,
+    SimilarityService,
     TmdbAdapter,
     LoaderService,
     CatalogService,
@@ -108,6 +112,7 @@ import { UserService } from "./user/user.service";
       { name: ProcessorType.TMDB, limiter: { max: 1, duration: 100 } },
       { name: ProcessorType.RATING, limiter: { max: 10, duration: 10 } },
       { name: ProcessorType.MOVIELENS, limiter: { max: 10, duration: 10 } },
+      { name: ProcessorType.SIMILARITY, limiter: { max: 10, duration: 10 } },
     ),
     BullBoardModule.forRoot({
       route: "/queues",
@@ -117,6 +122,7 @@ import { UserService } from "./user/user.service";
       { name: ProcessorType.MOVIELENS, adapter: BullAdapter },
       { name: ProcessorType.TMDB, adapter: BullAdapter },
       { name: ProcessorType.RATING, adapter: BullAdapter },
+      { name: ProcessorType.SIMILARITY, adapter: BullAdapter },
     ),
     JwtModule.register({
       global: true,
