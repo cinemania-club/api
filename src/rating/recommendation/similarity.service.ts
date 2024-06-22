@@ -20,6 +20,7 @@ export class SimilarityService {
     let ratings = await this.getIntersectionRatings(critic1, critic2);
     ratings = this.normalize(ratings);
     const similarity = this.cosineSimilarity(ratings);
+
     console.log({ similarity });
   }
 
@@ -107,7 +108,7 @@ export class SimilarityService {
     const normCritic1 = this.norm(ratings.map((e) => e.critic1));
     const normCritic2 = this.norm(ratings.map((e) => e.critic2));
 
-    if (!normCritic1 || !normCritic2) return 1;
+    if (!normCritic1 || !normCritic2) return 0;
 
     return dotProduct / (normCritic1 * normCritic2);
   }
