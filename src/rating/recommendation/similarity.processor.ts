@@ -21,7 +21,7 @@ export class SimilarityProcessor extends BaseProcessor {
     const critic2 = await this.getCritic(job.data.critic2);
     if (!critic1 || !critic2) return;
 
-    await this.similarityService.calculateSimilarity(critic1, critic2);
+    await this.similarityService.updateSimilarity(critic1, critic2);
   }
 
   private async getCritic(criticId: string) {

@@ -5,6 +5,7 @@ import { Model } from "mongoose";
 import { Oid } from "src/mongo";
 import { Critic } from "../critic.schema";
 import { Rating } from "../rating.schema";
+import { Similarity } from "./similarity.schema";
 
 type IntersectionRating = {
   itemId: Oid;
@@ -14,14 +15,31 @@ type IntersectionRating = {
 
 @Injectable()
 export class SimilarityService {
-  constructor(@InjectModel(Rating.name) private ratingModel: Model<Rating>) {}
+  constructor(
+    @InjectModel(Rating.name) private ratingModel: Model<Rating>,
+    @InjectModel(Similarity.name) private similarityModel: Model<Similarity>,
+  ) {}
 
-  async calculateSimilarity(critic1: Critic, critic2: Critic) {
+  async updateSimilarity(critic1: Critic, critic2: Critic) {
     let ratings = await this.getIntersectionRatings(critic1, critic2);
     ratings = this.normalize(ratings);
     const similarity = this.cosineSimilarity(ratings);
 
-    console.log({ similarity });
+    await this.similarityModel.findOneAndUpdate(
+      {
+        $or: [
+          { critic1: critic1._id, critic2: critic2._id },
+          { critic1: critic2._id, critic2: critic1._id },
+        ],
+      },
+      {
+        critic1: critic1._id,
+        critic2: critic2._id,
+        similarity,
+        sample: ratings.length,
+      },
+      { upsert: true },
+    );
   }
 
   private async getIntersectionRatings(critic1: Critic, critic2: Critic) {

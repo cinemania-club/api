@@ -46,6 +46,10 @@ import { RatingProcessor } from "./rating/rating.processor";
 import { Rating, RatingSchema } from "./rating/rating.schema";
 import { RatingService } from "./rating/rating.service";
 import { SimilarityProcessor } from "./rating/recommendation/similarity.processor";
+import {
+  Similarity,
+  SimilaritySchema,
+} from "./rating/recommendation/similarity.schema";
 import { SimilarityService } from "./rating/recommendation/similarity.service";
 import { ScrapperService } from "./scrapper/scrapper.service";
 import { TmdbAdapter } from "./scrapper/tmdb.adapter";
@@ -100,6 +104,7 @@ import { UserService } from "./user/user.service";
       { name: Playlist.name, schema: PlaylistSchema },
       { name: PlaylistItem.name, schema: PlaylistItemSchema },
       { name: Critic.name, schema: CriticSchema },
+      { name: Similarity.name, schema: SimilaritySchema },
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),
     ScheduleModule.forRoot(),
