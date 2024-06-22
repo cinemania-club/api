@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { pick } from "lodash";
 import { Model } from "mongoose";
-import { Oid } from "src/mongo";
 import { Critic } from "../critic.schema";
 import { Rating } from "../rating.schema";
 
@@ -12,24 +11,74 @@ export class SimilarityService {
 
   async calculateSimilarity(critic1: Critic, critic2: Critic) {
     const items = await this.getIntersectionItems(critic1, critic2);
-    console.log({ items });
+    console.log({ items: JSON.stringify(items) });
   }
 
   private async getIntersectionItems(critic1: Critic, critic2: Critic) {
-    const [result] = await this.ratingModel.aggregate<{ items: Oid[] }>([
+    const c1 = pick(critic1, ["source", "userId"]);
+    const c2 = pick(critic2, ["source", "userId"]);
+
+    const result = await this.ratingModel.aggregate([
+      { $match: { $or: [c1, c2] } },
       {
-        $facet: {
-          critic1: [{ $match: pick(critic1, ["source", "userId"]) }],
-          critic2: [{ $match: pick(critic2, ["source", "userId"]) }],
+        $group: {
+          _id: "$itemId",
+          ratings: {
+            $addToSet: {
+              source: "$source",
+              userId: "$userId",
+              stars: "$stars",
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          ratings: {
+            $all: [{ $elemMatch: c1 }, { $elemMatch: c2 }],
+          },
         },
       },
       {
         $project: {
-          items: { $setIntersection: ["$critic1.itemId", "$critic2.itemId"] },
+          critic1: {
+            $first: {
+              $filter: {
+                input: "$ratings",
+                cond: {
+                  $and: [
+                    { $eq: ["$$this.source", c1.source] },
+                    { $eq: ["$$this.userId", c1.userId] },
+                  ],
+                },
+              },
+            },
+          },
+          critic2: {
+            $first: {
+              $filter: {
+                input: "$ratings",
+                cond: {
+                  $and: [
+                    { $eq: ["$$this.source", c2.source] },
+                    { $eq: ["$$this.userId", c2.userId] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          itemId: "$_id",
+          critic1: "$critic1.stars",
+          critic2: "$critic1.stars",
         },
       },
     ]);
 
-    return result.items;
+    return result;
   }
 }
