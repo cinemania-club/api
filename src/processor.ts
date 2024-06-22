@@ -6,6 +6,7 @@ export enum ProcessorType {
   TMDB = "tmdb",
   MOVIELENS = "movielens",
   RATING = "rating",
+  SIMILARITY = "similarity",
 }
 
 export enum ProcessType {
@@ -18,6 +19,7 @@ export enum ProcessType {
   LOAD_RATINGS = "load-ratings",
   CALCULATE_RATINGS = "calculate-ratings",
   CALCULATE_RATING = "calculate-rating",
+  CALCULATE_SIMILARITY = "calculate-similarity",
 }
 
 export abstract class BaseProcessor {
