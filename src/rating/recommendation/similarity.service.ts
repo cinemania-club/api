@@ -2,23 +2,30 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { pick } from "lodash";
 import { Model } from "mongoose";
+import { Oid } from "src/mongo";
 import { Critic } from "../critic.schema";
 import { Rating } from "../rating.schema";
+
+type IntersectionRating = {
+  itemId: Oid;
+  critic1: number;
+  critic2: number;
+};
 
 @Injectable()
 export class SimilarityService {
   constructor(@InjectModel(Rating.name) private ratingModel: Model<Rating>) {}
 
   async calculateSimilarity(critic1: Critic, critic2: Critic) {
-    const items = await this.getIntersectionItems(critic1, critic2);
-    console.log({ items: JSON.stringify(items) });
+    const ratings = await this.getIntersectionRatings(critic1, critic2);
+    console.log({ ratings: JSON.stringify(ratings) });
   }
 
-  private async getIntersectionItems(critic1: Critic, critic2: Critic) {
+  private async getIntersectionRatings(critic1: Critic, critic2: Critic) {
     const c1 = pick(critic1, ["source", "userId"]);
     const c2 = pick(critic2, ["source", "userId"]);
 
-    const result = await this.ratingModel.aggregate([
+    const result = await this.ratingModel.aggregate<IntersectionRating>([
       { $match: { $or: [c1, c2] } },
       {
         $group: {
