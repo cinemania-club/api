@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { pick } from "lodash";
+import { meanBy, pick } from "lodash";
 import { Model } from "mongoose";
 import { Oid } from "src/mongo";
 import { Critic } from "../critic.schema";
@@ -17,7 +17,9 @@ export class SimilarityService {
   constructor(@InjectModel(Rating.name) private ratingModel: Model<Rating>) {}
 
   async calculateSimilarity(critic1: Critic, critic2: Critic) {
-    const ratings = await this.getIntersectionRatings(critic1, critic2);
+    let ratings = await this.getIntersectionRatings(critic1, critic2);
+    ratings = await this.normalize(ratings);
+
     console.log({ ratings: JSON.stringify(ratings) });
   }
 
@@ -87,5 +89,16 @@ export class SimilarityService {
     ]);
 
     return result;
+  }
+
+  private async normalize(ratings: IntersectionRating[]) {
+    const avgCritic1 = meanBy(ratings, "critic1");
+    const avgCritic2 = meanBy(ratings, "critic2");
+
+    return ratings.map((e) => ({
+      ...e,
+      critic1: e.critic1 - avgCritic1,
+      critic2: e.critic2 - avgCritic2,
+    }));
   }
 }
