@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { meanBy, pick } from "lodash";
+import { chain, meanBy, pick, sum } from "lodash";
 import { Model } from "mongoose";
 import { Oid } from "src/mongo";
 import { Critic } from "../critic.schema";
@@ -19,8 +19,8 @@ export class SimilarityService {
   async calculateSimilarity(critic1: Critic, critic2: Critic) {
     let ratings = await this.getIntersectionRatings(critic1, critic2);
     ratings = await this.normalize(ratings);
-
-    console.log({ ratings: JSON.stringify(ratings) });
+    const similarity = await this.cosineSimilarity(ratings);
+    console.log({ similarity });
   }
 
   private async getIntersectionRatings(critic1: Critic, critic2: Critic) {
@@ -83,7 +83,7 @@ export class SimilarityService {
           _id: 0,
           itemId: "$_id",
           critic1: "$critic1.stars",
-          critic2: "$critic1.stars",
+          critic2: "$critic2.stars",
         },
       },
     ]);
@@ -100,5 +100,23 @@ export class SimilarityService {
       critic1: e.critic1 - avgCritic1,
       critic2: e.critic2 - avgCritic2,
     }));
+  }
+
+  private async cosineSimilarity(ratings: IntersectionRating[]) {
+    const dotProduct = sum(ratings.map((e) => e.critic1 * e.critic2));
+    const normCritic1 = this.norm(ratings.map((e) => e.critic1));
+    const normCritic2 = this.norm(ratings.map((e) => e.critic2));
+
+    if (!normCritic1 || !normCritic2) return 1;
+
+    return dotProduct / (normCritic1 * normCritic2);
+  }
+
+  private norm(vector: number[]) {
+    return chain(vector)
+      .map((e) => e ** 2)
+      .sum()
+      .thru(Math.sqrt)
+      .value();
   }
 }
