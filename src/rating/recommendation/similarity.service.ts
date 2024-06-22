@@ -18,8 +18,8 @@ export class SimilarityService {
 
   async calculateSimilarity(critic1: Critic, critic2: Critic) {
     let ratings = await this.getIntersectionRatings(critic1, critic2);
-    ratings = await this.normalize(ratings);
-    const similarity = await this.cosineSimilarity(ratings);
+    ratings = this.normalize(ratings);
+    const similarity = this.cosineSimilarity(ratings);
     console.log({ similarity });
   }
 
@@ -91,7 +91,7 @@ export class SimilarityService {
     return result;
   }
 
-  private async normalize(ratings: IntersectionRating[]) {
+  private normalize(ratings: IntersectionRating[]) {
     const avgCritic1 = meanBy(ratings, "critic1");
     const avgCritic2 = meanBy(ratings, "critic2");
 
@@ -102,7 +102,7 @@ export class SimilarityService {
     }));
   }
 
-  private async cosineSimilarity(ratings: IntersectionRating[]) {
+  private cosineSimilarity(ratings: IntersectionRating[]) {
     const dotProduct = sum(ratings.map((e) => e.critic1 * e.critic2));
     const normCritic1 = this.norm(ratings.map((e) => e.critic1));
     const normCritic2 = this.norm(ratings.map((e) => e.critic2));
