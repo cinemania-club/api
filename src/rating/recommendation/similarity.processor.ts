@@ -1,32 +1,34 @@
-import { InjectQueue, Process, Processor } from "@nestjs/bull";
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Inject } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Job, Queue } from "bull";
-import { Cache } from "cache-manager";
-import { Model } from "mongoose";
+import { Process, Processor } from "@nestjs/bull";
+import { Job } from "bull";
+import { $oid } from "src/mongo";
 import { BaseProcessor, ProcessorType, ProcessType } from "src/processor";
-import { Critic } from "../critic.schema";
+import { DataSource } from "src/types";
 import { SimilarityService } from "./similarity.service";
+
+type InternalCritic = {
+  source: DataSource.INTERNAL;
+  userId: string;
+};
+
+type MovielensCritic = {
+  source: DataSource.MOVIELENS;
+  userId: number;
+};
+
+type Critic = InternalCritic | MovielensCritic;
 
 const PROCESSOR =
   ProcessorType.SIMILARITY + ":" + ProcessType.CALCULATE_SIMILARITIES;
 
 @Processor(ProcessorType.SIMILARITY)
 export class SimilarityProcessor extends BaseProcessor {
-  constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @InjectQueue(ProcessorType.SIMILARITY) private similarityQueue: Queue,
-    @InjectModel(Critic.name) private criticModel: Model<Critic>,
-    private similarityService: SimilarityService,
-  ) {
+  constructor(private similarityService: SimilarityService) {
     super();
   }
 
   @Process(ProcessType.CALCULATE_SIMILARITIES)
-  async calculateSimilarities(job: Job<{ critic: string }>) {
-    const critic = await this.getCritic(job.data.critic);
-    if (!critic) return;
+  async calculateSimilarities(job: Job<{ critic: Critic }>) {
+    const critic = this.sanitize(job.data.critic);
 
     const neighbors =
       await this.similarityService.getPotentialNeighbors(critic);
@@ -34,20 +36,19 @@ export class SimilarityProcessor extends BaseProcessor {
   }
 
   @Process(ProcessType.CALCULATE_SIMILARITY)
-  async calculateSimilarity(job: Job<{ critic1: string; critic2: string }>) {
-    const critic1 = await this.getCritic(job.data.critic1);
-    const critic2 = await this.getCritic(job.data.critic2);
-    if (!critic1 || !critic2) return;
+  async calculateSimilarity(job: Job<{ critic1: Critic; critic2: Critic }>) {
+    const critic1 = this.sanitize(job.data.critic1);
+    const critic2 = this.sanitize(job.data.critic2);
 
     await this.similarityService.updateSimilarity(critic1, critic2);
   }
 
-  private async getCritic(criticId: string) {
-    const critic = await this.criticModel.findById(criticId);
-    if (!critic) {
-      console.info(`Critic not found: ${criticId}`);
-      return;
-    }
+  private sanitize(critic: Critic) {
+    if (critic.source === DataSource.INTERNAL)
+      return {
+        source: critic.source,
+        userId: $oid(critic.userId),
+      };
 
     return critic;
   }

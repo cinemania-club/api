@@ -5,18 +5,21 @@ import { DataSource } from "src/types";
 
 export type RatingDocument = HydratedDocument<Rating>;
 
-@Schema({ timestamps: true })
-export class Rating {
-  @Prop({
-    type: SchemaTypes.String,
-    required: true,
-    enum: DataSource,
-    default: DataSource.INTERNAL,
-  })
+export class Critic {
+  @Prop({ type: SchemaTypes.String, required: true, enum: DataSource })
   source!: DataSource;
 
   @Prop({ type: SchemaTypes.Mixed, required: true })
   userId!: Oid | number;
+}
+
+@Schema({ timestamps: true })
+export class Rating {
+  @Prop({ type: SchemaTypes.ObjectId, required: true })
+  _id!: Oid;
+
+  @Prop({ type: Critic, required: true })
+  critic!: Critic;
 
   @Prop({ type: SchemaTypes.ObjectId, required: true })
   itemId!: Oid;

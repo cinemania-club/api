@@ -33,8 +33,6 @@ import { Playlist, PlaylistSchema } from "./playlist/playlist.schema";
 import { PlaylistExternal } from "./playlist/playlist.service";
 import { ProcessorType } from "./processor";
 import { QueueAdminController } from "./queue.controller";
-import { Critic, CriticSchema } from "./rating/critic.schema";
-import { CriticService } from "./rating/critic.service";
 import {
   MovielensLink,
   MovielensLinkSchema,
@@ -88,7 +86,6 @@ import { UserService } from "./user/user.service";
     UserService,
     CatalogHydration,
     PlaylistExternal,
-    CriticService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   imports: [
@@ -103,7 +100,6 @@ import { UserService } from "./user/user.service";
       { name: Connection.name, schema: ConnectionSchema },
       { name: Playlist.name, schema: PlaylistSchema },
       { name: PlaylistItem.name, schema: PlaylistItemSchema },
-      { name: Critic.name, schema: CriticSchema },
       { name: Similarity.name, schema: SimilaritySchema },
     ]),
     ElasticsearchModule.register({ node: ELASTICSEARCH_URL }),

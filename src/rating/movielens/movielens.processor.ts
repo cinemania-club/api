@@ -8,7 +8,6 @@ import { Model } from "mongoose";
 import { CatalogItem } from "src/catalog/item.schema";
 import { BaseProcessor, ProcessorType, ProcessType } from "src/processor";
 import { DataSource } from "src/types";
-import { Critic } from "../critic.schema";
 import { Rating } from "../rating.schema";
 import { MovielensLink } from "./link.schema";
 import { MovielensRating } from "./rating.schema";
@@ -25,7 +24,6 @@ export class MovielensProcessor extends BaseProcessor {
     @InjectModel(MovielensLink.name) private mlLinkModel: Model<MovielensLink>,
     @InjectModel(CatalogItem.name) private itemModel: Model<CatalogItem>,
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
-    @InjectModel(Critic.name) private criticModel: Model<Critic>,
   ) {
     super();
   }
@@ -63,16 +61,9 @@ export class MovielensProcessor extends BaseProcessor {
       return;
     }
 
-    await this.criticModel.findOneAndUpdate(
-      { source: DataSource.MOVIELENS, userId: rating.userId },
-      {},
-      { upsert: true },
-    );
-
     await this.ratingModel.findOneAndUpdate(
       {
-        source: DataSource.MOVIELENS,
-        userId: rating.userId,
+        critic: { source: DataSource.MOVIELENS, userId: rating.userId },
         itemId: item._id,
       },
       { $set: { stars: rating.rating } },
