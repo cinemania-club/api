@@ -5,6 +5,7 @@ import { $eq, Oid } from "src/mongo";
 import { PlaylistItem } from "src/playlist/playlist-item.schema";
 import { Playlist } from "src/playlist/playlist.schema";
 import { Rating } from "src/rating/rating.schema";
+import { DataSource } from "src/types";
 import { CatalogItem } from "./item.schema";
 
 @Injectable()
@@ -33,7 +34,7 @@ export class CatalogHydration {
   private async addRatings(items: CatalogItem[], userId: Oid) {
     const ids = items.map((item) => item._id);
     const ratings = await this.ratingModel.find({
-      userId,
+      critic: { source: DataSource.INTERNAL, userId },
       itemId: { $in: ids },
     });
 

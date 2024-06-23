@@ -63,8 +63,7 @@ export class MovielensProcessor extends BaseProcessor {
 
     await this.ratingModel.findOneAndUpdate(
       {
-        source: DataSource.MOVIELENS,
-        userId: rating.userId,
+        critic: { source: DataSource.MOVIELENS, userId: rating.userId },
         itemId: item._id,
       },
       { $set: { stars: rating.rating } },
