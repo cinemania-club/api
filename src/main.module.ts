@@ -11,17 +11,19 @@ import { JwtModule } from "@nestjs/jwt";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ScheduleModule } from "@nestjs/schedule";
 import { redisStore } from "cache-manager-redis-yet";
-import { AuthController } from "./auth/auth.controller";
-import { AuthGuard } from "./auth/auth.guard";
-import { Auth, AuthSchema } from "./auth/auth.schema";
-import { JWT_EXPIRATION } from "./auth/constants";
+import { AuthGuard } from "./auth.guard";
 import { CatalogController } from "./catalog/catalog.controller";
 import { CatalogService } from "./catalog/catalog.service";
 import { CatalogHydration } from "./catalog/hydration.service";
 import { CatalogItem, CatalogSchema } from "./catalog/item.schema";
 import { LoaderService } from "./catalog/loader.service";
 import { SearchService } from "./catalog/search.service";
-import { ELASTICSEARCH_URL, MONGO_URL, REDIS_URL } from "./constants";
+import {
+  ELASTICSEARCH_URL,
+  JWT_EXPIRATION,
+  MONGO_URL,
+  REDIS_URL,
+} from "./constants";
 import {
   PlaylistItem,
   PlaylistItemSchema,
@@ -66,11 +68,10 @@ import { UserService } from "./user/user.service";
 @Module({
   controllers: [
     QueueAdminController,
-    AuthController,
     CatalogController,
-    UserController,
     ConnectionController,
     PlaylistController,
+    UserController,
   ],
   providers: [
     RatingService,
@@ -98,7 +99,6 @@ import { UserService } from "./user/user.service";
       { name: CatalogItem.name, schema: CatalogSchema },
       { name: MovielensLink.name, schema: MovielensLinkSchema },
       { name: MovielensRating.name, schema: MovielensRatingSchema },
-      { name: Auth.name, schema: AuthSchema },
       { name: User.name, schema: UserSchema },
       { name: Connection.name, schema: ConnectionSchema },
       { name: Playlist.name, schema: PlaylistSchema },

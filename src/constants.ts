@@ -8,4 +8,7 @@ export const MONGO_URL = "mongodb://mongo/cinemania";
 export const ELASTICSEARCH_URL = "http://elasticsearch:9200";
 export const REDIS_URL = "redis://redis:6379";
 
+export const PASSWORD_SALT_ROUNDS = 10;
+export const JWT_EXPIRATION = "30 days";
+
 export const LIST_PAGE_SIZE = 100;

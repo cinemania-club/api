@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { Queue } from "bull";
 import { Cache } from "cache-manager";
-import { Admin } from "src/auth/auth.guard";
+import { Admin } from "src/auth.guard";
 import { v4 as uuidv4 } from "uuid";
 import { ProcessorType } from "./processor";
 

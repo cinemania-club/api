@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Param, Post, Req } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { Model } from "mongoose";
-import { Anonymous } from "src/auth/auth.guard";
+import { Anonymous } from "src/auth.guard";
 import { PlaylistItem } from "./playlist-item.schema";
 import { AddItemDto, CreatePlaylistDto, PlaylistDto } from "./playlist.dto";
 import { Playlist } from "./playlist.schema";

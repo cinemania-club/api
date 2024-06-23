@@ -5,6 +5,11 @@ export enum DataSource {
   MOVIELENS = "MOVIELENS",
 }
 
+export type JwtPayload = {
+  sub: string;
+  admin: boolean;
+};
+
 export type RequestPayload = { userId: Oid };
 
 declare global {
