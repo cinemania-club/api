@@ -3,11 +3,18 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { pick } from "lodash";
 import { Model } from "mongoose";
-import { Anonymous } from "src/auth/auth.guard";
+import { Anonymous, Public } from "src/auth.guard";
 import { $oid } from "src/mongo";
 import { PlaylistExternal } from "src/playlist/playlist.service";
 import { USER_FIELDS } from "./constants";
-import { SearchDto, SetStreamingsDto, UserDto } from "./user.dto";
+import {
+  AnonymousUserDto,
+  SearchDto,
+  SetStreamingsDto,
+  SignInDto,
+  SignUpDto,
+  UserDto,
+} from "./user.dto";
 import { User } from "./user.schema";
 import { UserService } from "./user.service";
 
@@ -18,6 +25,30 @@ export class UserController {
     private playlistExternal: PlaylistExternal,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
+
+  @Public()
+  @Post()
+  async create(@Body() dto: AnonymousUserDto) {
+    await this.userModel.findOneAndUpdate(
+      { uuid: dto.uuid },
+      {},
+      { upsert: true, new: true },
+    );
+  }
+
+  @Anonymous()
+  @Post("/sign-up")
+  async signUp(@Req() req: Request, @Body() dto: SignUpDto) {
+    const token = await this.userService.signUp(req.payload!.userId, dto);
+    return { token };
+  }
+
+  @Public()
+  @Post("/sign-in")
+  async signIn(@Body() dto: SignInDto) {
+    const token = await this.userService.signIn(dto);
+    return { token };
+  }
 
   @Anonymous()
   @Get("/search")

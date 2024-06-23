@@ -1,1 +1,1 @@
-export const USER_FIELDS = ["_id", "username", "name"];
+export const USER_FIELDS = ["_id", "profile.username", "profile.name"];

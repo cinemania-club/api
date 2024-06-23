@@ -3,7 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { pick } from "lodash";
 import { Model } from "mongoose";
-import { Anonymous } from "src/auth/auth.guard";
+import { Anonymous } from "src/auth.guard";
 import { USER_FIELDS } from "../constants";
 import { User } from "../user.schema";
 import { FollowDto } from "./connection.dto";

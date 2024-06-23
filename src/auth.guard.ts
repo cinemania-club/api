@@ -10,9 +10,8 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Request } from "express";
 import { Model } from "mongoose";
 import { $oid } from "src/mongo";
-import { RequestPayload } from "src/types";
-import { Auth } from "./auth.schema";
-import { JwtPayload } from "./types";
+import { JwtPayload, RequestPayload } from "src/types";
+import { User } from "src/user/user.schema";
 
 enum AccessLevel {
   PUBLIC = 1,
@@ -34,7 +33,7 @@ export const Public = () => SetMetadata(AccessLevel.PUBLIC, true);
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    @InjectModel(Auth.name) private authModel: Model<Auth>,
+    @InjectModel(User.name) private authModel: Model<User>,
     private jwtService: JwtService,
     private reflector: Reflector,
   ) {}
@@ -69,16 +68,16 @@ export class AuthGuard implements CanActivate {
   private async getUserProfile(authorization?: string): Promise<UserProfile> {
     if (!authorization) return { level: AccessLevel.PUBLIC };
 
-    const isAuthenticated = await this.testAuthenticated(authorization);
+    const isAuthenticated = await this.checkAuthenticated(authorization);
     if (isAuthenticated) return isAuthenticated;
 
-    const isAnnonymous = await this.testAnnonymous(authorization);
+    const isAnnonymous = await this.checkAnnonymous(authorization);
     if (isAnnonymous) return isAnnonymous;
 
     return { level: AccessLevel.PUBLIC };
   }
 
-  private async testAuthenticated(authorization: string) {
+  private async checkAuthenticated(authorization: string) {
     const token = authorization.match(/^Bearer (?<token>.+)$/)?.groups?.token;
     if (!token) return;
 
@@ -90,7 +89,7 @@ export class AuthGuard implements CanActivate {
     return { level, payload: { userId: $oid(payload.sub) } };
   }
 
-  private async testAnnonymous(authorization: string) {
+  private async checkAnnonymous(authorization: string) {
     const user = await this.authModel.findOne({ uuid: authorization });
     if (!user) return;
 
