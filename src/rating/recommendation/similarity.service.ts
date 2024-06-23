@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { chain, meanBy, sum } from "lodash";
 import { Model } from "mongoose";
 import { Oid } from "src/mongo";
+import { DataSource } from "src/types";
 import { Critic, Rating } from "../rating.schema";
 import { Similarity } from "./similarity.schema";
 
@@ -12,7 +13,7 @@ type IntersectionRating = {
   critic2: number;
 };
 
-type PotencialNeighbor = {
+type PotentialNeighbor = {
   source: string;
   userId: Oid | number;
   ratings: number;
@@ -27,8 +28,10 @@ export class SimilarityService {
     @InjectModel(Similarity.name) private similarityModel: Model<Similarity>,
   ) {}
 
-  async getPotentialNeighbors(critic: Critic) {
-    const result = await this.ratingModel.aggregate<PotencialNeighbor>([
+  async getPotentialNeighbors(userId: Oid) {
+    const critic = { source: DataSource.INTERNAL, userId };
+
+    const result = await this.ratingModel.aggregate<PotentialNeighbor>([
       {
         $facet: {
           all: [],
@@ -41,18 +44,18 @@ export class SimilarityService {
           items: {
             $filter: {
               input: "$all",
-              cond: { $in: ["$$this.itemId", "$userItems"] },
+              cond: {
+                $and: [
+                  { $in: ["$$this.itemId", "$userItems"] },
+                  { $ne: ["$$this.critic", critic] },
+                ],
+              },
             },
           },
         },
       },
       { $unwind: "$items" },
-      {
-        $group: {
-          _id: { source: "$items.source", userId: "$items.userId" },
-          ratings: { $sum: 1 },
-        },
-      },
+      { $group: { _id: "$items.critic", ratings: { $sum: 1 } } },
       { $sort: { ratings: -1 } },
       { $limit: POTENTIAL_NEIGHBORS },
       {
@@ -104,9 +107,7 @@ export class SimilarityService {
       },
       {
         $match: {
-          ratings: {
-            $all: [{ $elemMatch: critic1 }, { $elemMatch: critic2 }],
-          },
+          ratings: { $all: [{ $elemMatch: critic1 }, { $elemMatch: critic2 }] },
         },
       },
       {

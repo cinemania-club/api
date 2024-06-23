@@ -27,11 +27,10 @@ export class SimilarityProcessor extends BaseProcessor {
   }
 
   @Process(ProcessType.CALCULATE_SIMILARITIES)
-  async calculateSimilarities(job: Job<{ critic: Critic }>) {
-    const critic = this.sanitize(job.data.critic);
+  async calculateSimilarities(job: Job<{ userId: string }>) {
+    const oid = $oid(job.data.userId);
 
-    const neighbors =
-      await this.similarityService.getPotentialNeighbors(critic);
+    const neighbors = await this.similarityService.getPotentialNeighbors(oid);
     console.log({ neighbors });
   }
 
