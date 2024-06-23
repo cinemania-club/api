@@ -6,12 +6,7 @@ import { DataSource } from "src/types";
 export type RatingDocument = HydratedDocument<Rating>;
 
 export class Critic {
-  @Prop({
-    type: SchemaTypes.String,
-    required: true,
-    enum: DataSource,
-    default: DataSource.INTERNAL,
-  })
+  @Prop({ type: SchemaTypes.String, required: true, enum: DataSource })
   source!: DataSource;
 
   @Prop({ type: SchemaTypes.Mixed, required: true })
