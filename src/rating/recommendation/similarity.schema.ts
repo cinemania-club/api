@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, SchemaTypes } from "mongoose";
 import { Oid } from "src/mongo";
+import { Critic } from "../rating.schema";
 
 export type SimilarityDocument = HydratedDocument<Similarity>;
 
@@ -9,11 +10,11 @@ export class Similarity {
   @Prop({ type: SchemaTypes.ObjectId, required: true })
   _id!: Oid;
 
-  @Prop({ type: SchemaTypes.ObjectId, required: true })
-  critic1!: Oid;
+  @Prop({ type: Critic, required: true })
+  critic1!: Critic;
 
-  @Prop({ type: SchemaTypes.ObjectId, required: true })
-  critic2!: Oid;
+  @Prop({ type: Critic, required: true })
+  critic2!: Critic;
 
   @Prop({ type: SchemaTypes.Number, required: true })
   similarity!: number;

@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { chain, meanBy, pick, sum } from "lodash";
+import { chain, meanBy, sum } from "lodash";
 import { Model } from "mongoose";
 import { Oid } from "src/mongo";
-import { Critic } from "../critic.schema";
-import { Rating } from "../rating.schema";
+import { Critic, Rating } from "../rating.schema";
 import { Similarity } from "./similarity.schema";
 
 type IntersectionRating = {
@@ -23,38 +22,32 @@ export class SimilarityService {
   async updateSimilarity(critic1: Critic, critic2: Critic) {
     let ratings = await this.getIntersectionRatings(critic1, critic2);
     ratings = this.normalize(ratings);
+
     const similarity = this.cosineSimilarity(ratings);
+    if (!similarity) return;
 
     await this.similarityModel.findOneAndUpdate(
       {
         $or: [
-          { critic1: critic1._id, critic2: critic2._id },
-          { critic1: critic2._id, critic2: critic1._id },
+          { critic1, critic2 },
+          { critic1: critic2, critic2: critic1 },
         ],
       },
-      {
-        critic1: critic1._id,
-        critic2: critic2._id,
-        similarity,
-        sample: ratings.length,
-      },
+      { critic1, critic2, similarity, sample: ratings.length },
       { upsert: true },
     );
   }
 
   private async getIntersectionRatings(critic1: Critic, critic2: Critic) {
-    const c1 = pick(critic1, ["source", "userId"]);
-    const c2 = pick(critic2, ["source", "userId"]);
-
-    const result = await this.ratingModel.aggregate<IntersectionRating>([
-      { $match: { $or: [c1, c2] } },
+    const query = [
+      { $match: { $or: [{ critic: critic1 }, { critic: critic2 }] } },
       {
         $group: {
           _id: "$itemId",
           ratings: {
             $addToSet: {
-              source: "$source",
-              userId: "$userId",
+              source: "$critic.source",
+              userId: "$critic.userId",
               stars: "$stars",
             },
           },
@@ -63,7 +56,7 @@ export class SimilarityService {
       {
         $match: {
           ratings: {
-            $all: [{ $elemMatch: c1 }, { $elemMatch: c2 }],
+            $all: [{ $elemMatch: critic1 }, { $elemMatch: critic2 }],
           },
         },
       },
@@ -75,8 +68,8 @@ export class SimilarityService {
                 input: "$ratings",
                 cond: {
                   $and: [
-                    { $eq: ["$$this.source", c1.source] },
-                    { $eq: ["$$this.userId", c1.userId] },
+                    { $eq: ["$$this.source", critic1.source] },
+                    { $eq: ["$$this.userId", critic1.userId] },
                   ],
                 },
               },
@@ -88,8 +81,8 @@ export class SimilarityService {
                 input: "$ratings",
                 cond: {
                   $and: [
-                    { $eq: ["$$this.source", c2.source] },
-                    { $eq: ["$$this.userId", c2.userId] },
+                    { $eq: ["$$this.source", critic2.source] },
+                    { $eq: ["$$this.userId", critic2.userId] },
                   ],
                 },
               },
@@ -105,8 +98,9 @@ export class SimilarityService {
           critic2: "$critic2.stars",
         },
       },
-    ]);
+    ];
 
+    const result = await this.ratingModel.aggregate<IntersectionRating>(query);
     return result;
   }
 
@@ -126,7 +120,7 @@ export class SimilarityService {
     const normCritic1 = this.norm(ratings.map((e) => e.critic1));
     const normCritic2 = this.norm(ratings.map((e) => e.critic2));
 
-    if (!normCritic1 || !normCritic2) return 0;
+    if (!normCritic1 || !normCritic2) return;
 
     return dotProduct / (normCritic1 * normCritic2);
   }
