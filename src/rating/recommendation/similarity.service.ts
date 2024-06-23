@@ -13,12 +13,63 @@ type IntersectionRating = {
   critic2: number;
 };
 
+type PotencialNeighbor = {
+  source: string;
+  userId: Oid | number;
+  ratings: number;
+};
+
+const POTENTIAL_NEIGHBORS = 1000;
+
 @Injectable()
 export class SimilarityService {
   constructor(
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     @InjectModel(Similarity.name) private similarityModel: Model<Similarity>,
   ) {}
+
+  async getPotentialNeighbors(critic: Critic) {
+    const criticId = pick(critic, ["source", "userId"]);
+
+    const result = await this.ratingModel.aggregate<PotencialNeighbor>([
+      {
+        $facet: {
+          all: [],
+          userItems: [{ $match: criticId }, { $group: { _id: "$itemId" } }],
+        },
+      },
+      { $project: { all: "$all", userItems: "$userItems._id" } },
+      {
+        $project: {
+          items: {
+            $filter: {
+              input: "$all",
+              cond: { $in: ["$$this.itemId", "$userItems"] },
+            },
+          },
+        },
+      },
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: { source: "$items.source", userId: "$items.userId" },
+          ratings: { $sum: 1 },
+        },
+      },
+      { $sort: { ratings: -1 } },
+      { $limit: POTENTIAL_NEIGHBORS },
+      {
+        $project: {
+          _id: 0,
+          source: "$_id.source",
+          userId: "$_id.userId",
+          ratings: "$ratings",
+        },
+      },
+    ]);
+
+    return result;
+  }
 
   async updateSimilarity(critic1: Critic, critic2: Critic) {
     let ratings = await this.getIntersectionRatings(critic1, critic2);

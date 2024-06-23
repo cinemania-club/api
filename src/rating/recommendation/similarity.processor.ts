@@ -1,18 +1,36 @@
-import { Process, Processor } from "@nestjs/bull";
+import { InjectQueue, Process, Processor } from "@nestjs/bull";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Inject } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Job } from "bull";
+import { Job, Queue } from "bull";
+import { Cache } from "cache-manager";
 import { Model } from "mongoose";
 import { BaseProcessor, ProcessorType, ProcessType } from "src/processor";
 import { Critic } from "../critic.schema";
 import { SimilarityService } from "./similarity.service";
 
+const PROCESSOR =
+  ProcessorType.SIMILARITY + ":" + ProcessType.CALCULATE_SIMILARITIES;
+
 @Processor(ProcessorType.SIMILARITY)
 export class SimilarityProcessor extends BaseProcessor {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectQueue(ProcessorType.SIMILARITY) private similarityQueue: Queue,
     @InjectModel(Critic.name) private criticModel: Model<Critic>,
     private similarityService: SimilarityService,
   ) {
     super();
+  }
+
+  @Process(ProcessType.CALCULATE_SIMILARITIES)
+  async calculateSimilarities(job: Job<{ critic: string }>) {
+    const critic = await this.getCritic(job.data.critic);
+    if (!critic) return;
+
+    const neighbors =
+      await this.similarityService.getPotentialNeighbors(critic);
+    console.log({ neighbors });
   }
 
   @Process(ProcessType.CALCULATE_SIMILARITY)

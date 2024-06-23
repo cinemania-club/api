@@ -19,6 +19,7 @@ export enum ProcessType {
   LOAD_RATINGS = "load-ratings",
   CALCULATE_RATINGS = "calculate-ratings",
   CALCULATE_RATING = "calculate-rating",
+  CALCULATE_SIMILARITIES = "calculate-similarities",
   CALCULATE_SIMILARITY = "calculate-similarity",
 }
 
