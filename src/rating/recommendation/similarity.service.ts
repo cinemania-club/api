@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { chain, meanBy, sum } from "lodash";
 import { Model } from "mongoose";
 import { Oid } from "src/mongo";
+import { DataSource } from "src/types";
 import { Critic, Rating } from "../rating.schema";
 import { Similarity } from "./similarity.schema";
 
@@ -12,12 +13,63 @@ type IntersectionRating = {
   critic2: number;
 };
 
+type PotentialNeighbor = {
+  source: string;
+  userId: Oid | number;
+  ratings: number;
+};
+
+const POTENTIAL_NEIGHBORS = 1000;
+
 @Injectable()
 export class SimilarityService {
   constructor(
     @InjectModel(Rating.name) private ratingModel: Model<Rating>,
     @InjectModel(Similarity.name) private similarityModel: Model<Similarity>,
   ) {}
+
+  async getPotentialNeighbors(userId: Oid) {
+    const critic = { source: DataSource.INTERNAL, userId };
+
+    const result = await this.ratingModel.aggregate<PotentialNeighbor>([
+      {
+        $facet: {
+          all: [],
+          userItems: [{ $match: { critic } }, { $group: { _id: "$itemId" } }],
+        },
+      },
+      { $project: { all: "$all", userItems: "$userItems._id" } },
+      {
+        $project: {
+          items: {
+            $filter: {
+              input: "$all",
+              cond: {
+                $and: [
+                  { $in: ["$$this.itemId", "$userItems"] },
+                  { $ne: ["$$this.critic", critic] },
+                ],
+              },
+            },
+          },
+        },
+      },
+      { $unwind: "$items" },
+      { $group: { _id: "$items.critic", ratings: { $sum: 1 } } },
+      { $sort: { ratings: -1 } },
+      { $limit: POTENTIAL_NEIGHBORS },
+      {
+        $project: {
+          _id: 0,
+          source: "$_id.source",
+          userId: "$_id.userId",
+          ratings: "$ratings",
+        },
+      },
+    ]);
+
+    return result;
+  }
 
   async updateSimilarity(critic1: Critic, critic2: Critic) {
     let ratings = await this.getIntersectionRatings(critic1, critic2);
@@ -55,9 +107,7 @@ export class SimilarityService {
       },
       {
         $match: {
-          ratings: {
-            $all: [{ $elemMatch: critic1 }, { $elemMatch: critic2 }],
-          },
+          ratings: { $all: [{ $elemMatch: critic1 }, { $elemMatch: critic2 }] },
         },
       },
       {

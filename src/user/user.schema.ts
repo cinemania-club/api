@@ -39,6 +39,9 @@ export class User {
   @Prop({ type: [SchemaTypes.String], required: true, default: [] })
   streamings!: string[];
 
+  @Prop({ type: SchemaTypes.UUID, required: false })
+  similarityProcessId?: UUID;
+
   public get token() {
     return { sub: this._id.toString(), admin: this.admin };
   }
