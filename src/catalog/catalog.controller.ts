@@ -7,6 +7,7 @@ import { Anonymous } from "src/auth.guard";
 import { $oid } from "src/mongo";
 import { PLAYLIST_FIELDS } from "src/playlist/constants";
 import { Rating } from "src/rating/rating.schema";
+import { DataSource } from "src/types";
 import {
   CatalogItemDto,
   FilterCatalogDto,
@@ -39,7 +40,7 @@ export class CatalogController {
     );
 
     const currentRatings = await this.ratingModel.countDocuments({
-      userId: req.payload!.userId,
+      critic: { source: DataSource.INTERNAL, userId: req.payload!.userId },
       stars: { $ne: null },
     });
 
@@ -102,8 +103,13 @@ export class CatalogController {
     @Param() params: CatalogItemDto,
     @Body() rating: RatingDto,
   ) {
+    const critic = {
+      source: DataSource.INTERNAL,
+      userId: req.payload!.userId,
+    };
+
     await this.ratingModel.findOneAndUpdate(
-      { itemId: params.id, userId: req.payload!.userId.toString() },
+      { critic, itemId: params.id },
       { stars: rating.stars || null },
       { upsert: true },
     );
