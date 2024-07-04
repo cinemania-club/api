@@ -16,18 +16,20 @@ export class AnonymousUserDto {
 
 export class SignUpDto {
   @IsString()
+  @IsNotEmpty({ message: "Nome de usuário é obrigatório" })
   username!: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: "Email inválido" })
   email!: string;
 
-  @IsStrongPassword()
+  @IsStrongPassword({}, { message: "Escolha uma senha mais forte" })
   password!: string;
 
   @IsString()
+  @IsNotEmpty({ message: "Nome é obrigatório" })
   name!: string;
 
-  @IsPhoneNumber("BR")
+  @IsPhoneNumber("BR", { message: "Telefone inválido" })
   @IsOptional()
   phone?: string;
 }
