@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from "@nestjs/common";
 import { ElasticsearchService } from "@nestjs/elasticsearch";
 import { JwtService } from "@nestjs/jwt";
 import { InjectModel } from "@nestjs/mongoose";
@@ -22,20 +27,15 @@ export class UserService {
 
   async signUp(userId: Oid, profile: SignUpDto) {
     const user = (await this.userModel.findById(userId))!;
-    if (user.profile)
-      throw new HttpException("Usuário já cadastrado", HttpStatus.BAD_REQUEST);
+    if (user.profile) throw new BadRequestException("Usuário já cadastrado");
 
     await this.checkUniqueField(
-      "profile.username",
+      "username",
       profile.username,
       "Nome de usuário indisponível",
     );
 
-    await this.checkUniqueField(
-      "profile.email",
-      profile.email,
-      "Email já cadastrado",
-    );
+    await this.checkUniqueField("email", profile.email, "Email já cadastrado");
 
     await this.saveProfile(userId, profile);
     await this.playlistExternal.createUser(user._id);
@@ -83,8 +83,9 @@ export class UserService {
     value: string,
     message: string,
   ) {
-    const duplicate = await this.userModel.exists({ [field]: value });
-    if (duplicate) throw new HttpException(message, HttpStatus.BAD_REQUEST);
+    const key = `profile.${field}`;
+    const duplicate = await this.userModel.exists({ [key]: value });
+    if (duplicate) throw new BadRequestException({ [field]: message });
   }
 
   private async authenticate(dto: SignInDto) {

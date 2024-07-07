@@ -1,6 +1,6 @@
 import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { ValidationError } from "class-validator";
-import { chain } from "lodash";
+import { chain, first, values } from "lodash";
 
 export class FieldValidationPipe extends ValidationPipe {
   constructor() {
@@ -15,7 +15,7 @@ export class FieldValidationPipe extends ValidationPipe {
   private fieldErrors(errors: ValidationError[]) {
     return chain(errors)
       .keyBy("property")
-      .mapValues((e) => (e.constraints ? Object.values(e.constraints) : []))
+      .mapValues((e) => first(values(e.constraints)))
       .value();
   }
 }
