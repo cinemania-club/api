@@ -35,10 +35,11 @@ export class SignUpDto {
 }
 
 export class SignInDto {
-  @IsEmail()
+  @IsEmail({}, { message: "Email inválido" })
   email!: string;
 
   @IsString()
+  @IsNotEmpty({ message: "Senha é obrigatória" })
   password!: string;
 }
 
