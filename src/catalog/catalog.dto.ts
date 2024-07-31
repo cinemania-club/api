@@ -13,10 +13,9 @@ import { CatalogItemFormat } from "./item.schema";
 import { SortCriteria } from "./types";
 
 export class FilterCatalogDto {
-  @IsArray()
-  @IsEnum(CatalogItemFormat, { each: true })
+  @IsEnum(CatalogItemFormat)
   @IsOptional()
-  formats?: CatalogItemFormat[];
+  format?: CatalogItemFormat;
 
   @IsArray()
   @IsInt({ each: true })

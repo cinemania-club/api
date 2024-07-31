@@ -36,8 +36,8 @@ export class CatalogService {
 
   async getCatalog(filters: FilterCatalogDto, userId: Oid) {
     const filterFormats = $criteria(
-      { format: { $in: filters.formats } },
-      !!filters.formats?.length,
+      { format: filters.format },
+      !!filters.format,
     );
 
     const filterStreamings = $criteria(
